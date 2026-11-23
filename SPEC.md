@@ -14,8 +14,9 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 
 ## 2. Flujo del alumno
 
-![Boceto del flujo del alumno](docs/img/flujo.jpg)
-<!-- TODO: subir la foto del boceto en papel a docs/img/flujo.jpg -->
+> Boceto inicial hecho a mano en la sesión presencial del 23/11. El diseño ha evolucionado desde entonces: la tabla de abajo es la versión vigente.
+
+![Boceto del flujo del alumno](docs/img/flujo.png)
 
 | # | Pantalla | Qué hace |
 |---|---|---|
@@ -58,8 +59,9 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 
 ## 5. Arquitectura
 
-![Diagrama de arquitectura en papel](docs/img/arquitectura.jpg)
-<!-- TODO: subir la foto del diagrama a docs/img/arquitectura.jpg -->
+> Diagrama inicial hecho a mano en la sesión presencial del 23/11. El esquema y la tabla de abajo lo detallan y son la versión vigente.
+
+![Diagrama de arquitectura en papel](docs/img/arquitectura.png)
 
 ```
  Alumno / Tutor (móvil)
