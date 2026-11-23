@@ -1,0 +1,110 @@
+[
+  {
+    "title": "H1 · Tutor del módulo: resolver dudas",
+    "labels": ["historia", "imprescindible", "30/11"],
+    "estimate": "3 h",
+    "body": "**Como** alumno **quiero** preguntar dudas al tutor del módulo **para** resolverlas sin esperar a un tutor humano.\n\n**Criterios de aceptación**\n- Responde en español en menos de 5 s en 4G.\n- Solo usa el temario del módulo; fuera de él lo dice y no inventa.\n- Cita el vídeo y el minuto de donde sale la respuesta.\n- La pregunta pasa por el filtro de privacidad antes de llegar a la IA."
+  },
+  {
+    "title": "H2 · Tutor del módulo: resumen y tarjetas de estudio",
+    "labels": ["historia", "imprescindible", "30/11"],
+    "estimate": "1,5 h",
+    "body": "**Como** alumno **quiero** pedir al tutor un resumen o tarjetas de estudio del módulo **para** repasar rápido desde el móvil.\n\n**Criterios de aceptación**\n- El resumen cabe en una pantalla de móvil.\n- Las tarjetas se muestran como pregunta y respuesta y giran con un toque.\n- El material se genera una vez por módulo y se reutiliza (caché)."
+  },
+  {
+    "title": "H3 · Ejercicios de verificación con corrección",
+    "labels": ["historia", "imprescindible", "30/11"],
+    "estimate": "3 h",
+    "body": "**Como** alumno **quiero** resolver los ejercicios de verificación de un módulo **para** comprobar que he aprendido y completar el módulo.\n\n**Criterios de aceptación**\n- Se presentan entre 5 y 8 ejercicios del banco del módulo.\n- Las preguntas tipo test se corrigen con código y las abiertas con IA según la rúbrica.\n- El feedback enlaza al vídeo y al minuto que hay que repasar.\n- El intento y el progreso se guardan."
+  },
+  {
+    "title": "H4 · Generador de ejercicios a partir de ejemplos del profesor",
+    "labels": ["historia", "imprescindible", "semana-intermedia"],
+    "estimate": "2 h",
+    "body": "**Como** profesor **quiero** dar ejemplos y el tipo de ejercicio de cada módulo **para** que la IA genere ejercicios que no se desvíen.\n\n**Criterios de aceptación**\n- Se configura en un fichero, sin panel de administración.\n- Los ejercicios generados respetan el tipo y el formato de los ejemplos.\n- Se guardan en estado borrador y el profesor los aprueba antes de publicarlos.\n- Cada ejercicio indica su concepto y su vídeo y minuto de referencia."
+  },
+  {
+    "title": "H5 · Radar del tutor",
+    "labels": ["historia", "imprescindible", "30/11"],
+    "estimate": "2,5 h",
+    "body": "**Como** tutor **quiero** ver qué alumnos están atascados y en qué conceptos **para** dedicar mi tiempo a quien lo necesita.\n\n**Criterios de aceptación**\n- Lista priorizada de alumnos con fallos repetidos o inactividad.\n- Conceptos más fallados por módulo.\n- Resumen de las dudas frecuentes hechas al tutor IA.\n- A la IA solo llegan estadísticas y textos seudonimizados; la reidentificación se hace en nuestro servidor."
+  },
+  {
+    "title": "H6 · Diagnóstico rápido por módulo",
+    "labels": ["historia", "deseable", "30/11"],
+    "estimate": "1 h",
+    "body": "**Como** alumno con experiencia **quiero** hacer un diagnóstico rápido de un módulo **para** no ver contenido que ya domino.\n\n**Criterios de aceptación**\n- Unas 3 preguntas.\n- Si las acierta, el módulo queda como dominado y baja en la ruta sugerida."
+  },
+  {
+    "title": "H7 · Infografías de un concepto",
+    "labels": ["historia", "deseable", "30/11"],
+    "estimate": "1 h",
+    "body": "**Como** alumno **quiero** pedir una infografía de un concepto **para** entenderlo de un vistazo.\n\n**Criterios de aceptación**\n- Se genera como diagrama Mermaid o HTML, no como imagen.\n- Es legible en una pantalla de 360 px."
+  },
+  {
+    "title": "Base común: proyecto Next.js, Tailwind, shadcn/ui y tipos compartidos",
+    "labels": ["técnica", "imprescindible", "semana-intermedia"],
+    "estimate": "2 h",
+    "body": "Crear el proyecto y el **contrato** que permite trabajar en paralelo.\n\n**Hecho cuando**\n- El proyecto Next.js (TypeScript) arranca con Tailwind y shadcn/ui.\n- Hay tipos compartidos para el catálogo, los ejercicios, los intentos y el progreso.\n- Están documentados los endpoints de la API (aunque devuelvan datos de prueba).\n- Existe `.env.example`.\n\n⚠️ Bloquea al resto: es lo primero."
+  },
+  {
+    "title": "Capa de IA y filtro de privacidad",
+    "labels": ["técnica", "imprescindible", "semana-intermedia"],
+    "estimate": "2 h",
+    "body": "Crear un cliente único hacia el proveedor de IA (API compatible con OpenAI) y un filtro de privacidad hecho con código.\n\n**Hecho cuando**\n- El proveedor y el modelo se eligen por configuración.\n- Ninguna llamada a la IA sale sin pasar por el filtro.\n- El filtro cambia la identidad del alumno por un seudónimo y elimina emails, teléfonos, DNI y nombres conocidos.\n- Hay un límite diario de consultas por alumno."
+  },
+  {
+    "title": "Alta en el proveedor de IA y prueba de modelos en español",
+    "labels": ["técnica", "imprescindible", "semana-intermedia"],
+    "estimate": "1 h",
+    "body": "Darse de alta en OVHcloud AI Endpoints o Scaleway Generative APIs.\n\n**Hecho cuando**\n- Hay una clave operativa, guardada fuera del repositorio.\n- Se han comprobado qué modelos abiertos se ofrecen, su calidad en español y su precio por token.\n- El modelo elegido y los precios reales están apuntados en `SPEC.md` (apartado 9)."
+  },
+  {
+    "title": "Contenido: 12 vídeos, transcripciones y catalog.json",
+    "labels": ["técnica", "imprescindible", "semana-intermedia"],
+    "estimate": "3 h",
+    "body": "Seleccionar 12 vídeos de YouTube en español sobre desarrollo web (4 módulos: HTML, CSS, maquetación responsive y JavaScript).\n\n**Hecho cuando**\n- Las URLs de los vídeos están en `catalog.json` y en `SPEC.md` (apartado 8).\n- Las transcripciones están en formato VTT, con marcas de tiempo. Si un vídeo no tiene subtítulos, se transcribe con Whisper en local.\n- Cada módulo tiene su lista de conceptos."
+  },
+  {
+    "title": "Ejemplos del profesor por módulo",
+    "labels": ["técnica", "imprescindible", "semana-intermedia"],
+    "estimate": "1,5 h",
+    "body": "Hacer de profesor: escribir 2 o 3 ejercicios de ejemplo por módulo, de tipos distintos (test, respuesta corta, código), con su solución o rúbrica.\n\nNecesario para H4."
+  },
+  {
+    "title": "Esquema de BBDD, alumnos de demo y datos simulados para el Radar",
+    "labels": ["técnica", "imprescindible", "semana-intermedia"],
+    "estimate": "2,5 h",
+    "body": "**Hecho cuando**\n- El esquema SQLite cubre las entidades del apartado 6 de `SPEC.md`.\n- Hay alumnos de demo para entrar.\n- Hay unos 30 alumnos ficticios con intentos, fallos y dudas que forman patrones realistas (p. ej. «el 60 % falla especificidad en CSS»), para que el Radar tenga algo que enseñar."
+  },
+  {
+    "title": "Pantallas Home, Curso y Módulo con ruta sugerida, y PWA",
+    "labels": ["técnica", "imprescindible", "30/11"],
+    "estimate": "3 h",
+    "body": "**Hecho cuando**\n- Las pantallas son mobile-first y se usan con una mano (acciones principales abajo).\n- La Home muestra la ruta sugerida y el estado de cada módulo.\n- La pantalla de Módulo incluye los vídeos embebidos, el acceso al tutor y los ejercicios.\n- La PWA es instalable y cachea la interfaz."
+  },
+  {
+    "title": "Material de estudio pregenerado para la demo",
+    "labels": ["técnica", "imprescindible", "semana-intermedia"],
+    "estimate": "1 h",
+    "body": "Generar y guardar los resúmenes y las tarjetas de los 4 módulos, y preparar respuestas de reserva para las preguntas del guion de la demo.\n\nAsí la demo no depende de que la IA responda en directo."
+  },
+  {
+    "title": "Instrucciones de los agentes en agents/",
+    "labels": ["técnica", "imprescindible", "30/11"],
+    "estimate": "1 h",
+    "body": "Un fichero Markdown por agente (tutor, generador, corrector, analista del Radar) con qué hace, sus instrucciones, entrada, salida, modelo y límites. Es un entregable del reto."
+  },
+  {
+    "title": "Presentación (2-3 diapositivas) y guion de la demo",
+    "labels": ["técnica", "imprescindible", "30/11"],
+    "estimate": "1 h",
+    "body": "**Hecho cuando**\n- Hay 2 o 3 diapositivas: cómo hemos trabajado, harness y modelos, arquitectura y tecnologías.\n- Hay un guion de demo de 5 minutos desde el móvil, ensayado a las 13:15."
+  },
+  {
+    "title": "Subir las fotos de los bocetos a docs/img",
+    "labels": ["técnica", "imprescindible", "semana-intermedia"],
+    "estimate": "0,25 h",
+    "body": "Subir `docs/img/flujo.jpg` (flujo del alumno) y `docs/img/arquitectura.jpg` (diagrama en papel), a los que ya enlaza `SPEC.md`."
+  }
+]
