@@ -82,6 +82,7 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 | El alumno solo ve material común **revisado** por una persona | Mostrarlo con la etiqueta «pendiente» | Uso responsable de la IA: lo que ven todos lo aprueba una persona. El material personal no se revisa |
 | Infografías con **plantillas propias** | Mermaid; imágenes generadas | Ligeras en 4G, nunca salen rotas y se leen bien a 360 px |
 | Seudónimos estables (HMAC) en lugar de aleatorios por sesión | Aleatorios | El Radar necesita reconocer al mismo alumno entre sesiones |
+| **Decisión de equipo:** demo desplegada en **Vercel** (funciones en París) con **PostgreSQL en la UE**, en lugar de SQLite en un portátil | Portátil con SQLite; portátil con túnel | La wifi del aula puede aislar el móvil del portátil, la PWA necesita HTTPS para instalarse, el cliente podrá probarla desde su teléfono, y SQLite no funciona en Vercel. Plan B: portátil con el punto de acceso del móvil |
 
 ### Problemas y cómo los resolvimos
 

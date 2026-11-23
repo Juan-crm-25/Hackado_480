@@ -87,6 +87,13 @@ scripts/                Backlog y creación de issues
 
 Para añadir componentes de shadcn/ui: `npx shadcn@latest add <componente>`.
 
+## Despliegue (Vercel)
+
+- El repositorio está conectado a Vercel: cada cambio en `main` se publica solo, y cada PR tiene su propia URL de prueba.
+- Las funciones se ejecutan en **París** (`vercel.json`), así que los datos de los alumnos se procesan en la UE.
+- Las variables de `.env.example` se configuran en el panel de Vercel (Settings → Environment Variables), nunca en el repositorio. `DATABASE_URL` la crea la integración de PostgreSQL (Neon o Supabase, en una región de la UE).
+- `next.config.ts` incluye en el despliegue `agents/` y `data/`, que el servidor lee al responder.
+
 ## Tecnologías
 
-Next.js 16 (TypeScript) · Tailwind CSS 4 · shadcn/ui · SQLite · modelos de pesos abiertos alojados en la UE (API compatible con OpenAI).
+Next.js 16 (TypeScript) · Tailwind CSS 4 · shadcn/ui · PostgreSQL · Vercel (funciones en París) · modelos de pesos abiertos alojados en la UE (API compatible con OpenAI).

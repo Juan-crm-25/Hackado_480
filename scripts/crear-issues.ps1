@@ -24,7 +24,8 @@ $items = $json | ConvertFrom-Json
 $tmp = [System.IO.Path]::GetTempFileName()
 
 foreach ($item in $items) {
-    $body = $item.body + "`n`n**Estimación:** " + $item.estimate + "`n`n_Sin asignar: quien la coja, que se la asigne._"
+    # Sin tildes literales: PowerShell 5.1 lee los .ps1 sin BOM como ANSI ("Estimación" saldría como "EstimaciÃ³n").
+    $body = $item.body + "`n`n**Estimaci" + [char]0x00F3 + "n:** " + $item.estimate + "`n`n_Sin asignar: quien la coja, que se la asigne._"
     [System.IO.File]::WriteAllText($tmp, $body, $utf8)
     $ghArgs = @('issue', 'create', '--repo', $repo, '--title', $item.title, '--body-file', $tmp)
     foreach ($l in $item.labels) { $ghArgs += @('--label', $l) }
