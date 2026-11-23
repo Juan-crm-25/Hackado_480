@@ -8,7 +8,7 @@
 
 ## 2. Modelo y proveedor de IA
 
-**Decisión:** modelos de pesos abiertos (familia Qwen o similar) alojados por un proveedor europeo (OVHcloud AI Endpoints o Scaleway), detrás de una capa propia con API compatible con OpenAI. Un modelo mediano para el tutor y el corrector, y uno más grande solo para generar ejercicios, una vez por módulo.
+**Decisión:** modelos de pesos abiertos alojados por un proveedor europeo, detrás de una capa propia con API compatible con OpenAI. Elegimos **Scaleway Generative APIs**, que documenta que no retiene los datos, y el modelo **`gemma-4-26b-a4b-it`** (0,25 € por millón de tokens de entrada y 0,50 € por millón de salida) para todos los agentes. Si la generación de ejercicios se queda corta, se cambia solo ese modelo por uno mayor.
 **Alternativas:** las APIs de los fabricantes chinos (DeepSeek, Alibaba), los modelos comerciales de EE. UU. (OpenAI, Anthropic, Google), Mistral o los planes gratuitos.
 **Por qué:** hay alumnos menores y se aplica el RGPD. Las APIs chinas implican una transferencia de datos fuera de la UE sin garantías (en Italia ya se bloqueó DeepSeek), y los planes gratuitos usan los datos para entrenar. Con un modelo abierto alojado en la UE se consigue el precio bajo de esos modelos sin que los datos salgan de Europa. La capa propia permite cambiar de proveedor si cambian los precios o la calidad.
 
