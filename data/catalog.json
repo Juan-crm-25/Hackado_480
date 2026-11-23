@@ -31,9 +31,9 @@
           { "id": "css-unidades", "nombre": "Colores, tipografía y unidades" }
         ],
         "videos": [
-          { "id": "v04", "titulo": "Selectores y especificidad", "youtubeId": "", "duracionSegundos": 0 },
-          { "id": "v05", "titulo": "El modelo de caja", "youtubeId": "", "duracionSegundos": 0 },
-          { "id": "v06", "titulo": "Colores, tipografía y unidades", "youtubeId": "", "duracionSegundos": 0 }
+          { "id": "v04", "titulo": "Selectores y especificidad", "youtubeId": "", "duracionSegundos": 200, "transcripcion": "v04.vtt" },
+          { "id": "v05", "titulo": "El modelo de caja", "youtubeId": "", "duracionSegundos": 190, "transcripcion": "v05.vtt" },
+          { "id": "v06", "titulo": "Colores, tipografía y unidades", "youtubeId": "", "duracionSegundos": 170, "transcripcion": "v06.vtt" }
         ]
       },
       {

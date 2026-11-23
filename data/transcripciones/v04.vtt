@@ -1,0 +1,32 @@
+WEBVTT
+
+NOTE
+TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
+Se sustituirá por la transcripción real del vídeo (#11).
+
+00:00:00.000 --> 00:00:12.000
+Hola, en este vídeo vamos a ver qué son los selectores en CSS y cómo decide el navegador qué regla gana cuando dos reglas chocan.
+
+00:00:12.000 --> 00:00:31.000
+Un selector es la parte de la regla que dice a qué elementos se aplica el estilo. Los más básicos son el selector de etiqueta, por ejemplo button o p, que se aplica a todas las etiquetas de ese tipo.
+
+00:00:31.000 --> 00:00:52.000
+Después tenemos el selector de clase, que empieza por un punto, como .boton. Se aplica a todos los elementos que tengan class="boton". Una misma clase se puede usar en muchos elementos.
+
+00:00:52.000 --> 00:01:10.000
+Y el selector de id, que empieza por almohadilla, como #enviar. Un id debe ser único en la página, así que solo se aplica a un elemento.
+
+00:01:10.000 --> 00:01:34.000
+También se pueden combinar. Por ejemplo, div button selecciona los botones que están dentro de un div. A esto lo llamamos selector descendiente.
+
+00:01:34.000 --> 00:02:05.000
+Ahora, la especificidad. Cuando dos reglas dan valores distintos a la misma propiedad de un elemento, gana la más específica. Podemos pensar en la especificidad como tres contadores: ids, clases y etiquetas. Se comparan de izquierda a derecha.
+
+00:02:05.000 --> 00:02:32.000
+Un selector de id vale uno, cero, cero. Una clase vale cero, uno, cero. Una etiqueta vale cero, cero, uno. Por eso #enviar siempre gana a .boton, aunque .boton esté escrito después en el fichero: un solo id pesa más que cualquier número de clases.
+
+00:02:32.000 --> 00:02:55.000
+Si dos selectores tienen exactamente la misma especificidad, entonces gana el que aparece más tarde en el CSS. Eso es la cascada.
+
+00:02:55.000 --> 00:03:20.000
+Y un último aviso: los estilos escritos en el atributo style de la etiqueta ganan a todos los selectores, y !important gana incluso a eso. Usad !important lo menos posible, porque hace el CSS muy difícil de mantener.

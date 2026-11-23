@@ -1,0 +1,29 @@
+WEBVTT
+
+NOTE
+TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
+Se sustituirá por la transcripción real del vídeo (#11).
+
+00:00:00.000 --> 00:00:15.000
+En este vídeo vamos a entender el modelo de caja, que es la base de cómo se colocan y miden todos los elementos en una página.
+
+00:00:15.000 --> 00:00:38.000
+Para el navegador, cada elemento es una caja con cuatro capas. De dentro hacia fuera: el contenido, el padding, el borde y el margen.
+
+00:00:38.000 --> 00:01:02.000
+El padding es el relleno: el espacio interior entre el contenido y el borde. Si el elemento tiene color de fondo, el fondo también pinta el padding.
+
+00:01:02.000 --> 00:01:25.000
+El borde rodea al padding. Se define con border, por ejemplo border: 2px solid black, que es grosor, estilo y color.
+
+00:01:25.000 --> 00:01:50.000
+El margen es el espacio exterior, fuera del borde. Separa la caja de las cajas vecinas y siempre es transparente. Un truco para recordarlo: padding dentro, margin fuera.
+
+00:01:50.000 --> 00:02:20.000
+Ojo con el ancho. Por defecto, width solo mide el contenido. Si pongo width: 100px, padding de 10px y borde de 5px, la caja ocupa en total 100 más 20 más 10, es decir, 130px de ancho.
+
+00:02:20.000 --> 00:02:48.000
+Esto se puede cambiar con box-sizing: border-box. Con border-box, el width incluye el padding y el borde, así que la caja mide exactamente 100px. Es lo que casi todo el mundo usa hoy.
+
+00:02:48.000 --> 00:03:10.000
+Por último, los márgenes verticales de dos bloques seguidos se fusionan: si uno tiene margin-bottom de 20px y el siguiente margin-top de 30px, la separación es de 30px, no de 50.

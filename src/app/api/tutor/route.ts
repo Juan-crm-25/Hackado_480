@@ -1,34 +1,66 @@
-import { getModulo } from "@/lib/catalogo";
+import { ErrorIA } from "@/lib/ai/cliente";
+import { consumirConsulta } from "@/lib/ai/limite";
+import { preguntarAlTutor } from "@/lib/agentes/tutor";
+import { getCurso, getModulo } from "@/lib/catalogo";
+import { alumnosDemo } from "@/lib/datos-prueba";
 import type { ErrorApi, PeticionTutor, RespuestaTutor } from "@/lib/types";
 
+const MAX_CARACTERES = 1000;
+
 /**
- * POST /api/tutor — pregunta al tutor del módulo.
- * Hoy responde un texto fijo. La respuesta real llega con la capa de IA (#9) y el agente tutor (#1).
+ * POST /api/tutor — pregunta al tutor del módulo (issue #1). Ver agents/tutor.md.
+ * Los alumnos salen de los datos de prueba hasta que exista la BBDD (#13).
  */
 export async function POST(req: Request) {
   let peticion: PeticionTutor;
   try {
     peticion = (await req.json()) as PeticionTutor;
   } catch {
-    return Response.json({ error: "El cuerpo debe ser JSON" } satisfies ErrorApi, { status: 400 });
+    return error("El cuerpo debe ser JSON", 400);
   }
-  if (!peticion?.alumnoId || !peticion?.moduloId || !peticion?.mensaje) {
-    return Response.json(
-      { error: "Faltan campos: alumnoId, moduloId y mensaje" } satisfies ErrorApi,
-      { status: 400 },
-    );
+  const pregunta = typeof peticion?.mensaje === "string" ? peticion.mensaje.trim() : "";
+  if (!peticion?.alumnoId || !peticion?.moduloId || !pregunta) {
+    return error("Faltan campos: alumnoId, moduloId y mensaje", 400);
   }
-  const modulo = getModulo(peticion.moduloId);
-  if (!modulo) {
-    return Response.json({ error: `No existe el módulo "${peticion.moduloId}"` } satisfies ErrorApi, { status: 404 });
+  if (pregunta.length > MAX_CARACTERES) {
+    return error(`La pregunta es demasiado larga (máximo ${MAX_CARACTERES} caracteres)`, 400);
   }
 
-  const respuesta: RespuestaTutor = {
-    mensaje: {
-      rol: "tutor",
-      texto: `(Respuesta de prueba) Soy el tutor del módulo «${modulo.titulo}». Todavía no estoy conectado a la IA.`,
-      fuentes: [],
-    },
-  };
-  return Response.json(respuesta);
+  const modulo = getModulo(peticion.moduloId);
+  if (!modulo) return error(`No existe el módulo "${peticion.moduloId}"`, 404);
+  const alumno = alumnosDemo.find((a) => a.id === peticion.alumnoId);
+  if (!alumno) return error(`No existe el alumno "${peticion.alumnoId}"`, 404);
+
+  const limite = consumirConsulta(alumno.id);
+  if (!limite.permitido) {
+    return error("Has llegado al límite de preguntas de hoy. Mañana podrás seguir preguntando.", 429);
+  }
+
+  const historial = Array.isArray(peticion.historial)
+    ? peticion.historial.filter((m) => (m?.rol === "alumno" || m?.rol === "tutor") && typeof m.texto === "string")
+    : [];
+
+  try {
+    const salida = await preguntarAlTutor({
+      curso: getCurso(),
+      modulo,
+      pregunta,
+      historial,
+      nombresOcultos: [alumno.nombre],
+    });
+    const respuesta: RespuestaTutor = {
+      mensaje: salida.mensaje,
+      fueraDeTemario: salida.fueraDeTemario,
+      consultasRestantes: limite.restantes,
+    };
+    return Response.json(respuesta);
+  } catch (e) {
+    // Nunca se devuelve el detalle interno al alumno; sí se registra (sin contenido de la pregunta).
+    console.error(`[tutor] ${e instanceof ErrorIA ? e.message : "error inesperado"}`);
+    return error("El tutor no está disponible ahora mismo. Inténtalo de nuevo en unos segundos.", 502);
+  }
+}
+
+function error(mensaje: string, estado: number) {
+  return Response.json({ error: mensaje } satisfies ErrorApi, { status: estado });
 }
