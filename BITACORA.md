@@ -12,7 +12,7 @@ Responsable de la bitácora: Antonio Pascual.
 - **Diagnóstico inicial:** a 480 Academy le falta seguimiento del alumno, herramientas que acerquen al alumno y al tutor, y un aprendizaje menos estático.
 - **Ronda de preguntas al cliente (11:10):** preguntamos si quieren que los alumnos vean los vídeos enteros o que interioricen los conceptos, se aprenda como se aprenda.
   - Respuesta del cliente: _pendiente de completar_
-- **Bocetos en papel:** flujo del alumno en el móvil (Login → Home → Curso → Módulo → Foro → Tarea) y diagrama de arquitectura (Cliente ↔ Caché ↔ API/Servidor ↔ BBDD + IA).
+- **Bocetos en papel:** flujo del alumno en el móvil (Login → Home → Curso → Módulo → Foro → Tarea) y diagrama de arquitectura (Cliente ↔ Caché ↔ API/Servidor ↔ BBDD + IA). Fotos: [flujo](docs/img/flujo.png) y [arquitectura](docs/img/arquitectura.png). Son la versión inicial y pueden cambiar.
 - **Diseño de la solución:**
   - Un tutor de IA por módulo, limitado a su temario, que resuelve dudas y genera resúmenes, tarjetas de estudio e infografías.
   - Ejercicios de verificación por módulo, generados por IA a partir de ejemplos del profesor, del tipo que el profesor decida.
@@ -41,7 +41,6 @@ Responsable de la bitácora: Antonio Pascual.
 
 ### Pendiente para la semana intermedia (24–29/11)
 
-- Subir las fotos de los bocetos a `docs/img/`.
 - Asignarse los issues del backlog.
 - Dar de alta el proveedor de IA y probar los modelos en español.
 - Seleccionar los 12 vídeos y sacar sus transcripciones.
