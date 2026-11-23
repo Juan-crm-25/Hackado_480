@@ -12,7 +12,7 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/modulos/:id/ejercicios` | `EjercicioPublico[]` (sin solución ni rúbrica) | 🧪 Prueba | #4 banco, #3 selección |
 | `POST /api/intentos` | `Intento` | 🧪 Test corregido por código; abiertas pendientes | #3 corrector, #13 guardar |
 | `GET /api/progreso?alumnoId=` | `Progreso[]` | 🧪 Prueba | #13 |
-| `POST /api/tutor` | `RespuestaTutor` | 🧪 Texto fijo | #9 capa de IA, #1 tutor |
+| `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). Solo m2-css tiene transcripciones (de prueba) | #11 transcripciones reales, #13 alumnos reales |
 | `GET /api/radar` | `InformeRadar` | 🧪 Prueba | #5 |
 
 ## Ejemplos
@@ -44,8 +44,15 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 { "alumnoId": "a1", "moduloId": "m2-css", "mensaje": "¿Qué es la especificidad?", "historial": [] }
 
 // Respuesta (RespuestaTutor)
-{ "mensaje": { "rol": "tutor", "texto": "…", "fuentes": [{ "videoId": "v04", "segundo": 95 }] } }
+{
+  "mensaje": { "rol": "tutor", "texto": "…", "fuentes": [{ "videoId": "v04", "segundo": 125 }] },
+  "fueraDeTemario": false,
+  "consultasRestantes": 29
+}
 ```
+
+Errores: `400` (faltan campos o la pregunta supera 1.000 caracteres), `404` (módulo o alumno), `429` (límite diario alcanzado), `502` (la IA no responde). El mensaje de `error` se puede mostrar al alumno tal cual.
+Detalle del agente: [agents/tutor.md](../agents/tutor.md).
 
 ## Reglas
 

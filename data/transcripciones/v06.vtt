@@ -1,0 +1,26 @@
+WEBVTT
+
+NOTE
+TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
+Se sustituirá por la transcripción real del vídeo (#11).
+
+00:00:00.000 --> 00:00:14.000
+Vamos a ver cómo se escriben los colores, cómo se elige la tipografía y qué unidades de medida tenemos en CSS.
+
+00:00:14.000 --> 00:00:40.000
+Los colores se pueden escribir por nombre, como red; en hexadecimal, como #ff0000; o con rgb, como rgb(255, 0, 0). Con rgba o con una barra en rgb podemos añadir transparencia.
+
+00:00:40.000 --> 00:01:05.000
+Para el texto usamos font-family, que es la lista de fuentes por orden de preferencia, font-size para el tamaño y font-weight para el grosor. Terminad siempre la lista con una familia genérica, como sans-serif.
+
+00:01:05.000 --> 00:01:30.000
+Sobre las unidades: px son píxeles, una unidad absoluta. Sirve para bordes finos o detalles que no deben cambiar de tamaño.
+
+00:01:30.000 --> 00:02:00.000
+Las unidades relativas se adaptan. rem es relativo al tamaño de letra de la raíz de la página, normalmente 16px, así que 2rem son 32px. em es relativo al tamaño de letra del propio elemento, y se acumula si anidas elementos.
+
+00:02:00.000 --> 00:02:25.000
+El porcentaje es relativo al elemento padre. Y vw y vh son relativos al tamaño de la pantalla: 100vw es todo el ancho de la ventana.
+
+00:02:25.000 --> 00:02:50.000
+Mi recomendación: usad rem para tamaños de letra y espacios, porque respeta el tamaño de letra que el usuario haya elegido en su navegador. Eso es clave para la accesibilidad.

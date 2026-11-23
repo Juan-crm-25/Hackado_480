@@ -187,6 +187,10 @@ export interface PeticionTutor {
 
 export interface RespuestaTutor {
   mensaje: Mensaje;
+  /** true si la pregunta no se puede responder con el temario del módulo. */
+  fueraDeTemario?: boolean;
+  /** Consultas que le quedan hoy al alumno. */
+  consultasRestantes?: number;
 }
 
 export interface PeticionIntento {

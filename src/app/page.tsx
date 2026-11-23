@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCurso, getModulos } from "@/lib/catalogo";
@@ -28,6 +29,9 @@ export default function Home() {
                   <Badge variant="secondary">{modulo.videos.length} vídeos</Badge>
                 </div>
                 <CardDescription>{modulo.descripcion}</CardDescription>
+                <Link href={`/modulos/${modulo.id}/tutor`} className="pt-2 text-sm font-medium underline underline-offset-4">
+                  Preguntar al tutor →
+                </Link>
               </CardHeader>
             </Card>
           </li>
