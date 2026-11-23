@@ -14,6 +14,8 @@ Prototipo para **480 Academy**: una web móvil (PWA) en la que cada módulo del 
 - **Node.js 20 o superior** (recomendado el LTS). En Windows: `winget install OpenJS.NodeJS.LTS`
 - Git
 
+> **Windows y PowerShell:** si `npm` da el error *«running scripts is disabled on this system»*, usa `npm.cmd` en lugar de `npm` (por ejemplo, `npm.cmd run dev`). También puedes usar cmd o Git Bash.
+
 ## Arrancar el proyecto
 
 ```bash
@@ -33,6 +35,35 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm run dev` | Servidor de desarrollo |
 | `npm run build` | Compila para producción (hazlo antes de fusionar) |
 | `npm run lint` | Revisa el código |
+| `npm test` | Ejecuta los tests |
+| `npm run test:ia` | Prueba la conexión real con el proveedor de IA (necesita la clave en `.env.local`) |
+
+## Capa de IA
+
+Todo el acceso a la IA pasa por `src/lib/ai/`:
+
+| Fichero | Qué hace |
+|---|---|
+| `cliente.ts` | `completar()`: la única función que llama al proveedor (API compatible con OpenAI) |
+| `privacidad.ts` | `filtrarTexto()` quita emails, teléfonos, DNI, IBAN, tarjetas y nombres; `seudonimo()` oculta la identidad del alumno |
+| `limite.ts` | Límite diario de consultas por alumno |
+| `config.ts` | Lee la configuración de `.env.local` |
+
+- `completar()` **solo acepta texto filtrado**: el texto de un alumno tiene que pasar por `filtrarTexto()`, y el contenido del curso por `contenidoDelCurso()`. Si no, TypeScript da error.
+- **Sin clave**, la IA funciona en **modo simulado** y devuelve respuestas fijas. Así se puede desarrollar sin cuenta en el proveedor.
+
+```ts
+import { completar } from "@/lib/ai/cliente";
+import { contenidoDelCurso, filtrarTexto } from "@/lib/ai/privacidad";
+
+const { texto } = await completar({
+  modelo: "tutor",
+  mensajes: [
+    { rol: "sistema", contenido: contenidoDelCurso(instrucciones) },
+    { rol: "usuario", contenido: filtrarTexto(preguntaDelAlumno, [alumno.nombre]).texto },
+  ],
+});
+```
 
 ## Estructura
 

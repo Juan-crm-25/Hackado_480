@@ -124,7 +124,7 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 | Transcripciones y conceptos del módulo | Nombre, email, edad o cualquier identificador real |
 | Ejemplos y rúbricas del profesor | Que el alumno es menor de edad |
 | Pregunta o respuesta del alumno, **filtrada** | Historial fuera del módulo actual |
-| Un seudónimo aleatorio por sesión (p. ej. `alumno_7f3a`) | Datos de otros alumnos |
+| Un seudónimo estable generado con una clave secreta (p. ej. `alumno_3f9a1c`). Sin esa clave no se puede saber quién es | Datos de otros alumnos |
 | Para el Radar: estadísticas agregadas y dudas seudonimizadas | |
 
 ### Cómo cumplimos el RGPD (y la condición sobre menores)
