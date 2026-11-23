@@ -1,0 +1,118 @@
+{
+  "moduloId": "m2-css",
+  "generado": "2026-11-23T19:35:25.089Z",
+  "modelo": "gemma-4-26b-a4b-it",
+  "revisado": true,
+  "infografias": [
+    {
+      "conceptoId": "css-especificidad",
+      "titulo": "Jerarquía de Especificidad CSS",
+      "fuente": {
+        "videoId": "v04",
+        "segundo": 70
+      },
+      "plantilla": "comparativa",
+      "columnas": [
+        "Valor ID",
+        "Valor Clase",
+        "Valor Etiqueta"
+      ],
+      "filas": [
+        {
+          "nombre": "Selector de ID",
+          "valores": [
+            "1",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "nombre": "Selector de Clase",
+          "valores": [
+            "0",
+            "1",
+            "0"
+          ]
+        },
+        {
+          "nombre": "Selector de Etiqueta",
+          "valores": [
+            "0",
+            "0",
+            "1"
+          ]
+        }
+      ]
+    },
+    {
+      "conceptoId": "css-caja",
+      "titulo": "El Modelo de Caja",
+      "fuente": {
+        "videoId": "v05",
+        "segundo": 0
+      },
+      "plantilla": "capas",
+      "elementos": [
+        {
+          "nombre": "Margen",
+          "descripcion": "Espacio exterior fuera del borde que separa la caja de las vecinas."
+        },
+        {
+          "nombre": "Borde",
+          "descripcion": "Línea que rodea al padding, definida con grosor, estilo y color."
+        },
+        {
+          "nombre": "Padding",
+          "descripcion": "Relleno o espacio interior entre el contenido y el borde."
+        },
+        {
+          "nombre": "Contenido",
+          "descripcion": "El núcleo de la caja donde reside la información."
+        }
+      ]
+    },
+    {
+      "conceptoId": "css-unidades",
+      "titulo": "Colores, tipografía y unidades",
+      "fuente": {
+        "videoId": "v06",
+        "segundo": 0
+      },
+      "plantilla": "comparativa",
+      "columnas": [
+        "Concepto",
+        "Ejemplos o detalles"
+      ],
+      "filas": [
+        {
+          "nombre": "Colores",
+          "valores": [
+            "Nombre, hexadecimal o `rgb`",
+            "Usa `rgba` para transparencia"
+          ]
+        },
+        {
+          "nombre": "Tipografía",
+          "valores": [
+            "`font-family`, `font-size`, `font-weight`",
+            "Terminar con familia genérica"
+          ]
+        },
+        {
+          "nombre": "Unidades absolutas",
+          "valores": [
+            "`px` (píxeles)",
+            "Para bordes o detalles fijos"
+          ]
+        },
+        {
+          "nombre": "Unidades relativas",
+          "valores": [
+            "`rem` (raíz), `em` (elemento), `%`",
+            "`vw` y `vh` (pantalla)"
+          ]
+        }
+      ]
+    }
+  ]
+}

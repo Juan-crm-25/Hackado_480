@@ -38,6 +38,7 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm test` | Ejecuta los tests |
 | `npm run test:ia` | Prueba la conexión real con el proveedor de IA (necesita la clave en `.env.local`) |
 | `npm run generar:material` | Genera el resumen y las tarjetas comunes de los módulos con transcripciones (`-- m2-css` para uno solo, `-- --forzar` para regenerar). Revisa el resultado y pon `"revisado": true` |
+| `npm run generar:infografias` | Genera una infografía por concepto (mismas opciones). Revisa el resultado y pon `"revisado": true` |
 
 ## Capa de IA
 
