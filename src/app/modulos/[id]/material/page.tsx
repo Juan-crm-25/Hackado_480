@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getModulo, getModulos } from "@/lib/catalogo";
-import { leerMaterialComun } from "@/lib/material";
+import { leerMaterialComunPublicado } from "@/lib/material";
 import { VistaMaterial } from "./vista-material";
 
 export function generateStaticParams() {
@@ -24,20 +24,17 @@ async function ContenidoMaterial({ params }: { params: PageProps<"/modulos/[id]/
   const { id } = await params;
   const modulo = getModulo(id);
   if (!modulo) notFound();
-  const material = leerMaterialComun(id);
-
   return (
     <>
       <Cabecera titulo={modulo.titulo} />
-      {material ? (
-        <VistaMaterial
-          material={material}
-          videos={modulo.videos.map((v) => ({ id: v.id, titulo: v.titulo, youtubeId: v.youtubeId }))}
-          enlaceTutor={`/modulos/${modulo.id}/tutor`}
-        />
-      ) : (
-        <p className="px-4 py-6 text-sm text-muted-foreground">Este módulo todavía no tiene material de repaso.</p>
-      )}
+      <VistaMaterial
+        moduloId={modulo.id}
+        material={leerMaterialComunPublicado(id)}
+        conceptos={modulo.conceptos}
+        videos={modulo.videos.map((v) => ({ id: v.id, titulo: v.titulo, youtubeId: v.youtubeId }))}
+        hayTranscripciones={modulo.videos.some((v) => v.transcripcion)}
+        enlaceTutor={`/modulos/${modulo.id}/tutor`}
+      />
     </>
   );
 }

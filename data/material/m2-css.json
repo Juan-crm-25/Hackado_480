@@ -2,7 +2,7 @@
   "moduloId": "m2-css",
   "generado": "2026-11-23T19:07:07.071Z",
   "modelo": "gemma-4-26b-a4b-it",
-  "revisado": false,
+  "revisado": true,
   "resumen": [
     {
       "titulo": "Selectores y especificidad",

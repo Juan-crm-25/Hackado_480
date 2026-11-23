@@ -170,6 +170,42 @@ export interface MaterialComun {
   tarjetas: Tarjeta[];
 }
 
+export type NivelMaterial = "basico" | "normal" | "avanzado";
+
+/** Lo que pide el alumno para crearse su propio material (#2). */
+export interface PeticionMaterialPersonal {
+  alumnoId: string;
+  moduloId: string;
+  tipo: "resumen" | "tarjetas";
+  /** Concepto concreto; si falta, todo el módulo. */
+  conceptoId?: string;
+  nivel?: NivelMaterial;
+  /** Indicación libre del alumno ("con más ejemplos"...). Máximo 200 caracteres; se filtra antes de la IA. */
+  enfoque?: string;
+}
+
+/**
+ * Material PERSONAL: lo genera la IA a petición de un alumno y solo lo ve él.
+ * No se revisa: se muestra como "Generado por IA".
+ */
+export interface MaterialPersonal {
+  id: string;
+  alumnoId: string;
+  moduloId: string;
+  tipo: "resumen" | "tarjetas";
+  conceptoId?: string;
+  nivel: NivelMaterial;
+  enfoque?: string;
+  generado: string; // ISO 8601
+  resumen?: SeccionResumen[];
+  tarjetas?: Tarjeta[];
+}
+
+export interface RespuestaMaterialPersonal {
+  material: MaterialPersonal;
+  consultasRestantes: number;
+}
+
 // ─── Radar del tutor ─────────────────────────────────────────────────────────
 
 export interface AlertaAlumno {

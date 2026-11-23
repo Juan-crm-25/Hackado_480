@@ -14,7 +14,9 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/progreso?alumnoId=` | `Progreso[]` | 🧪 Prueba | #13 |
 | `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). Solo m2-css tiene transcripciones (de prueba) | #11 transcripciones reales, #13 alumnos reales |
 | `GET /api/radar` | `InformeRadar` | 🧪 Prueba | #5 |
-| `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (lee `data/material/`; no llama a la IA). 404 si el módulo aún no tiene material | #2 |
+| `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (lee `data/material/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #2 |
+| `POST /api/material-personal` | `RespuestaMaterialPersonal` | ✅ Real (IA). Cuenta para el límite diario. Errores 400/404/422/429/502 | #2 |
+| `GET /api/material-personal?alumnoId=&moduloId=` | `MaterialPersonal[]` | ✅ En memoria hasta #13 | #13 |
 
 ## Ejemplos
 

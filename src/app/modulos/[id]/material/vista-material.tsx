@@ -3,48 +3,64 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { MaterialComun } from "@/lib/types";
+import type { Concepto, MaterialComun, SeccionResumen, Tarjeta } from "@/lib/types";
+import { MiMaterial } from "./mi-material";
 
-type Pestana = "resumen" | "tarjetas";
+type Pestana = "resumen" | "tarjetas" | "mio";
 
 export function VistaMaterial({
+  moduloId,
   material,
+  conceptos,
   videos,
+  hayTranscripciones,
   enlaceTutor,
 }: {
-  material: MaterialComun;
+  moduloId: string;
+  /** Material común YA REVISADO, o null si aún no hay. */
+  material: MaterialComun | null;
+  conceptos: Concepto[];
   videos: VideoResumen[];
+  hayTranscripciones: boolean;
   enlaceTutor: string;
 }) {
-  const [pestana, setPestana] = useState<Pestana>("resumen");
+  const [pestana, setPestana] = useState<Pestana>(material ? "resumen" : "mio");
+  const pestanas: { id: Pestana; texto: string }[] = [
+    ...(material
+      ? [
+          { id: "resumen" as const, texto: "Resumen" },
+          { id: "tarjetas" as const, texto: `Tarjetas (${material.tarjetas.length})` },
+        ]
+      : []),
+    { id: "mio", texto: "Mío" },
+  ];
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4 px-4 py-4">
-      <div className="flex items-center justify-between gap-2">
-        <div className="grid flex-1 grid-cols-2 rounded-lg bg-muted p-1" role="tablist">
-          {(["resumen", "tarjetas"] as const).map((p) => (
-            <button
-              key={p}
-              role="tab"
-              aria-selected={pestana === p}
-              onClick={() => setPestana(p)}
-              className={`rounded-md py-2 text-sm font-medium ${pestana === p ? "bg-background shadow-sm" : "text-muted-foreground"}`}
-            >
-              {p === "resumen" ? "Resumen" : `Tarjetas (${material.tarjetas.length})`}
-            </button>
-          ))}
-        </div>
+      <div className={`grid rounded-lg bg-muted p-1 ${material ? "grid-cols-3" : "grid-cols-1"}`} role="tablist">
+        {pestanas.map((p) => (
+          <button
+            key={p.id}
+            role="tab"
+            aria-selected={pestana === p.id}
+            onClick={() => setPestana(p.id)}
+            className={`rounded-md py-2 text-sm font-medium ${pestana === p.id ? "bg-background shadow-sm" : "text-muted-foreground"}`}
+          >
+            {p.texto}
+          </button>
+        ))}
       </div>
 
-      {!material.revisado && (
-        <Badge variant="outline" className="self-start">
-          Generado por IA · pendiente de revisión
-        </Badge>
+      {!material && (
+        <p className="text-sm text-muted-foreground">Este módulo todavía no tiene material de repaso del curso, pero puedes crearte el tuyo.</p>
       )}
 
-      {pestana === "resumen" ? <Resumen material={material} videos={videos} /> : <Tarjetas material={material} videos={videos} />}
+      {pestana === "resumen" && material && <Resumen secciones={material.resumen} videos={videos} />}
+      {pestana === "tarjetas" && material && <Tarjetas tarjetas={material.tarjetas} videos={videos} />}
+      {pestana === "mio" && (
+        <MiMaterial moduloId={moduloId} conceptos={conceptos} videos={videos} hayTranscripciones={hayTranscripciones} />
+      )}
 
       <p className="mt-auto pt-2 text-center text-sm text-muted-foreground">
         ¿Te queda alguna duda?{" "}
@@ -56,10 +72,10 @@ export function VistaMaterial({
   );
 }
 
-function Resumen({ material, videos }: { material: MaterialComun; videos: VideoResumen[] }) {
+export function Resumen({ secciones, videos }: { secciones: SeccionResumen[]; videos: VideoResumen[] }) {
   return (
     <ol className="flex flex-col gap-3">
-      {material.resumen.map((s) => (
+      {secciones.map((s) => (
         <li key={s.titulo} className="flex flex-col gap-2 rounded-xl border p-4">
           <h2 className="font-semibold">{s.titulo}</h2>
           <p className="text-sm leading-relaxed">
@@ -76,11 +92,12 @@ function Resumen({ material, videos }: { material: MaterialComun; videos: VideoR
   );
 }
 
-function Tarjetas({ material, videos }: { material: MaterialComun; videos: VideoResumen[] }) {
+export function Tarjetas({ tarjetas, videos }: { tarjetas: Tarjeta[]; videos: VideoResumen[] }) {
   const [indice, setIndice] = useState(0);
   const [girada, setGirada] = useState(false);
-  const tarjeta = material.tarjetas[indice];
-  const total = material.tarjetas.length;
+  const total = tarjetas.length;
+  const tarjeta = tarjetas[Math.min(indice, total - 1)];
+  if (!tarjeta) return null;
 
   function ir(nuevo: number) {
     setIndice((nuevo + total) % total);

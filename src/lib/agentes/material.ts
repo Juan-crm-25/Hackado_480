@@ -63,26 +63,8 @@ export function validarMaterial(texto: string, modulo: Modulo): { resumen: Secci
   const datos = parsearObjetoJson(texto);
   if (!datos) throw new Error("El modelo no devolvió JSON válido.");
 
-  const textoLimpio = (v: unknown) => (typeof v === "string" ? v.trim() : "");
-  const primeraFuente = (v: unknown) => validarFuentes([v], modulo, 1)[0];
-
-  const resumen: SeccionResumen[] = [];
-  for (const s of Array.isArray(datos.resumen) ? (datos.resumen as Record<string, unknown>[]) : []) {
-    const titulo = textoLimpio(s?.titulo);
-    const cuerpo = textoLimpio(s?.texto);
-    if (!titulo || !cuerpo || resumen.some((x) => x.titulo === titulo)) continue;
-    resumen.push({ titulo, texto: cuerpo, fuente: primeraFuente(s?.fuente) });
-    if (resumen.length === MAXIMO_SECCIONES) break;
-  }
-
-  const tarjetas: Tarjeta[] = [];
-  for (const t of Array.isArray(datos.tarjetas) ? (datos.tarjetas as Record<string, unknown>[]) : []) {
-    const pregunta = textoLimpio(t?.pregunta);
-    const respuesta = textoLimpio(t?.respuesta);
-    if (!pregunta || !respuesta || tarjetas.some((x) => x.pregunta === pregunta)) continue;
-    tarjetas.push({ pregunta, respuesta, fuente: primeraFuente(t?.fuente) });
-    if (tarjetas.length === MAXIMO_TARJETAS) break;
-  }
+  const resumen = validarSecciones(datos.resumen, modulo, MAXIMO_SECCIONES);
+  const tarjetas = validarTarjetas(datos.tarjetas, modulo, MAXIMO_TARJETAS);
 
   if (resumen.length < MINIMO_SECCIONES || tarjetas.length < MINIMO_TARJETAS) {
     throw new Error(
@@ -90,4 +72,33 @@ export function validarMaterial(texto: string, modulo: Modulo): { resumen: Secci
     );
   }
   return { resumen, tarjetas };
+}
+
+const textoLimpio = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+const lista = (v: unknown) => (Array.isArray(v) ? (v as Record<string, unknown>[]) : []);
+
+/** Apartados con título y texto, sin repetidos, con su fuente validada. */
+export function validarSecciones(valor: unknown, modulo: Modulo, maximo: number): SeccionResumen[] {
+  const resumen: SeccionResumen[] = [];
+  for (const s of lista(valor)) {
+    const titulo = textoLimpio(s?.titulo);
+    const cuerpo = textoLimpio(s?.texto);
+    if (!titulo || !cuerpo || resumen.some((x) => x.titulo === titulo)) continue;
+    resumen.push({ titulo, texto: cuerpo, fuente: validarFuentes([s?.fuente], modulo, 1)[0] });
+    if (resumen.length === maximo) break;
+  }
+  return resumen;
+}
+
+/** Tarjetas con pregunta y respuesta, sin repetidas, con su fuente validada. */
+export function validarTarjetas(valor: unknown, modulo: Modulo, maximo: number): Tarjeta[] {
+  const tarjetas: Tarjeta[] = [];
+  for (const t of lista(valor)) {
+    const pregunta = textoLimpio(t?.pregunta);
+    const respuesta = textoLimpio(t?.respuesta);
+    if (!pregunta || !respuesta || tarjetas.some((x) => x.pregunta === pregunta)) continue;
+    tarjetas.push({ pregunta, respuesta, fuente: validarFuentes([t?.fuente], modulo, 1)[0] });
+    if (tarjetas.length === maximo) break;
+  }
+  return tarjetas;
 }

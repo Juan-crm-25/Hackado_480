@@ -16,6 +16,12 @@ export function leerMaterialComun(moduloId: string): MaterialComun | null {
   return JSON.parse(readFileSync(ruta, "utf8")) as MaterialComun;
 }
 
+/** Lo que ven los alumnos: solo el material común que una persona ha revisado. */
+export function leerMaterialComunPublicado(moduloId: string): MaterialComun | null {
+  const material = leerMaterialComun(moduloId);
+  return material?.revisado ? material : null;
+}
+
 export function guardarMaterialComun(material: MaterialComun): string {
   mkdirSync(CARPETA, { recursive: true });
   const ruta = rutaMaterial(material.moduloId);
