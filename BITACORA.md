@@ -67,7 +67,7 @@ Responsable de la bitácora: Antonio Pascual.
 | #10 Proveedor | Alta en **Scaleway Generative APIs**. Modelo elegido: **`gemma-4-26b-a4b-it`** (0,25 € por millón de tokens de entrada y 0,50 € de salida). Coste recalculado: unos **0,08 € por alumno y mes** (unos 100 € al mes para 1.200 alumnos) | #22 |
 | #1 Tutor | Tutor por módulo con IA real: responde solo con el temario, cita el vídeo y el minuto, rechaza lo que queda fuera y redirige al módulo correcto, y no da soluciones de ejercicios (solo pistas). Pantalla de chat para móvil. Instrucciones en `agents/tutor.md` | #23 |
 | #2 Material | **Común:** resumen y tarjetas generados una vez por módulo; solo los ven los alumnos si una persona los ha revisado. **Personal:** el alumno se crea su material eligiendo concepto, nivel y enfoque; cuenta para su límite diario y lleva la etiqueta «Generado por IA» | #24 |
-| #7 Infografías | La IA elige una plantilla (capas, jerarquía, comparativa o pasos) y rellena los datos; nosotros la dibujamos en HTML. Pestaña «Visual» | #25 (abierta) |
+| #7 Infografías | La IA elige una plantilla (capas, jerarquía, comparativa o pasos) y rellena los datos; nosotros la dibujamos en HTML. Pestaña «Visual» | #25 |
 
 Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo CSS** (v04–v06), marcadas como tales. Hay que sustituirlas por las reales en el #11.
 
@@ -96,7 +96,7 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 ### Pendiente
 
-- Fusionar la PR #25 (infografías).
+- ~~Fusionar la PR #25 (infografías).~~ Hecho.
 - **#11:** vídeos reales y transcripciones. Hoy solo el módulo CSS tiene contenido, y es de prueba.
 - Resto del backlog: ejercicios (#3, #4), Radar (#5), diagnóstico (#6), BBDD (#13), pantallas y PWA (#14), presentación (#17).
 - Material personal y límite diario se guardan en memoria hasta que exista la BBDD (#13).
