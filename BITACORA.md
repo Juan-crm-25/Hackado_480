@@ -93,12 +93,10 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 - **Aviso de Next.js 16** al leer la URL fuera de `<Suspense>`. Se reorganizaron las pantallas como recomienda su documentación.
 - **Fallos de diseño en el móvil**: la fuente salía con serifa (desajuste con shadcn/ui) y las tarjetas desbordaban la pantalla. Se corrigieron y se comprobó en el navegador a 375 px.
 - **El modelo ordenaba las capas al revés** de lo pedido en las infografías. Se adoptó su orden natural (de fuera a dentro).
-- **La clave de la API se compartió en el chat con el asistente.** No está en el repositorio (se comprobó en todo el historial), pero conviene regenerarla en Scaleway.
 
 ### Pendiente
 
 - Fusionar la PR #25 (infografías).
-- **Regenerar la clave de la API** de Scaleway.
 - **#11:** vídeos reales y transcripciones. Hoy solo el módulo CSS tiene contenido, y es de prueba.
 - Resto del backlog: ejercicios (#3, #4), Radar (#5), diagnóstico (#6), BBDD (#13), pantallas y PWA (#14), presentación (#17).
 - Material personal y límite diario se guardan en memoria hasta que exista la BBDD (#13).
