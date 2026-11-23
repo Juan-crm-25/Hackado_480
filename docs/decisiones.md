@@ -2,9 +2,9 @@
 
 ## 1. Stack tecnológico
 
-**Decisión:** Next.js (TypeScript) como PWA, con Tailwind CSS y shadcn/ui para la interfaz, API en las propias rutas de Next.js y SQLite como base de datos.
-**Alternativas:** React con un backend separado en FastAPI (Python), o una app nativa.
-**Por qué:** con un solo proyecto y un solo lenguaje, los cuatro miembros del equipo podemos trabajar en paralelo y construir el prototipo en las 4 horas de la segunda sesión. Una PWA cumple el requisito móvil sin app nativa: se puede instalar, cachea la interfaz y carga rápido en 4G. SQLite no necesita servidor y su migración a PostgreSQL en producción es directa.
+**Decisión:** Next.js (TypeScript) como PWA, con Tailwind CSS y shadcn/ui para la interfaz y la API en las propias rutas de Next.js. Se despliega en **Vercel**, con las funciones en París, y usa **PostgreSQL alojado en la UE**.
+**Alternativas:** React con un backend separado en FastAPI (Python), o una app nativa. Para la base de datos y la demo, empezamos con SQLite en un portátil.
+**Por qué:** con un solo proyecto y un solo lenguaje, los cuatro miembros del equipo podemos trabajar en paralelo y construir el prototipo en las 4 horas de la segunda sesión. Una PWA cumple el requisito móvil sin app nativa: se puede instalar, cachea la interfaz y carga rápido en 4G. Cambiamos SQLite en el portátil por Vercel con PostgreSQL por la demo: la wifi del aula puede impedir que el móvil llegue al portátil, la PWA necesita HTTPS para instalarse, y con una URL fija el cliente puede probarla desde su teléfono. SQLite no sirve en Vercel porque sus servidores no guardan ficheros de forma permanente. Además, PostgreSQL es lo que usaríamos en producción. Todo queda en la UE (Vercel en París, base de datos en la UE y Scaleway en París).
 
 ## 2. Modelo y proveedor de IA
 

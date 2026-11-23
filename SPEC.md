@@ -83,9 +83,11 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
  └──────────┬───────────┘
             ▼
  ┌──────────────────────┐
- │ BBDD (SQLite)        │  alumnos, progreso, intentos, conversaciones
+ │ BBDD (PostgreSQL)    │  alumnos, progreso, intentos, conversaciones, material personal, límites
  └──────────────────────┘
    catalog.json + transcripciones + ejemplos del profesor (ficheros de configuración)
+
+ Todo desplegado en Vercel con las funciones en París (UE); PostgreSQL alojado en la UE; IA en Scaleway (París).
 ```
 
 | Pieza | Qué hace |
@@ -95,7 +97,8 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 | **API** | Rutas de Next.js. Gestiona el catálogo, el progreso y los ejercicios, y orquesta los agentes. Está diseñada como API REST documentada para facilitar la integración futura con la plataforma de 480 Academy. |
 | **Filtro de privacidad** | Es código, no IA. Antes de cualquier llamada a la IA sustituye la identidad del alumno por un seudónimo y elimina datos personales del texto libre (emails, teléfonos, DNI, nombres conocidos). |
 | **IA** | Modelo de pesos abiertos alojado por un proveedor europeo. Los datos no salen de la UE. Se accede a través de una capa propia que permite cambiar de proveedor sin tocar el resto. |
-| **BBDD** | SQLite en el prototipo, con migración directa a PostgreSQL en producción. |
+| **BBDD** | PostgreSQL alojado en una región de la UE (Neon o Supabase, conectado desde Vercel). Guarda alumnos, progreso, intentos, conversaciones, material personal y el límite diario de consultas. Se accede con un ORM (Drizzle o Prisma) para no depender del proveedor. |
+| **Despliegue** | Vercel, conectado al repositorio de GitHub: cada cambio en `main` se publica solo y cada PR tiene su propia URL de prueba. Las funciones se ejecutan en **París** (`vercel.json`), así que los datos del alumno se procesan en la UE, junto a Scaleway. Da HTTPS, que la PWA necesita para poder instalarse. |
 | **Ficheros de configuración** | `catalog.json` (curso, módulos y vídeos), las transcripciones y los ejemplos de ejercicios del profesor. No hay panel de administración. |
 
 **Integración futura:** la plataforma actual no tiene API. Por eso el prototipo es independiente, pero cada interacción relevante (vídeo visto, ejercicio resuelto, duda planteada) se guarda como un evento con forma **xAPI**, el estándar de registros de aprendizaje. Así se podrá volcar a un LRS o a la plataforma cuando exista una vía de integración.
@@ -129,7 +132,7 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 
 ### Cómo cumplimos el RGPD (y la condición sobre menores)
 
-1. **Datos en la UE:** el modelo está alojado por un proveedor europeo, con contrato de encargado del tratamiento y **sin retención ni entrenamiento** con nuestros datos. Se descartan las APIs alojadas fuera de la UE y los planes gratuitos que usan los datos para entrenar.
+1. **Datos en la UE:** el modelo está alojado por un proveedor europeo, con contrato de encargado del tratamiento y **sin retención ni entrenamiento** con nuestros datos. Se descartan las APIs alojadas fuera de la UE y los planes gratuitos que usan los datos para entrenar. El servidor de la app (Vercel) y la base de datos también están en la UE.
 2. **Minimización:** la IA nunca necesita saber quién es el alumno. La relación entre el seudónimo y el alumno solo vive en nuestra BBDD.
 3. **Filtro de PII:** el texto libre se limpia antes de enviarse, porque un alumno puede escribir su teléfono en una duda.
 4. **Menores:** se exige el consentimiento del tutor legal para menores de 14 años (art. 7 LOPDGDD). Se aplican las mismas reglas a todos los alumnos, sin un trato especial que requiera enviar la edad.
@@ -224,6 +227,7 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 | Radar del tutor básico | Es nuestra idea original |
 | Filtro de privacidad y seudonimización | Es una condición del cliente y un criterio de evaluación |
 | Instrucciones de los agentes en `agents/` | Es un entregable |
+| Despliegue en Vercel con PostgreSQL en la UE | La demo se hace desde un móvil cualquiera con una URL fija y HTTPS (necesario para instalar la PWA). El cliente puede probarla desde su teléfono y no dependemos de la wifi del aula ni de un portátil |
 
 | Queda fuera | Por qué |
 |---|---|
@@ -243,6 +247,7 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 | ✅ **Alta en el proveedor de IA:** hecha el 23/11 en Scaleway, con `gemma-4-26b-a4b-it` probado en español | El alta puede pedir verificación y pago. Si falla, aún hay margen para cambiar de proveedor |
 | **Ejemplos del profesor:** 2 o 3 ejercicios de ejemplo por módulo, de tipos distintos (test, respuesta corta, código) | El generador de ejercicios parte de ellos. En el prototipo hacemos de profesor nosotros |
 | **Tailwind CSS + shadcn/ui** como base visual | Nadie del equipo tiene el frontend como punto fuerte. Los componentes ya hechos aseguran que se vea bien en el móvil |
+| **Desplegar en Vercel cuanto antes** y probarlo desde un móvil (instalar la PWA, preguntar al tutor) | Los problemas de despliegue salen mejor durante la semana que el día de la demo |
 
 ### Riesgos y mitigación
 
@@ -252,6 +257,7 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 | Respuestas pobres del modelo abierto en español | Probarlo esta semana. La capa propia permite cambiar de modelo o de proveedor con un cambio de configuración |
 | Poca experiencia en frontend | Componentes ya hechos y un responsable de la base visual y la navegación |
 | Las tareas paralelas chocan el 30/11 | El contrato (tipos compartidos, formato de `catalog.json` y de los ejercicios) queda cerrado antes de la sesión |
+| La versión desplegada falla el día de la demo | Plan B: la app arrancada en un portátil conectado al punto de acceso del móvil (sin depender de la wifi del aula) |
 
 ### Preguntas abiertas al cliente
 
