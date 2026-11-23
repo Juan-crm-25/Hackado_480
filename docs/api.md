@@ -17,6 +17,7 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (lee `data/material/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #2 |
 | `POST /api/material-personal` | `RespuestaMaterialPersonal` | ✅ Real (IA). Cuenta para el límite diario. Errores 400/404/422/429/502 | #2 |
 | `GET /api/material-personal?alumnoId=&moduloId=` | `MaterialPersonal[]` | ✅ En memoria hasta #13 | #13 |
+| `GET /api/modulos/:id/infografias` | `InfografiasModulo` | ✅ Real (lee `data/infografias/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #7 |
 
 ## Ejemplos
 

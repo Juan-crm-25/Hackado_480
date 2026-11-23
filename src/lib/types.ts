@@ -206,6 +206,42 @@ export interface RespuestaMaterialPersonal {
   consultasRestantes: number;
 }
 
+// ─── Infografías (#7) ────────────────────────────────────────────────────────
+// La IA no dibuja: elige una PLANTILLA y rellena sus datos. Las dibujamos nosotros (ligero y nunca sale roto).
+
+/** capas: una dentro de otra (de FUERA a DENTRO) · jerarquia: de más a menos (quién gana) · pasos: en orden. */
+export type PlantillaLista = "capas" | "jerarquia" | "pasos";
+
+export interface ElementoInfografia {
+  nombre: string;
+  descripcion: string;
+}
+
+interface InfografiaBase {
+  conceptoId: string;
+  titulo: string;
+  fuente?: ReferenciaVideo;
+}
+
+export type Infografia =
+  | (InfografiaBase & { plantilla: PlantillaLista; elementos: ElementoInfografia[] })
+  | (InfografiaBase & {
+      plantilla: "comparativa";
+      /** Qué se compara de cada fila (p. ej. ["Relativa a", "Cuándo usarla"]). */
+      columnas: string[];
+      filas: { nombre: string; valores: string[] }[];
+    });
+
+/** Infografías comunes de un módulo: una por concepto. Vive en data/infografias/<moduloId>.json. */
+export interface InfografiasModulo {
+  moduloId: string;
+  generado: string;
+  modelo: string;
+  /** Igual que el material común: solo las ven los alumnos cuando una persona las ha revisado. */
+  revisado: boolean;
+  infografias: Infografia[];
+}
+
 // ─── Radar del tutor ─────────────────────────────────────────────────────────
 
 export interface AlertaAlumno {

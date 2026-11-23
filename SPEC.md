@@ -52,7 +52,7 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 | H4 | profesor | dar ejemplos y el tipo de ejercicio de cada módulo | que la IA genere ejercicios que no se desvíen de lo que quiero evaluar | **Imprescindible** | Se configura en un fichero (sin panel de administración). Los ejercicios generados respetan el tipo y el formato de los ejemplos. El profesor puede revisarlos antes de publicarlos. |
 | H5 | tutor | ver qué alumnos están atascados y en qué conceptos | dedicar mi tiempo a quien lo necesita | **Imprescindible** | El Radar lista los alumnos con fallos repetidos o inactividad, los conceptos más fallados por módulo y un resumen de las dudas frecuentes hechas al tutor IA. |
 | H6 | alumno con experiencia | hacer un diagnóstico rápido de un módulo | no tener que ver contenido que ya domino | **Deseable** | Unas 3 preguntas. Si las acierta, el módulo queda como dominado y baja en la ruta sugerida. |
-| H7 | alumno | pedir una infografía de un concepto | entenderlo de un vistazo | **Deseable** | Se genera como diagrama (Mermaid o HTML), no como imagen. Es legible en una pantalla de 360 px. |
+| H7 | alumno | ver una infografía de cada concepto | entenderlo de un vistazo | **Deseable** | No es una imagen: la IA elige una de nuestras plantillas (capas, jerarquía, comparativa o pasos) y rellena sus datos, y nosotros la dibujamos en HTML. Es legible a 360 px, se genera una por concepto y, como el material común, solo se publica si una persona la ha revisado. |
 | H8 | alumno | comentar dudas con otros alumnos en un foro | aprender con los compañeros | **Fuera** | Fuera del alcance del prototipo. |
 
 ---

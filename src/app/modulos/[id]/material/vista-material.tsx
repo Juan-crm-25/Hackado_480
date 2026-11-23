@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
+import { VistaInfografia } from "@/components/infografia";
 import { Button } from "@/components/ui/button";
-import type { Concepto, MaterialComun, SeccionResumen, Tarjeta } from "@/lib/types";
+import type { Concepto, Infografia, MaterialComun, SeccionResumen, Tarjeta } from "@/lib/types";
 import { MiMaterial } from "./mi-material";
 
-type Pestana = "resumen" | "tarjetas" | "mio";
+type Pestana = "resumen" | "tarjetas" | "visual" | "mio";
 
 export function VistaMaterial({
   moduloId,
   material,
+  infografias,
   conceptos,
   videos,
   hayTranscripciones,
@@ -20,25 +22,28 @@ export function VistaMaterial({
   moduloId: string;
   /** Material común YA REVISADO, o null si aún no hay. */
   material: MaterialComun | null;
+  /** Infografías YA REVISADAS (#7), o vacío. */
+  infografias: Infografia[];
   conceptos: Concepto[];
   videos: VideoResumen[];
   hayTranscripciones: boolean;
   enlaceTutor: string;
 }) {
-  const [pestana, setPestana] = useState<Pestana>(material ? "resumen" : "mio");
   const pestanas: { id: Pestana; texto: string }[] = [
     ...(material
       ? [
           { id: "resumen" as const, texto: "Resumen" },
-          { id: "tarjetas" as const, texto: `Tarjetas (${material.tarjetas.length})` },
+          { id: "tarjetas" as const, texto: "Tarjetas" },
         ]
       : []),
+    ...(infografias.length ? [{ id: "visual" as const, texto: "Visual" }] : []),
     { id: "mio", texto: "Mío" },
   ];
+  const [pestana, setPestana] = useState<Pestana>(pestanas[0].id);
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4 px-4 py-4">
-      <div className={`grid rounded-lg bg-muted p-1 ${material ? "grid-cols-3" : "grid-cols-1"}`} role="tablist">
+      <div className="grid rounded-lg bg-muted p-1" style={{ gridTemplateColumns: `repeat(${pestanas.length}, minmax(0, 1fr))` }} role="tablist">
         {pestanas.map((p) => (
           <button
             key={p.id}
@@ -58,6 +63,13 @@ export function VistaMaterial({
 
       {pestana === "resumen" && material && <Resumen secciones={material.resumen} videos={videos} />}
       {pestana === "tarjetas" && material && <Tarjetas tarjetas={material.tarjetas} videos={videos} />}
+      {pestana === "visual" && (
+        <div className="flex flex-col gap-3">
+          {infografias.map((info) => (
+            <VistaInfografia key={info.conceptoId} infografia={info} videos={videos} />
+          ))}
+        </div>
+      )}
       {pestana === "mio" && (
         <MiMaterial moduloId={moduloId} conceptos={conceptos} videos={videos} hayTranscripciones={hayTranscripciones} />
       )}

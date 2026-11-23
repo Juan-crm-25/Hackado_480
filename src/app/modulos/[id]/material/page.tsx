@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getModulo, getModulos } from "@/lib/catalogo";
+import { leerInfografiasPublicadas } from "@/lib/infografias";
 import { leerMaterialComunPublicado } from "@/lib/material";
 import { VistaMaterial } from "./vista-material";
 
@@ -30,6 +31,7 @@ async function ContenidoMaterial({ params }: { params: PageProps<"/modulos/[id]/
       <VistaMaterial
         moduloId={modulo.id}
         material={leerMaterialComunPublicado(id)}
+        infografias={leerInfografiasPublicadas(id)?.infografias ?? []}
         conceptos={modulo.conceptos}
         videos={modulo.videos.map((v) => ({ id: v.id, titulo: v.titulo, youtubeId: v.youtubeId }))}
         hayTranscripciones={modulo.videos.some((v) => v.transcripcion)}
