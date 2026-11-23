@@ -9,6 +9,7 @@ import { contenidoDelCurso, filtrarTexto } from "../ai/privacidad";
 import { temarioDelModulo } from "../transcripciones";
 import type { Curso, Mensaje, Modulo, ReferenciaVideo } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
+import { quitarBloqueCodigo, validarFuentes } from "./validacion";
 
 /** Cuántos mensajes anteriores se envían como contexto. Más mensajes = más tokens. */
 export const MAX_HISTORIAL = 6;
@@ -106,12 +107,7 @@ export function interpretarRespuesta(
   texto: string,
   modulo: Modulo,
 ): { respuesta: string; fueraDeTemario: boolean; fuentes: ReferenciaVideo[] } {
-  const limpio = texto
-    .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/, "");
-
-  const datos = leerJsonTolerante(limpio);
+  const datos = leerJsonTolerante(quitarBloqueCodigo(texto));
 
   const sinCampos = typeof datos.respuesta === "string" ? limpiarTexto(datos.respuesta) : "";
   const respuesta = sinCampos
@@ -119,20 +115,7 @@ export function interpretarRespuesta(
     : "No he podido generar una respuesta. Prueba a reformular la pregunta.";
   const fueraDeTemario = datos.fuera_de_temario === true;
 
-  const fuentes: ReferenciaVideo[] = [];
-  if (!fueraDeTemario && Array.isArray(datos.fuentes)) {
-    for (const f of datos.fuentes as { videoId?: unknown; segundo?: unknown }[]) {
-      const video = modulo.videos.find((v) => v.id === f?.videoId);
-      const segundo = Number(f?.segundo);
-      if (!video || !Number.isFinite(segundo)) continue;
-      const max = video.duracionSegundos > 0 ? video.duracionSegundos : Infinity;
-      const ajustado = Math.round(Math.min(Math.max(segundo, 0), max));
-      if (!fuentes.some((x) => x.videoId === video.id && x.segundo === ajustado)) {
-        fuentes.push({ videoId: video.id, segundo: ajustado });
-      }
-      if (fuentes.length === MAX_FUENTES) break;
-    }
-  }
+  const fuentes = fueraDeTemario ? [] : validarFuentes(datos.fuentes, modulo, MAX_FUENTES);
 
   return { respuesta, fueraDeTemario, fuentes };
 }

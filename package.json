@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:ia": "vitest run --mode ia src/lib/ai/conexion.test.ts"
+    "test:ia": "vitest run --mode ia src/lib/ai/conexion.test.ts",
+    "generar:material": "tsx --env-file=.env.local scripts/generar-material.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -29,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.1.1"
   }

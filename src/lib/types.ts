@@ -143,13 +143,68 @@ export type TipoMaterial = "resumen" | "tarjetas" | "infografia";
 export interface Tarjeta {
   pregunta: string;
   respuesta: string;
+  /** Momento del vídeo donde se explica, para repasarlo. */
+  fuente?: ReferenciaVideo;
 }
 
-/** Material generado una vez por módulo y compartido entre alumnos (caché). */
-export type MaterialGenerado =
-  | { tipo: "resumen"; moduloId: string; texto: string }
-  | { tipo: "tarjetas"; moduloId: string; tarjetas: Tarjeta[] }
-  | { tipo: "infografia"; moduloId: string; conceptoId: string; mermaid: string };
+/** Un apartado del resumen: corto, para leerlo en una pantalla de móvil. */
+export interface SeccionResumen {
+  titulo: string;
+  texto: string;
+  fuente?: ReferenciaVideo;
+}
+
+/**
+ * Material COMÚN del módulo (#2): se genera una vez con `npm run generar:material`,
+ * lo revisa el equipo o el profesor y lo comparten todos los alumnos. Vive en data/material/<moduloId>.json.
+ */
+export interface MaterialComun {
+  moduloId: string;
+  /** Fecha de generación (ISO 8601). */
+  generado: string;
+  /** Modelo que lo generó, para trazabilidad. */
+  modelo: string;
+  /** false hasta que una persona lo revisa y cambia el valor a true en el fichero. */
+  revisado: boolean;
+  resumen: SeccionResumen[];
+  tarjetas: Tarjeta[];
+}
+
+export type NivelMaterial = "basico" | "normal" | "avanzado";
+
+/** Lo que pide el alumno para crearse su propio material (#2). */
+export interface PeticionMaterialPersonal {
+  alumnoId: string;
+  moduloId: string;
+  tipo: "resumen" | "tarjetas";
+  /** Concepto concreto; si falta, todo el módulo. */
+  conceptoId?: string;
+  nivel?: NivelMaterial;
+  /** Indicación libre del alumno ("con más ejemplos"...). Máximo 200 caracteres; se filtra antes de la IA. */
+  enfoque?: string;
+}
+
+/**
+ * Material PERSONAL: lo genera la IA a petición de un alumno y solo lo ve él.
+ * No se revisa: se muestra como "Generado por IA".
+ */
+export interface MaterialPersonal {
+  id: string;
+  alumnoId: string;
+  moduloId: string;
+  tipo: "resumen" | "tarjetas";
+  conceptoId?: string;
+  nivel: NivelMaterial;
+  enfoque?: string;
+  generado: string; // ISO 8601
+  resumen?: SeccionResumen[];
+  tarjetas?: Tarjeta[];
+}
+
+export interface RespuestaMaterialPersonal {
+  material: MaterialPersonal;
+  consultasRestantes: number;
+}
 
 // ─── Radar del tutor ─────────────────────────────────────────────────────────
 
