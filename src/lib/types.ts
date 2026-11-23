@@ -143,13 +143,32 @@ export type TipoMaterial = "resumen" | "tarjetas" | "infografia";
 export interface Tarjeta {
   pregunta: string;
   respuesta: string;
+  /** Momento del vídeo donde se explica, para repasarlo. */
+  fuente?: ReferenciaVideo;
 }
 
-/** Material generado una vez por módulo y compartido entre alumnos (caché). */
-export type MaterialGenerado =
-  | { tipo: "resumen"; moduloId: string; texto: string }
-  | { tipo: "tarjetas"; moduloId: string; tarjetas: Tarjeta[] }
-  | { tipo: "infografia"; moduloId: string; conceptoId: string; mermaid: string };
+/** Un apartado del resumen: corto, para leerlo en una pantalla de móvil. */
+export interface SeccionResumen {
+  titulo: string;
+  texto: string;
+  fuente?: ReferenciaVideo;
+}
+
+/**
+ * Material COMÚN del módulo (#2): se genera una vez con `npm run generar:material`,
+ * lo revisa el equipo o el profesor y lo comparten todos los alumnos. Vive en data/material/<moduloId>.json.
+ */
+export interface MaterialComun {
+  moduloId: string;
+  /** Fecha de generación (ISO 8601). */
+  generado: string;
+  /** Modelo que lo generó, para trazabilidad. */
+  modelo: string;
+  /** false hasta que una persona lo revisa y cambia el valor a true en el fichero. */
+  revisado: boolean;
+  resumen: SeccionResumen[];
+  tarjetas: Tarjeta[];
+}
 
 // ─── Radar del tutor ─────────────────────────────────────────────────────────
 

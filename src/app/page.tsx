@@ -29,9 +29,14 @@ export default function Home() {
                   <Badge variant="secondary">{modulo.videos.length} vídeos</Badge>
                 </div>
                 <CardDescription>{modulo.descripcion}</CardDescription>
-                <Link href={`/modulos/${modulo.id}/tutor`} className="pt-2 text-sm font-medium underline underline-offset-4">
-                  Preguntar al tutor →
-                </Link>
+                <div className="flex gap-4 pt-2 text-sm font-medium">
+                  <Link href={`/modulos/${modulo.id}/material`} className="underline underline-offset-4">
+                    Material de repaso
+                  </Link>
+                  <Link href={`/modulos/${modulo.id}/tutor`} className="underline underline-offset-4">
+                    Preguntar al tutor →
+                  </Link>
+                </div>
               </CardHeader>
             </Card>
           </li>

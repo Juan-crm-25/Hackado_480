@@ -1,0 +1,106 @@
+{
+  "moduloId": "m2-css",
+  "generado": "2026-11-23T19:07:07.071Z",
+  "modelo": "gemma-4-26b-a4b-it",
+  "revisado": false,
+  "resumen": [
+    {
+      "titulo": "Selectores y especificidad",
+      "texto": "Los selectores indican a qué elementos aplicar estilos. Existen selectores de etiqueta (`button`), de clase (`.boton`) y de id (`#enviar`). La especificidad decide qué regla gana mediante contadores de ids, clases y etiquetas. Un id siempre gana a una clase, y si la especificidad es igual, gana el que aparece más tarde en el CSS.",
+      "fuente": {
+        "videoId": "v04",
+        "segundo": 0
+      }
+    },
+    {
+      "titulo": "El modelo de caja",
+      "texto": "Cada elemento es una caja con cuatro capas: contenido, padding (espacio interior), borde y margen (espacio exterior). Por defecto, el `width` solo mide el contenido. Para que el `width` incluya el padding y el borde, se debe usar `box-sizing: border-box`, lo que hace que la caja mida exactamente lo indicado.",
+      "fuente": {
+        "videoId": "v05",
+        "segundo": 0
+      }
+    },
+    {
+      "titulo": "Colores y tipografía",
+      "texto": "Los colores se definen por nombre, hexadecimal o `rgb`/`rgba`. Para la tipografía se usa `font-family` (siempre terminando con una familia genérica como `sans-serif`), `font-size` para el tamaño y `font-weight` para el grosor del texto.",
+      "fuente": {
+        "videoId": "v06",
+        "segundo": 0
+      }
+    },
+    {
+      "titulo": "Unidades de medida",
+      "texto": "Existen unidades absolutas como `px` y relativas. `rem` es relativo al tamaño de la raíz, `em` al del propio elemento, el porcentaje al elemento padre, y `vw`/`vh` al tamaño de la pantalla. Se recomienda usar `rem` para mejorar la accesibilidad.",
+      "fuente": {
+        "videoId": "v06",
+        "segundo": 40
+      }
+    }
+  ],
+  "tarjetas": [
+    {
+      "pregunta": "¿Qué selector tiene más peso: una clase o un id?",
+      "respuesta": "Un id siempre gana a una clase porque su especificidad es mayor.",
+      "fuente": {
+        "videoId": "v04",
+        "segundo": 125
+      }
+    },
+    {
+      "pregunta": "¿Qué sucede si dos selectores tienen exactamente la misma especificidad?",
+      "respuesta": "Gana el que aparece más tarde en el fichero CSS, proceso conocido como cascada.",
+      "fuente": {
+        "videoId": "v04",
+        "segundo": 125
+      }
+    },
+    {
+      "pregunta": "¿Cuál es la jerarquía de victoria de los estilos según su aplicación?",
+      "respuesta": "El atributo `style` en la etiqueta gana a los selectores, y `!important` gana incluso al atributo `style`.",
+      "fuente": {
+        "videoId": "v04",
+        "segundo": 175
+      }
+    },
+    {
+      "pregunta": "Si un elemento tiene `width: 100px`, `padding: 10px` y `border: 5px`, ¿cuánto mide su ancho total por defecto?",
+      "respuesta": "Mide 130px (100 de contenido + 20 de padding + 10 de borde).",
+      "fuente": {
+        "videoId": "v05",
+        "segundo": 85
+      }
+    },
+    {
+      "pregunta": "¿Qué efecto tienen los márgenes verticales de dos bloques seguidos?",
+      "respuesta": "Se fusionan; si uno tiene 20px y el otro 30px, la separación final será de 30px.",
+      "fuente": {
+        "videoId": "v05",
+        "segundo": 140
+      }
+    },
+    {
+      "pregunta": "¿Qué diferencia hay entre el padding y el margen?",
+      "respuesta": "El padding es el espacio interior entre el contenido y el borde, mientras que el margen es el espacio exterior fuera del borde.",
+      "fuente": {
+        "videoId": "v05",
+        "segundo": 38
+      }
+    },
+    {
+      "pregunta": "¿A qué es relativa la unidad `rem`?",
+      "respuesta": "Es relativa al tamaño de letra de la raíz de la página.",
+      "fuente": {
+        "videoId": "v06",
+        "segundo": 90
+      }
+    },
+    {
+      "pregunta": "¿Qué unidad representa todo el ancho de la ventana del navegador?",
+      "respuesta": "La unidad `100vw`.",
+      "fuente": {
+        "videoId": "v06",
+        "segundo": 90
+      }
+    }
+  ]
+}

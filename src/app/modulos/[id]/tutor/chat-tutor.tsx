@@ -1,16 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ALUMNO_DEMO_ID, enlaceYoutube, formatoMinuto } from "@/lib/formato";
+import { ALUMNO_DEMO_ID } from "@/lib/formato";
 import type { ErrorApi, Mensaje, PeticionTutor, RespuestaTutor } from "@/lib/types";
-
-interface VideoResumen {
-  id: string;
-  titulo: string;
-  youtubeId: string;
-}
 
 type Burbuja = Mensaje & { fueraDeTemario?: boolean; error?: boolean };
 
@@ -137,36 +132,15 @@ function BurbujaMensaje({ mensaje, videos }: { mensaje: Burbuja; videos: VideoRe
     <div className={`flex max-w-[85%] flex-col gap-2 rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${estilo}`}>
       <p>
         {/* Los trozos entre `comillas invertidas` son código: se muestran en monoespaciada. */}
-        {mensaje.texto.split("`").map((trozo, i) =>
-          i % 2 === 1 ? (
-            <code key={i} className="rounded bg-background/60 px-1 font-mono text-[0.9em]">
-              {trozo}
-            </code>
-          ) : (
-            trozo
-          ),
-        )}
+        <TextoConCodigo texto={mensaje.texto} />
       </p>
       {!!mensaje.fuentes?.length && (
         <ul className="flex flex-wrap gap-2">
-          {mensaje.fuentes.map((f) => {
-            const video = videos.find((v) => v.id === f.videoId);
-            const etiqueta = `▶ ${video?.titulo ?? f.videoId} · ${formatoMinuto(f.segundo)}`;
-            const href = video ? enlaceYoutube(video.youtubeId, f.segundo) : null;
-            return (
-              <li key={`${f.videoId}-${f.segundo}`}>
-                {href ? (
-                  <a href={href} target="_blank" rel="noopener noreferrer" className="inline-block rounded-full border bg-background px-3 py-1 text-xs">
-                    {etiqueta}
-                  </a>
-                ) : (
-                  <span className="inline-block rounded-full border bg-background px-3 py-1 text-xs" title="El vídeo aún no tiene enlace">
-                    {etiqueta}
-                  </span>
-                )}
-              </li>
-            );
-          })}
+          {mensaje.fuentes.map((f) => (
+            <li key={`${f.videoId}-${f.segundo}`}>
+              <FuenteVideo fuente={f} videos={videos} />
+            </li>
+          ))}
         </ul>
       )}
     </div>
