@@ -23,4 +23,23 @@ describe.skipIf(!hayClave)("conexión con el proveedor de IA", () => {
     expect(r.simulado).toBe(false);
     expect(r.texto.length).toBeGreaterThan(0);
   });
+
+  it("devuelve JSON válido cuando se le pide", { timeout: 60_000 }, async () => {
+    const r = await completar({
+      modelo: "tutor",
+      formatoJson: true,
+      mensajes: [
+        {
+          rol: "usuario",
+          contenido: contenidoDelCurso(
+            'Genera 2 tarjetas de estudio sobre el modelo de caja en CSS. Responde SOLO con JSON: {"tarjetas":[{"pregunta":"...","respuesta":"..."}]}',
+          ),
+        },
+      ],
+      maxTokens: 400,
+    });
+    console.log(`JSON: ${r.texto}\nTokens: ${JSON.stringify(r.tokens)}`);
+    const datos = JSON.parse(r.texto);
+    expect(datos.tarjetas.length).toBeGreaterThan(0);
+  });
 });

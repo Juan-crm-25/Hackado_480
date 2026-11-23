@@ -22,6 +22,12 @@ export interface OpcionesCompletar {
   formatoJson?: boolean;
   maxTokens?: number;
   temperatura?: number;
+  /**
+   * Cuánto "piensa" el modelo antes de responder. Esos tokens no se ven, pero se pagan y tardan.
+   * Por defecto "none": con gemma-4 respuesta en ~0,5 s en vez de ~3 s y ~10 veces menos tokens.
+   * Súbelo solo para tareas difíciles (generar ejercicios, corregir con rúbrica) si la calidad no basta.
+   */
+  razonamiento?: "none" | "low" | "medium" | "high";
 }
 
 export interface RespuestaIA {
@@ -61,6 +67,7 @@ export async function completar(opciones: OpcionesCompletar): Promise<RespuestaI
     messages: opciones.mensajes.map((m) => ({ role: ROLES[m.rol], content: m.contenido })),
     max_tokens: opciones.maxTokens ?? 800,
     temperature: opciones.temperatura ?? 0.3,
+    reasoning_effort: opciones.razonamiento ?? "none",
     ...(opciones.formatoJson ? { response_format: { type: "json_object" } } : {}),
   };
 
@@ -83,11 +90,18 @@ export async function completar(opciones: OpcionesCompletar): Promise<RespuestaI
     if (!res.ok) throw new ErrorIA(`El proveedor de IA respondió ${res.status}`, res.status);
 
     const datos = (await res.json()) as {
-      choices?: { message?: { content?: string } }[];
+      choices?: { message?: { content?: string | null }; finish_reason?: string }[];
       usage?: { prompt_tokens?: number; completion_tokens?: number };
     };
-    const texto = datos.choices?.[0]?.message?.content;
-    if (typeof texto !== "string") throw new ErrorIA("Respuesta del proveedor sin contenido");
+    const eleccion = datos.choices?.[0];
+    const texto = eleccion?.message?.content;
+    if (typeof texto !== "string" || texto === "") {
+      throw new ErrorIA(
+        eleccion?.finish_reason === "length"
+          ? "Se agotaron los tokens antes de responder (sube maxTokens o baja el razonamiento)"
+          : "Respuesta del proveedor sin contenido",
+      );
+    }
 
     const tokens = datos.usage
       ? { entrada: datos.usage.prompt_tokens ?? 0, salida: datos.usage.completion_tokens ?? 0 }

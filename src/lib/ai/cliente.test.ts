@@ -55,6 +55,7 @@ describe("completar", () => {
     const cuerpo = JSON.parse(init.body);
     expect(cuerpo.model).toBe("modelo-mediano");
     expect(cuerpo.response_format).toEqual({ type: "json_object" });
+    expect(cuerpo.reasoning_effort).toBe("none");
     expect(cuerpo.messages).toEqual([
       { role: "system", content: "Eres el tutor del módulo CSS." },
       { role: "user", content: "Soy [NOMBRE], ¿qué es la especificidad?" },
@@ -73,6 +74,13 @@ describe("completar", () => {
 
     expect((await completar({ modelo: "tutor", mensajes })).texto).toBe("ok");
     expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("avisa claramente si el razonamiento agota los tokens", async () => {
+    configurarIA();
+    const vacia = { choices: [{ message: { content: null }, finish_reason: "length" }] };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(vacia), { status: 200 })));
+    await expect(completar({ modelo: "tutor", mensajes, razonamiento: "high" })).rejects.toThrow(/agotaron los tokens/);
   });
 
   it("lanza ErrorIA si el proveedor rechaza la petición", async () => {

@@ -144,7 +144,7 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 
 | Agente | Qué hace | Modelo y por qué | Entrada | Salida | Límites |
 |---|---|---|---|---|---|
-| **Tutor del módulo** | Responde dudas y genera resúmenes, tarjetas de estudio e infografías del módulo | Modelo abierto mediano (familia Qwen o similar) alojado en la UE. Es barato, rápido y funciona bien en español, que es lo que pide una interacción frecuente | Temario del módulo (transcripciones y conceptos), pregunta filtrada, últimos mensajes | Texto, o JSON estructurado (tarjetas, diagrama Mermaid) | **Solo** su temario: fuera de él responde «eso no está en este módulo». Cita la fuente (vídeo y minuto). No hace ejercicios por el alumno. Limita los mensajes diarios por alumno |
+| **Tutor del módulo** | Responde dudas y genera resúmenes, tarjetas de estudio e infografías del módulo | `gemma-4-26b-a4b-it` en Scaleway (UE), sin razonamiento. Es barato, responde en ~0,5 s y va bien en español, que es lo que pide una interacción frecuente. Superó nuestras pruebas: se ciñe al temario, rechaza lo que queda fuera, devuelve JSON válido y corrige con rúbrica | Temario del módulo (transcripciones y conceptos), pregunta filtrada, últimos mensajes | Texto, o JSON estructurado (tarjetas, diagrama Mermaid) | **Solo** su temario: fuera de él responde «eso no está en este módulo». Cita la fuente (vídeo y minuto). No hace ejercicios por el alumno. Limita los mensajes diarios por alumno |
 | **Generador de ejercicios** | Crea el banco de ejercicios de cada módulo a partir de los ejemplos del profesor | Modelo abierto más grande, también en la UE. Se ejecuta **una vez por módulo** (no por alumno), así que su coste es despreciable y compensa la calidad | Transcripciones, conceptos, ejemplos y tipo de ejercicio del profesor | JSON de ejercicios en estado *borrador*, con solución o rúbrica y vídeo y minuto de referencia | Mismo tipo y formato que los ejemplos. Solo contenido del módulo. **El profesor aprueba** antes de publicar. Ningún dato de alumnos |
 | **Corrector** | Evalúa respuestas abiertas con la rúbrica y explica el error | Modelo mediano. Las preguntas tipo test se corrigen con código, sin IA | Enunciado, rúbrica, respuesta filtrada | Puntuación, feedback breve, vídeo y minuto que hay que repasar | Se ciñe a la rúbrica. Si no tiene confianza, lo marca para revisión humana |
 | **Analista del Radar** | Resume para el tutor qué está fallando y qué dudas se repiten | Modelo mediano, en lote nocturno (no en tiempo real) | Estadísticas calculadas por código y dudas seudonimizadas | Resumen por módulo y lista priorizada de seudónimos (se reidentifican en nuestro servidor) | No diagnostica ni juzga al alumno: señala patrones. La decisión es siempre del tutor humano |
@@ -177,19 +177,21 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 - 20 consultas al tutor. Cada una envía el temario completo del módulo (unos 12.000 tokens) más el historial (unos 2.000) y recibe unos 500 tokens.
 - 10 respuestas abiertas corregidas por IA (unos 3.000 tokens de entrada cada una).
 - Resúmenes, tarjetas, infografías y banco de ejercicios: se generan **una vez por módulo** y se comparten, así que su coste por alumno es casi nulo.
-- Precio orientativo de un modelo abierto mediano alojado en la UE: unos 0,5 € por millón de tokens de entrada y 1,5 € por millón de salida. *Hay que confirmarlo con el proveedor elegido.*
+- **Modelo elegido:** `gemma-4-26b-a4b-it` (pesos abiertos) en **Scaleway Generative APIs**, alojado en la UE y sin retención de datos. **Precio real: 0,25 € por millón de tokens de entrada y 0,50 € por millón de salida.**
+- **Sin razonamiento** (`reasoning_effort: "none"`): lo medimos el 23/11 con la misma pregunta. Con razonamiento tardó 3 s y gastó 303 tokens de salida (276 de razonamiento invisible); sin él, 0,5 s y 23 tokens, con una respuesta igual de buena. Solo se activará para tareas difíciles si hace falta.
 
 | Concepto | Tokens/mes | Coste |
 |---|---|---|
-| Tutor (entrada) | ~280.000 | ~0,14 € |
-| Tutor (salida) | ~10.000 | ~0,015 € |
-| Corrector | ~30.000 entrada + ~3.000 salida | ~0,02 € |
-| **Total por alumno medio** | | **≈ 0,18 €/mes** |
-| Alumno muy activo (×3) | | ≈ 0,55 €/mes |
-| **1.200 alumnos** | | **≈ 215 €/mes** (escenario conservador) |
+| Tutor (entrada) | ~280.000 | ~0,07 € |
+| Tutor (salida) | ~10.000 | ~0,005 € |
+| Corrector | ~30.000 entrada + ~3.000 salida | ~0,01 € |
+| **Total por alumno medio** | | **≈ 0,08 €/mes** |
+| Alumno muy activo (×3) | | ≈ 0,25 €/mes |
+| **1.200 alumnos** | | **≈ 100 €/mes** |
+| Peor caso por alumno (agota el límite de 30 consultas diarias todo el mes) | ~12,6 M entrada | ≈ 3,40 €/mes, que es el **techo** que fija el límite |
 
 **Cómo lo reduciríamos:**
-1. **Recuperación por fragmentos (RAG):** enviar solo los trozos de transcripción relevantes y no el módulo entero. La entrada baja un 70–80 %, hasta unos **0,05 €/alumno/mes**.
+1. **Recuperación por fragmentos (RAG):** enviar solo los trozos de transcripción relevantes y no el módulo entero. La entrada baja un 70–80 %, hasta unos **0,03 €/alumno/mes**.
 2. **Caché de material y de preguntas frecuentes:** las preguntas repetidas se responden desde la caché, sin llamar al modelo.
 3. **Tipo test corregido por código:** solo las respuestas abiertas pasan por la IA.
 4. **Límite diario de consultas** por alumno, que da un coste máximo predecible.
@@ -238,7 +240,7 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 |---|---|
 | **Datos simulados para el Radar:** unos 30 alumnos ficticios con intentos, fallos y dudas que formen patrones realistas (p. ej. «el 60 % falla especificidad en CSS») | Con 4 alumnos de demo el Radar sale vacío y la idea original no se aprecia |
 | **Material pregenerado:** resúmenes, tarjetas y banco de ejercicios de los 4 módulos, generados y guardados antes de la demo | La demo no depende de que la IA responda en directo. En directo solo van el chat del tutor y la corrección |
-| **Alta en el proveedor de IA** (OVHcloud o Scaleway), comprobar qué modelos ofrece y su calidad en español | El alta puede pedir verificación y pago. Si falla, aún hay margen para cambiar de proveedor |
+| ✅ **Alta en el proveedor de IA:** hecha el 23/11 en Scaleway, con `gemma-4-26b-a4b-it` probado en español | El alta puede pedir verificación y pago. Si falla, aún hay margen para cambiar de proveedor |
 | **Ejemplos del profesor:** 2 o 3 ejercicios de ejemplo por módulo, de tipos distintos (test, respuesta corta, código) | El generador de ejercicios parte de ellos. En el prototipo hacemos de profesor nosotros |
 | **Tailwind CSS + shadcn/ui** como base visual | Nadie del equipo tiene el frontend como punto fuerte. Los componentes ya hechos aseguran que se vea bien en el móvil |
 
