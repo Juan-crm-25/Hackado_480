@@ -42,8 +42,61 @@ Responsable de la bitácora: Antonio Pascual.
 ### Pendiente para la semana intermedia (24–29/11)
 
 - Asignarse los issues del backlog.
-- Dar de alta el proveedor de IA y probar los modelos en español.
+- ~~Dar de alta el proveedor de IA y probar los modelos en español.~~ Hecho el 23/11 (ver la entrada siguiente).
 - Seleccionar los 12 vídeos y sacar sus transcripciones.
 - Escribir los ejemplos del profesor y generar el banco de ejercicios.
-- Crear la base común del proyecto (proyecto, contrato de tipos y capa de IA).
+- ~~Crear la base común del proyecto (proyecto, contrato de tipos y capa de IA).~~ Hecho el 23/11.
 - Preparar los datos simulados para el Radar.
+
+---
+
+## Trabajo de Juan tras la sesión — Lunes 23/11/2026 (tarde)
+
+**Quién:** Juan Carmona, con Claude Code (Claude Opus 5.5) como asistente de programación.
+**Bloque:** IA y base técnica (issues #8, #9, #10, #1, #2 y #7).
+**Coordinación:** cada PR que tocaba lo compartido se avisó antes por WhatsApp, como dice `CONTRIBUTING.md`.
+
+### Qué hicimos
+
+| Issue | Qué se hizo | PR |
+|---|---|---|
+| Organización | Backlog de 18 issues con estimación y etiquetas, y tablero en GitHub Projects (Pendiente → En curso → En revisión → Hecho) con un campo **Bloque** para repartir el trabajo. Fotos de los bocetos subidas | #19 |
+| Organización | Nueva norma de PRs: cada uno fusiona las suyas y se revisan después, en una revisión conjunta | #20 |
+| #8 Base común | Proyecto Next.js 16 + TypeScript + Tailwind + shadcn/ui. **Contrato** de tipos compartidos (`src/lib/types.ts`), `catalog.json` con 4 módulos y 12 vídeos, y 7 endpoints con datos de prueba documentados en `docs/api.md` | #21 |
+| #9 Capa de IA | Cliente único de IA compatible con OpenAI y **filtro de privacidad** (quita emails, teléfonos, DNI, IBAN, tarjetas y nombres; seudónimos con HMAC). TypeScript **impide** enviar a la IA texto sin filtrar. Límite diario de consultas y modo simulado sin clave | #22 |
+| #10 Proveedor | Alta en **Scaleway Generative APIs**. Modelo elegido: **`gemma-4-26b-a4b-it`** (0,25 € por millón de tokens de entrada y 0,50 € de salida). Coste recalculado: unos **0,08 € por alumno y mes** (unos 100 € al mes para 1.200 alumnos) | #22 |
+| #1 Tutor | Tutor por módulo con IA real: responde solo con el temario, cita el vídeo y el minuto, rechaza lo que queda fuera y redirige al módulo correcto, y no da soluciones de ejercicios (solo pistas). Pantalla de chat para móvil. Instrucciones en `agents/tutor.md` | #23 |
+| #2 Material | **Común:** resumen y tarjetas generados una vez por módulo; solo los ven los alumnos si una persona los ha revisado. **Personal:** el alumno se crea su material eligiendo concepto, nivel y enfoque; cuenta para su límite diario y lleva la etiqueta «Generado por IA» | #24 |
+| #7 Infografías | La IA elige una plantilla (capas, jerarquía, comparativa o pasos) y rellena los datos; nosotros la dibujamos en HTML. Pestaña «Visual» | #25 (abierta) |
+
+Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo CSS** (v04–v06), marcadas como tales. Hay que sustituirlas por las reales en el #11.
+
+### Decisiones tomadas
+
+| Decisión | Alternativas | Por qué |
+|---|---|---|
+| Scaleway + `gemma-4-26b-a4b-it` | OVHcloud; APIs gratuitas; APIs chinas | Scaleway documenta que no retiene los datos (RGPD, menores). Gemma superó nuestras pruebas en el Playground: se ciñe al temario, rechaza lo que queda fuera, devuelve JSON válido y corrige con rúbrica |
+| Razonamiento del modelo **desactivado** por defecto | Dejarlo activado | Medido con la misma pregunta: 3 s y 303 tokens con razonamiento, frente a 0,5 s y 23 tokens sin él, con una respuesta igual de buena |
+| Las instrucciones de cada agente viven en `agents/*.md` y el código las lee de ahí | Instrucciones dentro del código | El documento (entregable) y el comportamiento real no pueden separarse |
+| Material común **y** material personal | Solo común | Idea de Juan: el común complementa a los vídeos para todos y el personal se adapta a cada alumno. Lo que piden los alumnos (concepto y tipo, nunca el texto) sirve de señal para el Radar |
+| El alumno solo ve material común **revisado** por una persona | Mostrarlo con la etiqueta «pendiente» | Uso responsable de la IA: lo que ven todos lo aprueba una persona. El material personal no se revisa |
+| Infografías con **plantillas propias** | Mermaid; imágenes generadas | Ligeras en 4G, nunca salen rotas y se leen bien a 360 px |
+| Seudónimos estables (HMAC) en lugar de aleatorios por sesión | Aleatorios | El Radar necesita reconocer al mismo alumno entre sesiones |
+
+### Problemas y cómo los resolvimos
+
+- **Faltaban herramientas en el ordenador** (GitHub CLI y Node.js). Se instalaron con `winget`.
+- **GitHub rechazó el primer push** por la privacidad del email. Se configuró en el repositorio el email anónimo de GitHub.
+- **PowerShell bloqueaba `npm`** («running scripts is disabled»). Se usa `npm.cmd`, y está explicado en el README.
+- **El modelo gastaba todos los tokens razonando** y respondía vacío. Se desactivó el razonamiento (ver decisiones).
+- **El modelo rompía a veces el JSON** o copiaba nombres de campos en el texto (`fuera_de_temario: true, ...`). Se reforzaron las instrucciones y el código tolera las respuestas mal formadas. Se probó el modo de esquema estricto y se descartó: en 1 de cada 3 pruebas se quedaba escribiendo espacios.
+- **Aviso de Next.js 16** al leer la URL fuera de `<Suspense>`. Se reorganizaron las pantallas como recomienda su documentación.
+- **Fallos de diseño en el móvil**: la fuente salía con serifa (desajuste con shadcn/ui) y las tarjetas desbordaban la pantalla. Se corrigieron y se comprobó en el navegador a 375 px.
+- **El modelo ordenaba las capas al revés** de lo pedido en las infografías. Se adoptó su orden natural (de fuera a dentro).
+
+### Pendiente
+
+- Fusionar la PR #25 (infografías).
+- **#11:** vídeos reales y transcripciones. Hoy solo el módulo CSS tiene contenido, y es de prueba.
+- Resto del backlog: ejercicios (#3, #4), Radar (#5), diagnóstico (#6), BBDD (#13), pantallas y PWA (#14), presentación (#17).
+- Material personal y límite diario se guardan en memoria hasta que exista la BBDD (#13).
