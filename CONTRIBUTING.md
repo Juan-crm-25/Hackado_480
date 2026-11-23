@@ -4,7 +4,7 @@
 
 | Rol | Persona | Qué hace |
 |---|---|---|
-| Repositorio | Juan | Revisa que las PRs cumplan las normas, cuida `main` y resuelve los conflictos de integración |
+| Repositorio | Juan | Cuida `main`, organiza la revisión conjunta de las PRs y resuelve los conflictos de integración |
 | Bitácora | Antonio | Apunta en `BITACORA.md` cada sesión: quién hizo qué, qué problemas hubo y qué se decidió |
 | Contacto con el cliente | Héctor | Reúne las dudas, apunta las respuestas (también las que da a otros equipos) y avisa al grupo de los cambios |
 
@@ -23,8 +23,10 @@ Columnas: **Pendiente → En curso → En revisión → Hecho**.
 - `main` siempre funciona y es lo que se enseña en la demo. **Nadie sube cambios directamente a `main`.**
 - Una rama por issue: `feat/12-tutor-modulo`, `fix/20-error-correccion`, `docs/bitacora-23-11`.
 - PRs pequeñas, de 1 o 2 horas de trabajo como mucho, que enlazan su issue con `Closes #12`.
-- Cada PR necesita **1 revisión** de otro compañero. Nadie aprueba su propia PR.
-- Antes de abrir la PR: `git pull origin main` y comprobar que el proyecto arranca.
+- **Cada uno fusiona sus propias PRs**, sin esperar revisión, porque no trabajamos todos a la vez. Las PRs se revisan después.
+- Antes de fusionar: `git pull origin main` y comprobar que el proyecto **sigue arrancando**. `main` no puede romperse, porque los demás trabajan sobre ella.
+- Si la PR toca **lo compartido** (tipos y contrato, capa de IA, filtro de privacidad o esquema de la BBDD), **avisa por WhatsApp antes de fusionar**. No hace falta esperar respuesta.
+- **Revisión conjunta** antes de la sesión del 30/11 (o en sus primeros 15 minutos): repasamos juntos lo fusionado durante la semana. Lo que haya que arreglar se hace con una PR nueva.
 - Commits cortos y en español: `feat: tutor responde con cita al vídeo`.
 
 ## Cuándo algo está terminado
@@ -47,7 +49,7 @@ Un issue pasa a *Hecho* solo si:
 
 | Hora | Qué |
 |---|---|
-| 10:00 | Puesta en común de 10 minutos; cada uno confirma su issue |
+| 10:00 | Puesta en común de 10 minutos; cada uno confirma su issue. Si no se hizo antes, revisión conjunta de lo fusionado durante la semana (15 minutos) |
 | 11:00 y 12:00 | Puntos de control de 5 minutos para ver quién está bloqueado |
 | 12:30 | Congelación: solo se integra y se arreglan errores |
 | 13:15 | Ensayo de la demo en el móvil |
