@@ -7,17 +7,17 @@
       {
         "id": "m1-html",
         "titulo": "HTML",
-        "descripcion": "Cómo funciona la web y cómo se estructura una página.",
+        "descripcion": "Cómo están hechas las páginas web y cómo se estructura un documento HTML.",
         "ordenSugerido": 1,
         "conceptos": [
-          { "id": "html-web", "nombre": "Cómo funciona la web" },
+          { "id": "html-web", "nombre": "Cómo están hechas las páginas web" },
           { "id": "html-estructura", "nombre": "Estructura de un documento" },
-          { "id": "html-semantica", "nombre": "Etiquetas semánticas y formularios" }
+          { "id": "html-semantica", "nombre": "Etiquetas semánticas" }
         ],
         "videos": [
-          { "id": "v01", "titulo": "Qué es la web y cómo funciona", "youtubeId": "81u19umYU_E", "duracionSegundos": 403, "transcripcion": "v01.vtt" },
+          { "id": "v01", "titulo": "Cómo están hechas las páginas web", "youtubeId": "81u19umYU_E", "duracionSegundos": 403, "transcripcion": "v01.vtt" },
           { "id": "v02", "titulo": "Estructura de un documento HTML", "youtubeId": "_MTZx8H-Fo4", "duracionSegundos": 432, "transcripcion": "v02.vtt" },
-          { "id": "v03", "titulo": "Etiquetas semánticas y formularios", "youtubeId": "FeXpLU515AI", "duracionSegundos": 289, "transcripcion": "v03.vtt" }
+          { "id": "v03", "titulo": "Etiquetas semánticas", "youtubeId": "FeXpLU515AI", "duracionSegundos": 289, "transcripcion": "v03.vtt" }
         ]
       },
       {
@@ -44,12 +44,12 @@
         "conceptos": [
           { "id": "resp-flexbox", "nombre": "Flexbox" },
           { "id": "resp-grid", "nombre": "CSS Grid" },
-          { "id": "resp-media", "nombre": "Media queries y mobile-first" }
+          { "id": "resp-media", "nombre": "Media queries y diseño responsive" }
         ],
         "videos": [
           { "id": "v07", "titulo": "Flexbox", "youtubeId": "-nVJwYKx6H8", "duracionSegundos": 661, "transcripcion": "v07.vtt" },
           { "id": "v08", "titulo": "CSS Grid", "youtubeId": "edEG0CoM5gw", "duracionSegundos": 711, "transcripcion": "v08.vtt" },
-          { "id": "v09", "titulo": "Media queries y mobile-first", "youtubeId": "pu6ArfDxxpE", "duracionSegundos": 320, "transcripcion": "v09.vtt" }
+          { "id": "v09", "titulo": "Media queries y diseño responsive", "youtubeId": "pu6ArfDxxpE", "duracionSegundos": 320, "transcripcion": "v09.vtt" }
         ]
       },
       {
@@ -58,13 +58,13 @@
         "descripcion": "Dar comportamiento a la página: variables, funciones, DOM y eventos.",
         "ordenSugerido": 4,
         "conceptos": [
-          { "id": "js-basico", "nombre": "Variables, tipos y funciones" },
-          { "id": "js-dom", "nombre": "El DOM" },
+          { "id": "js-basico", "nombre": "Variables, condicionales, bucles y funciones" },
+          { "id": "js-dom", "nombre": "Modificar el DOM" },
           { "id": "js-eventos", "nombre": "Eventos" }
         ],
         "videos": [
-          { "id": "v10", "titulo": "Variables, tipos y funciones", "youtubeId": "oqXYMnmq3c8", "duracionSegundos": 1232, "transcripcion": "v10.vtt" },
-          { "id": "v11", "titulo": "El DOM", "youtubeId": "H7CC46Hi0YA", "duracionSegundos": 771, "transcripcion": "v11.vtt" },
+          { "id": "v10", "titulo": "Variables, condicionales, bucles y funciones", "youtubeId": "oqXYMnmq3c8", "duracionSegundos": 1232, "transcripcion": "v10.vtt" },
+          { "id": "v11", "titulo": "Modificar el DOM", "youtubeId": "H7CC46Hi0YA", "duracionSegundos": 771, "transcripcion": "v11.vtt" },
           { "id": "v12", "titulo": "Eventos", "youtubeId": "griNhCfEIOM", "duracionSegundos": 731, "transcripcion": "v12.vtt" }
         ]
       }
