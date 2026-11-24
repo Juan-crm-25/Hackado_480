@@ -1,126 +1,204 @@
 WEBVTT
 
 NOTE
-Transcripción de «Selectores y especificidad» (https://www.youtube.com/watch?v=_Nnrb5zwydc).
-Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+Transcripción de «Especificidad y cascada» (https://www.youtube.com/watch?v=6fh7ZTj2t2k).
+Subtítulos manuales de YouTube en español, descargados con yt-dlp y limpiados con
 scripts/transcripciones/descargar.py (issue #11).
 
-00:00:00.000 --> 00:00:10.940
-en css tenemos hasta 5 tipos de selectores diferentes en este vídeo vamos a ver el primer tipo de selector el selector simple si quieres saber cuáles son los otros cuatro tipos
+00:00:01.590 --> 00:00:19.290
+en este vídeo comenzamos la sección de los fundamentos de css o la forma en la que css funciona para ello ha creado una carpeta como funciona css y dentro tenemos un styles que
 
-00:00:10.950 --> 00:00:22.440
-suscríbete al canal que en próximos vídeos los vamos a traer y los vamos a explicar programador programador a mi nombre es kiko palomares y comenzamos
+00:00:19.290 --> 00:00:33.840
+ahora os enseño y un index.html que lo único que tiene es un título h1 con fundamentos de css le incluido la clase title y el y de twiter y vamos a quitar esto para tener un poco
 
-00:00:24.750 --> 00:00:36.380
-bueno pues para empezar yo tengo por aquí virtud visual estudio code y lo primero que necesitamos es un archivo de html mi index html el cual lo vamos a inicializar con html5 y ahora lo que
+00:00:33.840 --> 00:00:49.980
+más de sitio y aquí en styles os he puesto como funciona css y lo que vamos a ver en este vídeo que es la especificidad sé que es una palabra rara pero especificidad viene de específico
 
-00:00:36.390 --> 00:00:48.860
-necesitamos es un documento de css bien pues para ello vamos a crear un nuevo documento vamos a llamarle styles css y vamos a vincular selo a nuestro archivo de index.hr ml por aquí con el link ya
+00:00:49.980 --> 00:01:03.030
+la especificidad establece como de específico es un selector para saber qué estilo aplicar el cálculo se realiza con la siguiente fórmula esto os lo voy a explicar ahora en un momentito
 
-00:00:48.870 --> 00:00:59.510
-lo tenemos por aquí vinculado a lo que vamos a hacer es ejecutar el index html con el open with lights server para ver el resultado y ahora ya tenemos por aquí el navegador al mismo tiempo que el código para que vayamos viendo el
+00:01:03.030 --> 00:01:17.610
+como cual es la fórmula que sigue el navegador para saber qué estilos aplicar pero aquí os he puesto varios ejemplos sobre cómo aplicar estilos al h1 tenemos la etiqueta h uno que
 
-00:00:59.520 --> 00:01:11.540
-resultado en tiempo real piel lo primero que vamos a hacer es crear un párrafo vale que se va a ser nuestro párrafo a seleccionar vamos a crearlo aquí con loren ipsum por ejemplo aquí lo tenemos ahora vámonos al ceses y vamos a ver qué
+00:01:17.610 --> 00:01:35.250
+tiene el background color red title seleccionando la clase el y the title seleccionando el y de el h 1 con la clase title el h 1 con el líder title y el h 1 con la clase y el y de title tal y como
 
-00:01:11.550 --> 00:01:22.430
-es el lector como podemos seleccionar ese párrafo desde css bien pues es tan fácil como poner p abrimos las llaves y ya está ya tenemos seleccionado ese párrafo en realidad no sólo tenemos seleccionador de párrafo bueno en este
+00:01:35.250 --> 00:01:48.870
+está puesto si os dais cuenta todo va a aplicar estilos al h 1 pero evidentemente sólo uno de ellos va a ganar por decirlo de alguna forma entonces cuando yo guardé que este archivo lo
 
-00:01:22.440 --> 00:01:33.020
-caso sí porque sólo tenemos un párrafo de esta manera tenemos eliminado todos los párrafos por ejemplo si yo ahora quisiera cambiarle el tamaño de fuente podemos poner font size y le puedo dar aquí por
+00:01:48.870 --> 00:02:03.380
+tengo sin guardar vais a ver de qué color se pinta control ese y como veis se pinta de este color si es la primera vez que veis css es posible que penséis que esto se aplica
 
-00:01:33.030 --> 00:01:43.550
-ejemplo 45 píxeles ale de esta manera veremos que el párrafo se me hace ahí enorme pero qué pasa si añadimos otro párrafo vamos a añadir otro párrafo un segundo párrafo para que veáis pues que
+00:02:03.380 --> 00:02:14.870
+porque es el último y como ya habíamos hablado anteriormente de que los estilos que están por debajo sobre escriben a los que están arriba pues es posible que alguno piense que se está
 
-00:01:43.560 --> 00:01:54.410
-realmente se me están seleccionando varios párrafos aquí ya tengo el párrafo número dos de hecho voy a ponerle aquí un 2 y aquí vamos a dejarle un 1 y como estamos viendo aquí los dos párrafos se
+00:02:14.870 --> 00:02:32.540
+aplicando porque es el último pero si yo cojo esto de aquí lo quito y lo pongo arriba del todo si os dais cuenta sigue funcionando exactamente igual y se sigue aplicando este color esto es
 
-00:01:54.420 --> 00:02:06.620
-me están haciendo grandes se está aplicando el css que hemos puesto aquí a los dos párrafos porque la pista ha seleccionado todos los párrafos después tenemos también lo que sería el selector por haití es decir si por ejemplo ya
+00:02:32.540 --> 00:02:45.800
+la teoría de cómo funciona bueno la teoría no esto es la práctica realmente de cómo funciona la especificidad vamos a explicar cómo funciona para que entendáis por qué está
 
-00:02:06.630 --> 00:02:17.810
-aquí en el primer párrafo tuviera el atributo ayby y lo igualó por ejemplo al primero vale puedo seleccionar sólo este párrafo utilizando el atributo ayby
+00:02:45.800 --> 00:02:59.810
+pasando esto y por qué el navegador decide darle estilos a este y no a todos los demás la fórmula que sigue el navegador es bastante sencilla no tiene no tiene mucha complejidad
 
-00:02:17.820 --> 00:02:29.360
-primero si nos vamos al css yo puedo poner la almohadilla primero y abro las las llaves y ahora aquí puedo hacer lo que quiera ese párrafo por ejemplo puedo hacerle color red de esta manera sólo el
+00:03:02.130 --> 00:03:13.890
+básicamente cada uno de estos elementos tiene un valor lo que hace el navegador es sumar ese valor y el que gane o el que tenga la suma más alta pues es el que gana
 
-00:02:29.370 --> 00:02:39.470
-primer párrafo como estamos sabiendo a que aquí se me está aplicando el color rojo porque estamos seleccionando sólo ese párrafo por haití importante que el haití debe ser único
+00:03:14.920 --> 00:03:24.470
+y los valores son bastante sencillos tenemos para las etiquetas bueno etiquetas seguro de elementos
 
-00:02:39.480 --> 00:02:50.660
-es decir yo no puedo ponerle aquí al segundo párrafo otro haití y que sea primero no porque la idea es único solo pertenece a un elemento muy importante esto en el caso de que queramos aplicar
+00:03:26.130 --> 00:03:40.070
+esto no lo hemos visto todavía pero pero ya sabréis lo que son pseudo elementos tenemos unos valores que serían 0 0 1 luego entenderéis por qué se llaman así
 
-00:02:50.670 --> 00:03:01.130
-el mismo estilo a varios párrafos pero no lo queremos aplicar a todos por ejemplo supongamos que yo tengo aquí tres párrafos vale tengo tres párrafos y quiero aplicarles a todos el mismo
+00:03:41.520 --> 00:03:49.550
+para las clases clases atributos y pseudo clases
 
-00:03:01.140 --> 00:03:12.500
-estilo menos al párrafo segundo por ejemplo pues para eso tenemos las clases yo aquí lo que puedo poner es class igual a por ejemplo párrafo vale le doy
+00:03:52.330 --> 00:04:09.910
+tenemos 0 10 para los ideas tenemos 100 o 100 como lo queráis ver y para los estilos en línea es decir los que ponemos
 
-00:03:12.510 --> 00:03:24.409
-aquí una clase párrafo por ejemplo le ponen el nombre que queramos y ahora esta clase que sí que se puede repetir en otros elementos me la voy a copiar al tercer párrafo de forma que el segundo párrafo no lo pongo así entonces ahora
+00:04:09.910 --> 00:04:25.900
+directamente en la etiqueta html esto vale 1000 ó 1000 y mal esto podríais separarlo por comas porque realmente es así como lo representa tanto la w3c como visual studio
 
-00:03:24.419 --> 00:03:36.289
-con esta clase párrafo si me voy a los styles le vamos a borrar esta ya igual que las ideas los utilizamos la almohadilla para seleccionar los párrafos se utiliza el punto los párrafos no perdón las clases las clases
+00:04:25.900 --> 00:04:43.360
+si nos ponemos encima de un elemento aquí nos pone selector específica es decir speed especificidad del selector y nos pone 001 que es exactamente lo mismo que yo os he puesto aquí si
 
-00:03:36.299 --> 00:03:46.580
-se utiliza el punto haré el punto seguido del nombre de la clase que tengamos que en este caso es párrafo y ahora aquí pues le puedo pagar el color por ejemplo blue y de esta
+00:04:43.360 --> 00:04:52.630
+nos venimos a este de arriba nos pone 1 1 1 y eso es porque tenemos una etiqueta es decir 1
 
-00:03:46.590 --> 00:03:57.350
-manera estamos viendo que es solo los párrafos que tienen la clase párrafo se me están poniendo de color azul es una manera de seleccionar varias cosas al mismo tiempo utilizando clases por ejemplo qué pasaría si yo tuviera aquí
+00:04:53.470 --> 00:05:06.160
+una clase 010 y uni de que sería 100 por lo tanto el valor de especificidad de este selector es 111
 
-00:03:57.360 --> 00:04:07.610
-un h1 ahora vamos a crear un h uno voy a poner hola programadores y qué pasa si yo ahora cojo y le meto también la clase párrafo a la h1 pues veremos que
+00:05:08.030 --> 00:05:23.930
+y ya está y esto que parece tan sencillo es la causa de que muchísima gente diga que css que no lo entiende que no se le aplican los estilos css es muy difícil y cosas de esas porque vamos
 
-00:04:07.620 --> 00:04:18.229
-realmente pues se me va a poner también de color azul es decir no tiene por qué ser el mismo elemento ahora qué pasa si yo quiero que la clase párrafo sólo afecte realmente a los que son un párrafo pues bien lo que podemos hacer
+00:05:23.930 --> 00:05:40.010
+a ponernos por un momento en el ejemplo imaginaos que esté css en lugar de tener 34 líneas tuviera setecientas y alguien llega por aquí y dice el background del title pues tiene que ser de
 
-00:04:18.239 --> 00:04:28.670
-aquí en el selector es antes de la clase puedo poner la p de esta manera sólo estará afectando a todos los elementos que sean penn y que tengan la clase párrafo veis que ya ya no está azul el
+00:05:40.010 --> 00:05:51.410
+color rojo y entonces pone punto title wing coma no punto title y pone background color rec lo
 
-00:04:28.680 --> 00:04:39.770
-h1 tocará sólo estamos afectando a la p más el párrafo vale son esos dos selectores en uno podríamos decir puede ser que por ejemplo yo quiera que estos dos párrafos sean azules como está pero
+00:05:51.410 --> 00:06:07.010
+pone y no funciona y dice joven pues pues vamos a poner h 1 punto title y tampoco se aplica y cuando aprobado 20 cosas y ninguna funciona es cuando dice bueno pues le pongo un importante le da y
 
-00:04:39.780 --> 00:04:51.110
-que el primer párrafo en concreto sea por ejemplo más grande voy a poner peak por ejemplo que es grande en inglés pues yo puedo ponerle aquí dos clases como estamos viendo ese párrafo y puedo ponerle una segunda
+00:06:07.010 --> 00:06:21.890
+se aplica y que pasa cuando ponemos importante que nos estamos cargando completamente la especificidad porque si aquí yo añado importante como selector no lo conoce lector como como valor
 
-00:04:51.120 --> 00:05:04.010
-clase que sea vi entonces yo puedo irme después a los estilos crear otra clase que sea bic y aquí le puedo poner el font size por ejemplo pues más grande como por ejemplo a 25 píxeles a leer y
+00:06:23.030 --> 00:06:33.930
+aquí esto grana a todo cuando ponemos importante estamos dando bueno estamos haciendo dos cosas
 
-00:05:04.020 --> 00:05:15.020
-de esa manera veremos que el primer párrafo que estamos aplicando las dos clases al mismo tiempo la de párrafo que no está poniendo azul y la de bill que me lo está poniendo grande o sea podemos poner todas las clases que queramos
+00:06:33.930 --> 00:06:51.210
+una es admitir que no tenemos ni idea de cómo funciona css y otra es que nos estamos cargando la especificidad del navegador porque una vez que tenemos esto imaginaos que 50 ó 200 líneas después
 
-00:05:15.030 --> 00:05:25.490
-dentro de un mismo elemento otro selector interesante que tenemos es el selector universal que para ello se utiliza el asterisco de esta manera poniéndola estricto estamos diciendo todos los elementos por
+00:06:51.210 --> 00:07:09.360
+llega alguien y dice no no el background tiene que ser azul entonces llega aquí y pone title pero sin mayúsculas punto tight el background color blue le da y no se le aplica y supongamos
 
-00:05:25.500 --> 00:05:37.310
-ejemplo si yo la pongo aquí color red veremos que todos los elementos me van a poner de color ahí estamos viendo si por ejemplo en vez de color rey yo pongo border y pongo solid un píxel y pongo
+00:07:09.360 --> 00:07:26.010
+que sigue el mismo principio que el otro y pone h1 title y tampoco se aplica y dice vale pues le pongo importante y viene aquí pone important y se pone por qué pasa esto porque este importante está
 
-00:05:37.320 --> 00:05:48.500
-black veremos que todos los elementos se me van a poner se me va a poner un borde en todos los elementos como estamos viendo aquí pues dentro del body dentro de la h1 dentro de todos los párrafos todo para esto es la manera de
+00:07:26.010 --> 00:07:42.140
+sobre escribiendo al otro y esto es muy sencillo y de hecho si quitáramos este h1 y dejáramos title volvería a pasar entonces la gente empieza a confundirse ya decir qué css no hay quien lo
 
-00:05:48.510 --> 00:06:01.220
-seleccionar todos los elementos al mismo tiempo por ejemplo algo muy común que se puede hacer es que yo quiero a lo mejor quitarle los marlins me ponen por defecto los navegadores y puedo poner margin 0 y padding pero
+00:07:42.140 --> 00:08:00.230
+entienda y que que no se le aplican los estilos y se vuelve loca entonces cuál es la forma de evitar todos estos problemas y que no os volváis locos a la hora de aplicar estilos es tan sencillo como
 
-00:06:01.230 --> 00:06:11.900
-también y esto se lo doy a todos los elementos de esa manera es una manera rápida de resetear todos los márgenes del navegador como estamos viendo aquí pues ahora no hay márgenes ya partir de ahí yo puedo escribir los que yo quiera
+00:08:00.230 --> 00:08:13.830
+utilizar siempre siempre siempre clases ya está así de simple tile tel y aquí ponéis background
 
-00:06:11.910 --> 00:06:22.340
-bien hay alguna manera de por ejemplo agrupar estilos por ejemplo yo quiero que en este caso el h1 pues tenga el color red vale pero qué pasa yo por
+00:08:13.830 --> 00:08:32.790
+color el que os dé la gana podéis poner por ejemplo y le he dejado este por aquí sí sí ya lo estoy explicando mal aquí siempre utilizar clases importan gana todo y no se usa nunca esto
 
-00:06:22.350 --> 00:06:33.680
-ejemplo quiero que los párrafos también tengan el color red pues estoy poniendo aquí varias veces el color red d en varias lenguas en varios elementos
+00:08:32.790 --> 00:08:47.010
+es muy importante que lo recordéis tenéis que utilizar siempre clases va a haber situaciones sobre todo cuando veamos pseudo elementos y pseudo clases donde la especificidad la vamos
 
-00:06:33.690 --> 00:06:45.140
-cuando podría agruparlos en un solo sitio como pues tan fácil como poner h 1b y de esta manera ya no nos hace falta este segundo porque todo lo estamos definiendo aquí y yo podría seguir
+00:08:47.010 --> 00:09:02.250
+a modificar un poquito pero no lo suficiente como para que se nos rompa el css pero eso ya os lo explicaré cuando lleguemos a ese punto ahora para terminar quiero contestar una pregunta
 
-00:06:45.150 --> 00:06:55.520
-poniendo aquí todos los elementos que quisieras pues por ejemplo si tenemos una si tenemos una lista todo todo lo podemos meter concatenados dejar en el mismo sitio y no tenemos que estar
+00:09:02.250 --> 00:09:17.610
+que me habéis hecho muchísimas veces tanto en los directos de tweets como en los comentarios del curso anterior de css que es como se yo si estoy escribiendo un buen css vale pues existe
 
-00:06:55.530 --> 00:07:05.750
-repitiendo el mismo estilo una y otra vez espero que te haya gustado el vídeo que hayas aprendido cosas nuevas por aquí te voy a dejar el curso de css completo recuerda que vamos a sacar en próximos vídeos
+00:09:17.610 --> 00:09:27.480
+una página que es muy útil sobre todo si estáis empezando qué es css específico y graf o algo así
 
-00:07:05.760 --> 00:07:16.340
-los otros cuatro tipos de selectores que tenemos en css así que estaré muy atento por supuesto suscríbete al canal para no perderte esos próximos vídeos programador programadora nos vemos en el
+00:09:29.240 --> 00:09:39.650
+está donde aquí podéis poner vuestro css y saber si lo estáis escribiendo bien de hecho
 
-00:07:16.350 --> 00:07:19.250
-próximo vídeo
+00:09:39.650 --> 00:09:56.720
+si os dais cuenta de cómo está este gráfico evidentemente esto no es bueno si el gráfico tiene tantísimos picos y hace todas estas cosas es una señal muy clara de que vuestro css no es
+
+00:09:56.720 --> 00:10:13.760
+bueno y que estáis teniendo unos problemas de especificidad tremendos vamos a ir momento a guija para que podáis ver un ejemplo real y os voy a poner pues de los de los retos que estoy
+
+00:10:13.760 --> 00:10:26.600
+haciendo yo en directo en tweets vamos a [ __ ] cualquiera de estos yo que sé el profile car por ejemplo sé que tenía muy poquito css y yo creo que este va a servir para que veáis cómo se escribe
+
+00:10:26.600 --> 00:10:35.600
+un buen css controlar control c voy a quitar estoy aquí aquí controlar el borro todo pero
+
+00:10:37.690 --> 00:10:54.040
+y aquí tenéis el resultado de cómo se ve un buen css un buen css ese tiene que ver lo más lineal posible en cuanto tengamos picos o ese tipo de cosas ya es mala señal vamos
+
+00:10:54.040 --> 00:11:10.190
+a [ __ ] uno que tenga más código css para que veáis cómo se puede romper un poquito pero sin ser demasiado pues no sé qué proyectos teníamos que fueran grandes este a lo mejor una vez ese
+
+00:11:10.190 --> 00:11:23.780
+es styles vamos a ver este qué tal está sé que aquí hay muchas cosas que no entendéis vale no no os preocupéis que dentro de poco las vais a entender todas aquí este también está bien
+
+00:11:24.770 --> 00:11:41.390
+tengo que tener alguno que tenga que tenga picos este tiene alguno aquí si os dais cuenta esto de card after es un pseudo elemento en este punto tenemos un before que también es un elemento si
+
+00:11:41.390 --> 00:11:55.760
+os dais cuenta se rompe un poquito pero pero no lo suficiente no tenemos los picos que teníamos antes entonces si vosotros cogéis un css lo pegáis aquí y tenéis los picos que habéis
+
+00:11:55.760 --> 00:12:09.650
+visto al principio eso es señal de que estáis escribiendo un mal css tenemos que intentar que esta línea de aquí vale que toda la línea del gráfico sea lo más estable posible de hecho
+
+00:12:09.650 --> 00:12:21.860
+aquí esto está pasando que aquí tengo un bajón y después va por abajo y después vuelve a subir esto es por cómo he construido el css porque aquí estoy usando pues el selector universal
+
+00:12:21.860 --> 00:12:35.270
+estoy utilizando variables css que también vamos a ver y la pseudo clase route y ese tipo de cosas soy consciente de que si es la primera vez que veis css de aquí no entendéis prácticamente
+
+00:12:35.270 --> 00:12:47.020
+nada pero si yo cojo esto de aquí lo corto y lo pongo abajo del todo aquí tendríais el aspecto de
+
+00:12:47.020 --> 00:13:02.650
+cómo se ve un css perfectamente escrito es decir empezamos con una especificidad baja subimos y nos mantenemos este es el aspecto que debería tener todo el css que escribamos
+
+00:13:02.650 --> 00:13:18.670
+independientemente de si tiene 100 líneas o si tiene 3000 vale tiene que quedar lo más estable posible esto se sale se sale completamente del nivel del curso en el que estamos porque esto
+
+00:13:18.670 --> 00:13:31.810
+ya sería un tema de arquitectura css que lo vamos a ver en el último bloque del curso que sería el avanzado pero que si estáis empezando con css y ya habéis escrito pues algún mini proyecto o
+
+00:13:31.810 --> 00:13:48.070
+ese tipo de cosas utilizar esta página pega hace el código y echarle un vistazo a ver si vuestra especificidad es correcta o se os está empezando a complicar un poquito con esto puede ser vuestra
+
+00:13:48.070 --> 00:14:03.480
+herramientas si estáis empezando para saber si vais por buen camino o tenéis cosas que cambiar y una vez dicho esto os dejo con un último apunte sobre la cascada que es que la cascada
+
+00:14:05.440 --> 00:14:14.890
+funciona muy funcional siempre que la especificidad sobre el elemento
+
+00:14:17.440 --> 00:14:37.370
+a la misma a qué me refiero con esto si aquí pusiéramos un punto title y le pusiéramos un background color yellow por ejemplo pues aquí la cascada funcionaría si recargo vais a ver
+
+00:14:37.370 --> 00:14:52.310
+qué funciona ahí entonces tened en cuenta que si la especificidad no es la misma la cascada no va a funcionar si yo aquí pongo h1 title vuelve a ganar este entonces muy
+
+00:14:52.310 --> 00:15:04.760
+recomendable que siempre utilicéis clases para que la cascada no se vea afectada y una vez dicho esto que me está quedando el vídeo un poquito largo lo voy a dejar por aquí
+
+00:15:04.760 --> 00:15:17.000
+y en el siguiente vídeo vamos a hablar sobre la herencia y por fin vamos a utilizar alguna otra propiedad que no es background color así que muchísimas gracias por ver este
+
+00:15:17.000 --> 00:15:29.610
+vídeo y nos vemos en el siguiente un saludo y hasta luego espero que te esté gustando esta nueva edición del curso de css y si crees que este contenido puede ayudar a alguien te animo
+
+00:15:29.610 --> 00:15:41.070
+a que lo compartas en todas tus redes sociales además si tienes alguna duda o algo que quieras comentar te dejo en la descripción un link para que te unas a la comunidad de discos donde ya
+
+00:15:41.070 --> 00:15:51.780
+somos casi 5.000 personas que estamos dispuestos a echar un cable en cualquier cosa que necesites y si quieres estar al día de todo el contenido y no perderte nada te animo a que te suscribas
+
+00:15:51.780 --> 00:16:02.730
+haciendo click aquí y le des a la campanita para que youtube te avise de todas las notificaciones muchísimas gracias por ver este vídeo y nos vemos en el siguiente un saludo y hasta luego

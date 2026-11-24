@@ -23,17 +23,17 @@
       {
         "id": "m2-css",
         "titulo": "CSS",
-        "descripcion": "Dar estilo a una página: selectores, caja, color y tipografía.",
+        "descripcion": "Dar estilo a una página: especificidad, modelo de caja y unidades de medida.",
         "ordenSugerido": 2,
         "conceptos": [
           { "id": "css-especificidad", "nombre": "Selectores y especificidad" },
           { "id": "css-caja", "nombre": "Modelo de caja" },
-          { "id": "css-unidades", "nombre": "Colores, tipografía y unidades" }
+          { "id": "css-unidades", "nombre": "Unidades de medida (em y rem)" }
         ],
         "videos": [
-          { "id": "v04", "titulo": "Selectores y especificidad", "youtubeId": "_Nnrb5zwydc", "duracionSegundos": 438, "transcripcion": "v04.vtt" },
-          { "id": "v05", "titulo": "El modelo de caja", "youtubeId": "UCc0bJfqsmk", "duracionSegundos": 413, "transcripcion": "v05.vtt" },
-          { "id": "v06", "titulo": "Colores, tipografía y unidades", "youtubeId": "4CC1wxHQQ5k", "duracionSegundos": 482, "transcripcion": "v06.vtt" }
+          { "id": "v04", "titulo": "Especificidad y cascada", "youtubeId": "6fh7ZTj2t2k", "duracionSegundos": 972, "transcripcion": "v04.vtt" },
+          { "id": "v05", "titulo": "El modelo de caja", "youtubeId": "-ivUAB-aG2U", "duracionSegundos": 257, "transcripcion": "v05.vtt" },
+          { "id": "v06", "titulo": "Unidades de medida: em y rem", "youtubeId": "4DgjXh-h2xI", "duracionSegundos": 695, "transcripcion": "v06.vtt" }
         ]
       },
       {

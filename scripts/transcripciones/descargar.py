@@ -23,6 +23,7 @@ Al final muestra cuántas palabras y tokens (aprox.) tiene cada módulo, para el
 
 from __future__ import annotations
 
+import html
 import json
 import re
 import subprocess
@@ -84,7 +85,8 @@ def limpiar(vtt: str) -> list[tuple[float, float, str]]:
         con_marcas = [l for l in texto if "<c>" in l or re.search(r"<\d{2}:", l)]
         candidatas = con_marcas if con_marcas else ([] if "<c>" in vtt else texto)
         for l in candidatas:
-            limpio = re.sub(r"\s+", " ", ETIQUETAS.sub("", l)).strip()
+            # html.unescape: los subtítulos manuales traen entidades como &nbsp; en lugar de espacios.
+            limpio = re.sub(r"\s+", " ", html.unescape(ETIQUETAS.sub("", l))).strip()
             if limpio and (not lineas_nuevas or lineas_nuevas[-1][2] != limpio):
                 lineas_nuevas.append((inicio, fin, limpio))
     return lineas_nuevas
