@@ -20,3 +20,14 @@ The database is the single source of truth. Full reference: [`docs/bbdd/README.m
 - Generated material is created once: look it up first, generate only if missing, insert with `ON CONFLICT DO NOTHING`, always set `modelo` and `generado`.
 - Images go to Cloudflare R2 (only the URL is stored). Videos stay on YouTube (only the link is stored). Payments use Stripe in test mode; enrollments from purchases are created only by the verified Stripe webhook.
 - Schema changes are contract changes: one Drizzle migration per PR, and warn the team before merging.
+
+## Testing rules (mandatory)
+
+- **No feature or bug fix without tests.** Write the test first, run it and see it fail for the expected reason, then implement until it passes (TDD).
+- **A change is not done until its tests pass.** Never report work as finished, commit it or open a PR with failing or unrun tests.
+- **Run only the tests the change affects**, not the whole suite on every change:
+  - the test file you wrote or changed: `npx vitest run src/lib/db/client.test.ts`
+  - tests that import the files you changed: `npx vitest related --run <changed files>`
+  - code that reads data files (VTT, JSON) is not in the import graph: find its tests by name (e.g. `grep -rl transcripcion src --include=*.test.ts`) and run them.
+- Run the full suite (`npm test`), `npx tsc --noEmit` and `npm run lint` once before opening or updating a PR.
+- Tests that need the database use a throwaway database in the local Docker container, never the developer's `hackado` database and never production.
