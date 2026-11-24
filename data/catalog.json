@@ -15,9 +15,9 @@
           { "id": "html-semantica", "nombre": "Etiquetas semánticas y formularios" }
         ],
         "videos": [
-          { "id": "v01", "titulo": "Qué es la web y cómo funciona", "youtubeId": "", "duracionSegundos": 0 },
-          { "id": "v02", "titulo": "Estructura de un documento HTML", "youtubeId": "", "duracionSegundos": 0 },
-          { "id": "v03", "titulo": "Etiquetas semánticas y formularios", "youtubeId": "", "duracionSegundos": 0 }
+          { "id": "v01", "titulo": "Qué es la web y cómo funciona", "youtubeId": "81u19umYU_E", "duracionSegundos": 403 },
+          { "id": "v02", "titulo": "Estructura de un documento HTML", "youtubeId": "_MTZx8H-Fo4", "duracionSegundos": 432 },
+          { "id": "v03", "titulo": "Etiquetas semánticas y formularios", "youtubeId": "FeXpLU515AI", "duracionSegundos": 289 }
         ]
       },
       {
@@ -31,9 +31,9 @@
           { "id": "css-unidades", "nombre": "Colores, tipografía y unidades" }
         ],
         "videos": [
-          { "id": "v04", "titulo": "Selectores y especificidad", "youtubeId": "", "duracionSegundos": 200, "transcripcion": "v04.vtt" },
-          { "id": "v05", "titulo": "El modelo de caja", "youtubeId": "", "duracionSegundos": 190, "transcripcion": "v05.vtt" },
-          { "id": "v06", "titulo": "Colores, tipografía y unidades", "youtubeId": "", "duracionSegundos": 170, "transcripcion": "v06.vtt" }
+          { "id": "v04", "titulo": "Selectores y especificidad", "youtubeId": "_Nnrb5zwydc", "duracionSegundos": 438, "transcripcion": "v04.vtt" },
+          { "id": "v05", "titulo": "El modelo de caja", "youtubeId": "UCc0bJfqsmk", "duracionSegundos": 413, "transcripcion": "v05.vtt" },
+          { "id": "v06", "titulo": "Colores, tipografía y unidades", "youtubeId": "4CC1wxHQQ5k", "duracionSegundos": 482, "transcripcion": "v06.vtt" }
         ]
       },
       {
@@ -47,9 +47,9 @@
           { "id": "resp-media", "nombre": "Media queries y mobile-first" }
         ],
         "videos": [
-          { "id": "v07", "titulo": "Flexbox", "youtubeId": "", "duracionSegundos": 0 },
-          { "id": "v08", "titulo": "CSS Grid", "youtubeId": "", "duracionSegundos": 0 },
-          { "id": "v09", "titulo": "Media queries y mobile-first", "youtubeId": "", "duracionSegundos": 0 }
+          { "id": "v07", "titulo": "Flexbox", "youtubeId": "-nVJwYKx6H8", "duracionSegundos": 661 },
+          { "id": "v08", "titulo": "CSS Grid", "youtubeId": "edEG0CoM5gw", "duracionSegundos": 711 },
+          { "id": "v09", "titulo": "Media queries y mobile-first", "youtubeId": "pu6ArfDxxpE", "duracionSegundos": 320 }
         ]
       },
       {
@@ -63,9 +63,9 @@
           { "id": "js-eventos", "nombre": "Eventos" }
         ],
         "videos": [
-          { "id": "v10", "titulo": "Variables, tipos y funciones", "youtubeId": "", "duracionSegundos": 0 },
-          { "id": "v11", "titulo": "El DOM", "youtubeId": "", "duracionSegundos": 0 },
-          { "id": "v12", "titulo": "Eventos", "youtubeId": "", "duracionSegundos": 0 }
+          { "id": "v10", "titulo": "Variables, tipos y funciones", "youtubeId": "oqXYMnmq3c8", "duracionSegundos": 1232 },
+          { "id": "v11", "titulo": "El DOM", "youtubeId": "H7CC46Hi0YA", "duracionSegundos": 771 },
+          { "id": "v12", "titulo": "Eventos", "youtubeId": "griNhCfEIOM", "duracionSegundos": 731 }
         ]
       }
     ]
