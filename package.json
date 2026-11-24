@@ -13,14 +13,18 @@
     "generar:infografias": "tsx --env-file=.env.local scripts/generar-infografias.ts",
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
-    "db:validar": "docker compose cp docs/bbdd/esquema-borrador.sql db:/tmp/esquema.sql && docker compose exec -T db sh -c \"dropdb -U hackado --if-exists validacion && createdb -U hackado validacion && psql -U hackado -d validacion -v ON_ERROR_STOP=1 --single-transaction -q -f /tmp/esquema.sql && dropdb -U hackado validacion && echo 'Esquema OK'\""
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
+    "drizzle-orm": "0.45.4",
     "lucide-react": "^1.78.0",
     "next": "16.4.6",
+    "postgres": "4.1.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "shadcn": "^4.23.0",
@@ -31,6 +35,7 @@
     "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
     "tailwindcss": "4.3.3",

@@ -38,7 +38,9 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm test` | Ejecuta los tests |
 | `npm run test:ia` | Prueba la conexión real con el proveedor de IA (necesita la clave en `.env.local`) |
 | `npm run db:up` / `npm run db:down` | Arranca o para la BBDD local en Docker, en el puerto 5433 (ver [docs/bbdd](docs/bbdd/README.md#5-entornos-y-variables-de-entorno)) |
-| `npm run db:validar` | Comprueba el borrador del esquema en una BBDD temporal (no toca tus datos) |
+| `npm run db:generate` | Genera la migración SQL en `drizzle/` a partir del esquema (`src/lib/db/schema/`) |
+| `npm run db:migrate` | Aplica las migraciones pendientes a la BBDD de `DATABASE_URL` |
+| `npm run db:studio` | Abre Drizzle Studio para ver y editar los datos |
 | `npm run generar:material` | Genera el resumen y las tarjetas comunes de los módulos con transcripciones (`-- m2-css` para uno solo, `-- --forzar` para regenerar). Revisa el resultado y pon `"revisado": true` |
 | `npm run generar:infografias` | Genera una infografía por concepto (mismas opciones). Revisa el resultado y pon `"revisado": true` |
 
@@ -76,6 +78,7 @@ data/                   Origen del seed (catálogo, transcripciones, material). 
                         el código lea de la BBDD: no añadas ficheros de datos nuevos aquí
 docs/                   Decisiones, API, fotos de los bocetos
   bbdd/                 Modelo de datos, reglas y variables de entorno (la BBDD manda)
+drizzle/                Migraciones SQL generadas con npm run db:generate (no se editan a mano)
 src/
   app/
     api/                Endpoints de la API (ver docs/api.md)
@@ -83,6 +86,7 @@ src/
   components/ui/        Componentes de shadcn/ui
   lib/
     types.ts            Tipos compartidos: EL CONTRATO. Avisa antes de cambiarlos
+    db/                 BBDD: esquema de Drizzle (schema/) y cliente (client.ts)
     catalogo.ts         Lectura del catálogo
     datos-prueba.ts     Datos de prueba hasta que exista la BBDD
 scripts/                Backlog y creación de issues

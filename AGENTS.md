@@ -12,7 +12,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 The database is the single source of truth. Full reference: [`docs/bbdd/README.md`](docs/bbdd/README.md).
 
-- PostgreSQL (Neon, EU) with Drizzle. Until `src/lib/db/schema.ts` exists, the schema is `docs/bbdd/esquema-borrador.sql`.
+- PostgreSQL (Neon, EU) with Drizzle. The schema lives in `src/lib/db/schema/` (one file per block) and migrations in `drizzle/`.
+- To change the schema: edit the TypeScript schema → `npm run db:generate` → review the generated SQL → `npm run db:migrate`. One migration per PR; never edit an applied migration.
 - Do not create new data files in `data/`. The existing ones are seed sources only and will be removed once the code reads from the database.
 - Fill exactly the fields each table defines, with its types and formats. Do not add fields or store free-form JSON "just in case".
 - AI never writes to the database or chooses ids. It returns JSON; code validates it (`src/lib/agentes/`), resolves foreign keys and inserts. If validation fails, nothing is saved.
