@@ -44,6 +44,18 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm run generar:material` | Genera el resumen y las tarjetas comunes de los módulos con transcripciones (`-- m2-css` para uno solo, `-- --forzar` para regenerar). Revisa el resultado y pon `"revisado": true` |
 | `npm run generar:infografias` | Genera una infografía por concepto (mismas opciones). Revisa el resultado y pon `"revisado": true` |
 
+### Volver a descargar las transcripciones
+
+No hace falta para trabajar: las 12 transcripciones ya están en `data/transcripciones/`. Solo si cambia algún vídeo de `data/catalog.json`. Necesita Python 3.10+ y [yt-dlp](https://github.com/yt-dlp/yt-dlp):
+
+```bash
+pip install yt-dlp
+python scripts/transcripciones/descargar.py          # los 12 vídeos
+python scripts/transcripciones/descargar.py v04 v05  # solo esos
+```
+
+Descarga los subtítulos en español de YouTube (sin bajar el vídeo), los limpia y los guarda en VTT con sus marcas de tiempo. Al terminar muestra los tokens aproximados del temario de cada módulo. Si cambian las transcripciones, el material y las infografías de ese módulo quedan desfasados: vuelve a generarlos con `-- --forzar`. Cómo y por qué se hace así: [SPEC.md, apartado 8](SPEC.md#8-contenido).
+
 ## Capa de IA
 
 Todo el acceso a la IA pasa por `src/lib/ai/`:

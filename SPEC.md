@@ -153,6 +153,7 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 | **Generador de ejercicios** | Crea el banco de ejercicios de cada módulo a partir de los ejemplos del profesor | Modelo abierto más grande, también en la UE. Se ejecuta **una vez por módulo** (no por alumno), así que su coste es despreciable y compensa la calidad | Transcripciones, conceptos, ejemplos y tipo de ejercicio del profesor | JSON de ejercicios en estado *borrador*, con solución o rúbrica y vídeo y minuto de referencia | Mismo tipo y formato que los ejemplos. Solo contenido del módulo. **El profesor aprueba** antes de publicar. Ningún dato de alumnos |
 | **Corrector** | Evalúa respuestas abiertas con la rúbrica y explica el error | Modelo mediano. Las preguntas tipo test se corrigen con código, sin IA | Enunciado, rúbrica, respuesta filtrada | Puntuación, feedback breve, vídeo y minuto que hay que repasar | Se ciñe a la rúbrica. Si no tiene confianza, lo marca para revisión humana |
 | **Analista del Radar** | Resume para el tutor qué está fallando y qué dudas se repiten | Modelo mediano, en lote nocturno (no en tiempo real) | Estadísticas calculadas por código y dudas seudonimizadas | Resumen por módulo y lista priorizada de seudónimos (se reidentifican en nuestro servidor) | No diagnostica ni juzga al alumno: señala patrones. La decisión es siempre del tutor humano |
+| **Revisor de transcripciones** (solo en producción) | Corrige el vocabulario técnico de cada transcripción (`createElement`, `div`, `append`, números dictados) antes de guardarla | `gemma-4-26b-a4b-it` en Scaleway (UE), sin razonamiento. Es una tarea sencilla de texto y se ejecuta **una vez por vídeo**: unos 0,003 € por vídeo, alrededor de 1 € para los 400 del catálogo | Bloques de transcripción sin las marcas de tiempo, título del vídeo y conceptos del módulo. Ningún dato de alumnos | Los mismos bloques, en el mismo orden, corregidos. El código vuelve a poner los tiempos | No resume, no añade ni quita contenido. Si un bloque cambia demasiado o falta, se conserva el original. Un profesor puede revisar el resultado. **No se usa en el prototipo** (ver apartado 8) |
 
 ---
 
@@ -160,28 +161,62 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 
 **Curso elegido:** *Introducción al desarrollo web* (HTML, CSS y JavaScript). Tiene mucho contenido en español en YouTube y unos ejercicios prácticos que lucen en la demo.
 
-| Módulo | Vídeos (12) |
-|---|---|
-| M1 · HTML | 1. Qué es la web y cómo funciona · 2. Estructura de un documento HTML · 3. Etiquetas semánticas y formularios |
-| M2 · CSS | 4. Selectores y especificidad · 5. Modelo de caja · 6. Colores, tipografía y unidades |
-| M3 · Maquetación responsive | 7. Flexbox · 8. CSS Grid · 9. Media queries y mobile-first |
-| M4 · JavaScript | 10. Variables, tipos y funciones · 11. El DOM · 12. Eventos |
+Usamos 12 vídeos de dos canales de YouTube en español: **Kiko Palomares** (HTML, maquetación y JavaScript) y **Dorian Desings** (CSS, de su curso de CSS). Los elegimos por contenido: cada vídeo explica de verdad los conceptos de su módulo, que comprobamos leyendo las transcripciones.
 
-<!-- TODO: completar con las URLs concretas de YouTube al seleccionar los vídeos -->
+| Módulo | Vídeo | Duración | Subtítulos |
+|---|---|---|---|
+| M1 · HTML | v01 · [Cómo están hechas las páginas web](https://www.youtube.com/watch?v=81u19umYU_E) | 6:43 | automáticos |
+| | v02 · [Estructura de un documento HTML](https://www.youtube.com/watch?v=_MTZx8H-Fo4) | 7:12 | automáticos |
+| | v03 · [Etiquetas semánticas](https://www.youtube.com/watch?v=FeXpLU515AI) | 4:49 | automáticos |
+| M2 · CSS | v04 · [Especificidad y cascada](https://www.youtube.com/watch?v=6fh7ZTj2t2k) | 16:12 | a mano |
+| | v05 · [El modelo de caja](https://www.youtube.com/watch?v=-ivUAB-aG2U) | 4:17 | automáticos |
+| | v06 · [Unidades de medida: em y rem](https://www.youtube.com/watch?v=4DgjXh-h2xI) | 11:35 | a mano |
+| M3 · Maquetación responsive | v07 · [Flexbox](https://www.youtube.com/watch?v=-nVJwYKx6H8) | 11:01 | automáticos |
+| | v08 · [CSS Grid](https://www.youtube.com/watch?v=edEG0CoM5gw) | 11:51 | automáticos |
+| | v09 · [Media queries y diseño responsive](https://www.youtube.com/watch?v=pu6ArfDxxpE) | 5:20 | automáticos |
+| M4 · JavaScript | v10 · [Variables, condicionales, bucles y funciones](https://www.youtube.com/watch?v=oqXYMnmq3c8) | 20:32 | automáticos |
+| | v11 · [Modificar el DOM](https://www.youtube.com/watch?v=H7CC46Hi0YA) | 12:51 | automáticos |
+| | v12 · [Eventos](https://www.youtube.com/watch?v=griNhCfEIOM) | 12:11 | automáticos |
 
-**De dónde salen los textos y las transcripciones:**
-- Se eligen vídeos con **subtítulos en español** y se descargan en formato VTT, con marcas de tiempo. Gracias a esas marcas, el tutor y el corrector pueden citar el minuto exacto.
-- Si un vídeo no tiene subtítulos, se transcribe con **Whisper** (modelo abierto) ejecutado en local, sin enviar el audio a terceros. Es la misma vía para el 70 % del catálogo real que no tiene transcripción, y es un coste único por vídeo.
-- Los conceptos de cada módulo se extraen de las transcripciones con el generador y los revisa el equipo.
+Los vídeos, sus duraciones y los 3 conceptos de cada módulo están en `data/catalog.json`; las transcripciones, en `data/transcripciones/v01.vtt` … `v12.vtt`. Son el origen del seed de la BBDD (ver [`docs/bbdd/README.md`](docs/bbdd/README.md)).
+
+### Cómo obtuvimos las transcripciones
+
+**En el prototipo** no hizo falta transcribir: los 12 vídeos ya tenían subtítulos en español en YouTube (2 puestos a mano por el autor y 10 automáticos). El script `scripts/transcripciones/descargar.py`:
+
+1. Descarga con **yt-dlp** solo los subtítulos en VTT, sin bajar el vídeo ni el audio. Prefiere los hechos a mano y, si no hay, usa los automáticos.
+2. **Los limpia.** Los automáticos repiten cada frase 2 o 3 veces porque en pantalla «ruedan» de una línea a la siguiente; sin limpiar, el temario que recibe el tutor duplicaría los tokens. También quita las etiquetas de tiempo por palabra y entidades como `&nbsp;`.
+3. Agrupa el texto en bloques de unos 10 segundos, **conservando el segundo en que empieza cada bloque**. Es lo que permite al tutor citar el minuto exacto.
+4. Guarda `data/transcripciones/<vídeo>.vtt` y anota el fichero en `catalog.json`.
+
+Todo tarda menos de un minuto y no cuesta nada. Elegimos este camino por sencillez: Whisper en un portátil sin tarjeta gráfica habría tardado horas para las ~2 horas de vídeo, y no habría resuelto los fallos que más nos importan (ver abajo).
+
+**Calidad.** Los subtítulos, sobre todo los automáticos, no tienen puntuación y fallan en vocabulario de programación: «create Element» por `createElement`, «dip» por `div`, «a pen» por `append`, o «0 10» donde el autor dicta la especificidad (0,1,0). Lo comprobamos con el tutor:
+- Los fallos **evidentes** los corrige el propio modelo por el contexto: preguntando cómo crear un elemento, respondió con `document.createElement('div')` y `append` aunque la transcripción dijera otra cosa.
+- Los que **cambian el sentido** no: con el «0 10» explicó mal los valores de la especificidad.
+
+En el prototipo lo aceptamos: el tutor recibe el módulo entero y la mayoría de fallos se resuelven por contexto.
+
+**En la app real** los vídeos son de 480 Academy y no están en YouTube. El proceso se dispara solo cuando un profesor sube un vídeo, en un trabajo en segundo plano:
+
+1. **Whisper** (modelo abierto, en servidores propios o de la UE, sin enviar el audio a terceros) transcribe el 70 % del catálogo que no tiene transcripción. Devuelve VTT con marcas de tiempo, igual que ahora. Para el 30 % que ya la tiene, se parte de ella.
+2. **Limpieza** con código, como en el prototipo.
+3. **Revisor de transcripciones**, un agente de IA (ver apartado 7 y [`agents/revisor-transcripciones.md`](agents/revisor-transcripciones.md)): corrige el vocabulario técnico sin cambiar el contenido ni los tiempos. Whisper transcribe mejor que los subtítulos automáticos, pero sigue fallando en nombres de código y en números dictados.
+4. **Conversión a markdown** con marcas `[mm:ss]` y guardado en la tabla `documento`. Un profesor puede revisarla antes de publicar.
+
+El revisor es necesario en producción por dos motivos: con 400 vídeos el tutor busca los fragmentos relevantes (RAG) en lugar de recibir el módulo entero, y una búsqueda de «div» no encuentra un fragmento que dice «dip»; y las transcripciones se reutilizan como apuntes y para generar resúmenes, tarjetas y ejercicios. Se ejecuta una vez por vídeo y cuesta céntimos.
+
+**Conceptos.** Los 3 conceptos de cada módulo los revisamos con las transcripciones reales y ajustamos sus nombres a lo que explican los vídeos. Sus identificadores no cambiaron, porque los usan los ejercicios, el material y los datos del Radar.
 
 ---
 
 ## 9. Coste
 
 **Hipótesis por alumno activo y mes:**
-- 20 consultas al tutor. Cada una envía el temario completo del módulo (unos 12.000 tokens) más el historial (unos 2.000) y recibe unos 500 tokens.
+- 20 consultas al tutor. Cada una envía el temario completo del módulo (unos 12.000 tokens) más el historial (unos 2.000) y recibe unos 500 tokens. *Medido con las transcripciones reales (24/11): el temario va de unos 5.300 tokens (HTML) a unos 13.000 (JavaScript), unos 8.000 de media. Mantenemos 12.000 como hipótesis conservadora.*
 - 10 respuestas abiertas corregidas por IA (unos 3.000 tokens de entrada cada una).
 - Resúmenes, tarjetas, infografías y banco de ejercicios: se generan **una vez por módulo** y se comparten, así que su coste por alumno es casi nulo.
+- Transcripciones: coste **único por vídeo**, no por alumno. En el prototipo, 0 € (subtítulos de YouTube). En producción, Whisper en servidores propios más el revisor de transcripciones, unos 1 € de IA para los 400 vídeos.
 - **Modelo elegido:** `gemma-4-26b-a4b-it` (pesos abiertos) en **Scaleway Generative APIs**, alojado en la UE y sin retención de datos. **Precio real: 0,25 € por millón de tokens de entrada y 0,50 € por millón de salida.**
 - **Sin razonamiento** (`reasoning_effort: "none"`): lo medimos el 23/11 con la misma pregunta. Con razonamiento tardó 3 s y gastó 303 tokens de salida (276 de razonamiento invisible); sin él, 0,5 s y 23 tokens, con una respuesta igual de buena. Solo se activará para tareas difíciles si hace falta.
 

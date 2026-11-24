@@ -1,32 +1,204 @@
 WEBVTT
 
 NOTE
-TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
-Se sustituirá por la transcripción real del vídeo (#11).
+Transcripción de «Especificidad y cascada» (https://www.youtube.com/watch?v=6fh7ZTj2t2k).
+Subtítulos manuales de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
 
-00:00:00.000 --> 00:00:12.000
-Hola, en este vídeo vamos a ver qué son los selectores en CSS y cómo decide el navegador qué regla gana cuando dos reglas chocan.
+00:00:01.590 --> 00:00:19.290
+en este vídeo comenzamos la sección de los fundamentos de css o la forma en la que css funciona para ello ha creado una carpeta como funciona css y dentro tenemos un styles que
 
-00:00:12.000 --> 00:00:31.000
-Un selector es la parte de la regla que dice a qué elementos se aplica el estilo. Los más básicos son el selector de etiqueta, por ejemplo button o p, que se aplica a todas las etiquetas de ese tipo.
+00:00:19.290 --> 00:00:33.840
+ahora os enseño y un index.html que lo único que tiene es un título h1 con fundamentos de css le incluido la clase title y el y de twiter y vamos a quitar esto para tener un poco
 
-00:00:31.000 --> 00:00:52.000
-Después tenemos el selector de clase, que empieza por un punto, como .boton. Se aplica a todos los elementos que tengan class="boton". Una misma clase se puede usar en muchos elementos.
+00:00:33.840 --> 00:00:49.980
+más de sitio y aquí en styles os he puesto como funciona css y lo que vamos a ver en este vídeo que es la especificidad sé que es una palabra rara pero especificidad viene de específico
 
-00:00:52.000 --> 00:01:10.000
-Y el selector de id, que empieza por almohadilla, como #enviar. Un id debe ser único en la página, así que solo se aplica a un elemento.
+00:00:49.980 --> 00:01:03.030
+la especificidad establece como de específico es un selector para saber qué estilo aplicar el cálculo se realiza con la siguiente fórmula esto os lo voy a explicar ahora en un momentito
 
-00:01:10.000 --> 00:01:34.000
-También se pueden combinar. Por ejemplo, div button selecciona los botones que están dentro de un div. A esto lo llamamos selector descendiente.
+00:01:03.030 --> 00:01:17.610
+como cual es la fórmula que sigue el navegador para saber qué estilos aplicar pero aquí os he puesto varios ejemplos sobre cómo aplicar estilos al h1 tenemos la etiqueta h uno que
 
-00:01:34.000 --> 00:02:05.000
-Ahora, la especificidad. Cuando dos reglas dan valores distintos a la misma propiedad de un elemento, gana la más específica. Podemos pensar en la especificidad como tres contadores: ids, clases y etiquetas. Se comparan de izquierda a derecha.
+00:01:17.610 --> 00:01:35.250
+tiene el background color red title seleccionando la clase el y the title seleccionando el y de el h 1 con la clase title el h 1 con el líder title y el h 1 con la clase y el y de title tal y como
 
-00:02:05.000 --> 00:02:32.000
-Un selector de id vale uno, cero, cero. Una clase vale cero, uno, cero. Una etiqueta vale cero, cero, uno. Por eso #enviar siempre gana a .boton, aunque .boton esté escrito después en el fichero: un solo id pesa más que cualquier número de clases.
+00:01:35.250 --> 00:01:48.870
+está puesto si os dais cuenta todo va a aplicar estilos al h 1 pero evidentemente sólo uno de ellos va a ganar por decirlo de alguna forma entonces cuando yo guardé que este archivo lo
 
-00:02:32.000 --> 00:02:55.000
-Si dos selectores tienen exactamente la misma especificidad, entonces gana el que aparece más tarde en el CSS. Eso es la cascada.
+00:01:48.870 --> 00:02:03.380
+tengo sin guardar vais a ver de qué color se pinta control ese y como veis se pinta de este color si es la primera vez que veis css es posible que penséis que esto se aplica
 
-00:02:55.000 --> 00:03:20.000
-Y un último aviso: los estilos escritos en el atributo style de la etiqueta ganan a todos los selectores, y !important gana incluso a eso. Usad !important lo menos posible, porque hace el CSS muy difícil de mantener.
+00:02:03.380 --> 00:02:14.870
+porque es el último y como ya habíamos hablado anteriormente de que los estilos que están por debajo sobre escriben a los que están arriba pues es posible que alguno piense que se está
+
+00:02:14.870 --> 00:02:32.540
+aplicando porque es el último pero si yo cojo esto de aquí lo quito y lo pongo arriba del todo si os dais cuenta sigue funcionando exactamente igual y se sigue aplicando este color esto es
+
+00:02:32.540 --> 00:02:45.800
+la teoría de cómo funciona bueno la teoría no esto es la práctica realmente de cómo funciona la especificidad vamos a explicar cómo funciona para que entendáis por qué está
+
+00:02:45.800 --> 00:02:59.810
+pasando esto y por qué el navegador decide darle estilos a este y no a todos los demás la fórmula que sigue el navegador es bastante sencilla no tiene no tiene mucha complejidad
+
+00:03:02.130 --> 00:03:13.890
+básicamente cada uno de estos elementos tiene un valor lo que hace el navegador es sumar ese valor y el que gane o el que tenga la suma más alta pues es el que gana
+
+00:03:14.920 --> 00:03:24.470
+y los valores son bastante sencillos tenemos para las etiquetas bueno etiquetas seguro de elementos
+
+00:03:26.130 --> 00:03:40.070
+esto no lo hemos visto todavía pero pero ya sabréis lo que son pseudo elementos tenemos unos valores que serían 0 0 1 luego entenderéis por qué se llaman así
+
+00:03:41.520 --> 00:03:49.550
+para las clases clases atributos y pseudo clases
+
+00:03:52.330 --> 00:04:09.910
+tenemos 0 10 para los ideas tenemos 100 o 100 como lo queráis ver y para los estilos en línea es decir los que ponemos
+
+00:04:09.910 --> 00:04:25.900
+directamente en la etiqueta html esto vale 1000 ó 1000 y mal esto podríais separarlo por comas porque realmente es así como lo representa tanto la w3c como visual studio
+
+00:04:25.900 --> 00:04:43.360
+si nos ponemos encima de un elemento aquí nos pone selector específica es decir speed especificidad del selector y nos pone 001 que es exactamente lo mismo que yo os he puesto aquí si
+
+00:04:43.360 --> 00:04:52.630
+nos venimos a este de arriba nos pone 1 1 1 y eso es porque tenemos una etiqueta es decir 1
+
+00:04:53.470 --> 00:05:06.160
+una clase 010 y uni de que sería 100 por lo tanto el valor de especificidad de este selector es 111
+
+00:05:08.030 --> 00:05:23.930
+y ya está y esto que parece tan sencillo es la causa de que muchísima gente diga que css que no lo entiende que no se le aplican los estilos css es muy difícil y cosas de esas porque vamos
+
+00:05:23.930 --> 00:05:40.010
+a ponernos por un momento en el ejemplo imaginaos que esté css en lugar de tener 34 líneas tuviera setecientas y alguien llega por aquí y dice el background del title pues tiene que ser de
+
+00:05:40.010 --> 00:05:51.410
+color rojo y entonces pone punto title wing coma no punto title y pone background color rec lo
+
+00:05:51.410 --> 00:06:07.010
+pone y no funciona y dice joven pues pues vamos a poner h 1 punto title y tampoco se aplica y cuando aprobado 20 cosas y ninguna funciona es cuando dice bueno pues le pongo un importante le da y
+
+00:06:07.010 --> 00:06:21.890
+se aplica y que pasa cuando ponemos importante que nos estamos cargando completamente la especificidad porque si aquí yo añado importante como selector no lo conoce lector como como valor
+
+00:06:23.030 --> 00:06:33.930
+aquí esto grana a todo cuando ponemos importante estamos dando bueno estamos haciendo dos cosas
+
+00:06:33.930 --> 00:06:51.210
+una es admitir que no tenemos ni idea de cómo funciona css y otra es que nos estamos cargando la especificidad del navegador porque una vez que tenemos esto imaginaos que 50 ó 200 líneas después
+
+00:06:51.210 --> 00:07:09.360
+llega alguien y dice no no el background tiene que ser azul entonces llega aquí y pone title pero sin mayúsculas punto tight el background color blue le da y no se le aplica y supongamos
+
+00:07:09.360 --> 00:07:26.010
+que sigue el mismo principio que el otro y pone h1 title y tampoco se aplica y dice vale pues le pongo importante y viene aquí pone important y se pone por qué pasa esto porque este importante está
+
+00:07:26.010 --> 00:07:42.140
+sobre escribiendo al otro y esto es muy sencillo y de hecho si quitáramos este h1 y dejáramos title volvería a pasar entonces la gente empieza a confundirse ya decir qué css no hay quien lo
+
+00:07:42.140 --> 00:08:00.230
+entienda y que que no se le aplican los estilos y se vuelve loca entonces cuál es la forma de evitar todos estos problemas y que no os volváis locos a la hora de aplicar estilos es tan sencillo como
+
+00:08:00.230 --> 00:08:13.830
+utilizar siempre siempre siempre clases ya está así de simple tile tel y aquí ponéis background
+
+00:08:13.830 --> 00:08:32.790
+color el que os dé la gana podéis poner por ejemplo y le he dejado este por aquí sí sí ya lo estoy explicando mal aquí siempre utilizar clases importan gana todo y no se usa nunca esto
+
+00:08:32.790 --> 00:08:47.010
+es muy importante que lo recordéis tenéis que utilizar siempre clases va a haber situaciones sobre todo cuando veamos pseudo elementos y pseudo clases donde la especificidad la vamos
+
+00:08:47.010 --> 00:09:02.250
+a modificar un poquito pero no lo suficiente como para que se nos rompa el css pero eso ya os lo explicaré cuando lleguemos a ese punto ahora para terminar quiero contestar una pregunta
+
+00:09:02.250 --> 00:09:17.610
+que me habéis hecho muchísimas veces tanto en los directos de tweets como en los comentarios del curso anterior de css que es como se yo si estoy escribiendo un buen css vale pues existe
+
+00:09:17.610 --> 00:09:27.480
+una página que es muy útil sobre todo si estáis empezando qué es css específico y graf o algo así
+
+00:09:29.240 --> 00:09:39.650
+está donde aquí podéis poner vuestro css y saber si lo estáis escribiendo bien de hecho
+
+00:09:39.650 --> 00:09:56.720
+si os dais cuenta de cómo está este gráfico evidentemente esto no es bueno si el gráfico tiene tantísimos picos y hace todas estas cosas es una señal muy clara de que vuestro css no es
+
+00:09:56.720 --> 00:10:13.760
+bueno y que estáis teniendo unos problemas de especificidad tremendos vamos a ir momento a guija para que podáis ver un ejemplo real y os voy a poner pues de los de los retos que estoy
+
+00:10:13.760 --> 00:10:26.600
+haciendo yo en directo en tweets vamos a [ __ ] cualquiera de estos yo que sé el profile car por ejemplo sé que tenía muy poquito css y yo creo que este va a servir para que veáis cómo se escribe
+
+00:10:26.600 --> 00:10:35.600
+un buen css controlar control c voy a quitar estoy aquí aquí controlar el borro todo pero
+
+00:10:37.690 --> 00:10:54.040
+y aquí tenéis el resultado de cómo se ve un buen css un buen css ese tiene que ver lo más lineal posible en cuanto tengamos picos o ese tipo de cosas ya es mala señal vamos
+
+00:10:54.040 --> 00:11:10.190
+a [ __ ] uno que tenga más código css para que veáis cómo se puede romper un poquito pero sin ser demasiado pues no sé qué proyectos teníamos que fueran grandes este a lo mejor una vez ese
+
+00:11:10.190 --> 00:11:23.780
+es styles vamos a ver este qué tal está sé que aquí hay muchas cosas que no entendéis vale no no os preocupéis que dentro de poco las vais a entender todas aquí este también está bien
+
+00:11:24.770 --> 00:11:41.390
+tengo que tener alguno que tenga que tenga picos este tiene alguno aquí si os dais cuenta esto de card after es un pseudo elemento en este punto tenemos un before que también es un elemento si
+
+00:11:41.390 --> 00:11:55.760
+os dais cuenta se rompe un poquito pero pero no lo suficiente no tenemos los picos que teníamos antes entonces si vosotros cogéis un css lo pegáis aquí y tenéis los picos que habéis
+
+00:11:55.760 --> 00:12:09.650
+visto al principio eso es señal de que estáis escribiendo un mal css tenemos que intentar que esta línea de aquí vale que toda la línea del gráfico sea lo más estable posible de hecho
+
+00:12:09.650 --> 00:12:21.860
+aquí esto está pasando que aquí tengo un bajón y después va por abajo y después vuelve a subir esto es por cómo he construido el css porque aquí estoy usando pues el selector universal
+
+00:12:21.860 --> 00:12:35.270
+estoy utilizando variables css que también vamos a ver y la pseudo clase route y ese tipo de cosas soy consciente de que si es la primera vez que veis css de aquí no entendéis prácticamente
+
+00:12:35.270 --> 00:12:47.020
+nada pero si yo cojo esto de aquí lo corto y lo pongo abajo del todo aquí tendríais el aspecto de
+
+00:12:47.020 --> 00:13:02.650
+cómo se ve un css perfectamente escrito es decir empezamos con una especificidad baja subimos y nos mantenemos este es el aspecto que debería tener todo el css que escribamos
+
+00:13:02.650 --> 00:13:18.670
+independientemente de si tiene 100 líneas o si tiene 3000 vale tiene que quedar lo más estable posible esto se sale se sale completamente del nivel del curso en el que estamos porque esto
+
+00:13:18.670 --> 00:13:31.810
+ya sería un tema de arquitectura css que lo vamos a ver en el último bloque del curso que sería el avanzado pero que si estáis empezando con css y ya habéis escrito pues algún mini proyecto o
+
+00:13:31.810 --> 00:13:48.070
+ese tipo de cosas utilizar esta página pega hace el código y echarle un vistazo a ver si vuestra especificidad es correcta o se os está empezando a complicar un poquito con esto puede ser vuestra
+
+00:13:48.070 --> 00:14:03.480
+herramientas si estáis empezando para saber si vais por buen camino o tenéis cosas que cambiar y una vez dicho esto os dejo con un último apunte sobre la cascada que es que la cascada
+
+00:14:05.440 --> 00:14:14.890
+funciona muy funcional siempre que la especificidad sobre el elemento
+
+00:14:17.440 --> 00:14:37.370
+a la misma a qué me refiero con esto si aquí pusiéramos un punto title y le pusiéramos un background color yellow por ejemplo pues aquí la cascada funcionaría si recargo vais a ver
+
+00:14:37.370 --> 00:14:52.310
+qué funciona ahí entonces tened en cuenta que si la especificidad no es la misma la cascada no va a funcionar si yo aquí pongo h1 title vuelve a ganar este entonces muy
+
+00:14:52.310 --> 00:15:04.760
+recomendable que siempre utilicéis clases para que la cascada no se vea afectada y una vez dicho esto que me está quedando el vídeo un poquito largo lo voy a dejar por aquí
+
+00:15:04.760 --> 00:15:17.000
+y en el siguiente vídeo vamos a hablar sobre la herencia y por fin vamos a utilizar alguna otra propiedad que no es background color así que muchísimas gracias por ver este
+
+00:15:17.000 --> 00:15:29.610
+vídeo y nos vemos en el siguiente un saludo y hasta luego espero que te esté gustando esta nueva edición del curso de css y si crees que este contenido puede ayudar a alguien te animo
+
+00:15:29.610 --> 00:15:41.070
+a que lo compartas en todas tus redes sociales además si tienes alguna duda o algo que quieras comentar te dejo en la descripción un link para que te unas a la comunidad de discos donde ya
+
+00:15:41.070 --> 00:15:51.780
+somos casi 5.000 personas que estamos dispuestos a echar un cable en cualquier cosa que necesites y si quieres estar al día de todo el contenido y no perderte nada te animo a que te suscribas
+
+00:15:51.780 --> 00:16:02.730
+haciendo click aquí y le des a la campanita para que youtube te avise de todas las notificaciones muchísimas gracias por ver este vídeo y nos vemos en el siguiente un saludo y hasta luego

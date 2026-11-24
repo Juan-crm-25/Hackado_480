@@ -1,0 +1,201 @@
+WEBVTT
+
+NOTE
+Transcripción de «Eventos» (https://www.youtube.com/watch?v=griNhCfEIOM).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
+
+00:00:00.000 --> 00:00:10.910
+un evento es una señal de que algo ha pasado y en consecuencia nosotros podemos hacer otra cosa cuando ese algo ha pasado por ejemplo en el don Tenemos un montón de eventos tenemos todos estos
+
+00:00:10.920 --> 00:00:23.390
+que tenemos aquí por ejemplo Tenemos aquí eventos del mouse vale del Ratón por ejemplo cuando se hace clic cuando abrimos el contex menú que es cuando haces clic derecho sobre un elemento cuando pasamos el mouse por encima de un
+
+00:00:23.400 --> 00:00:33.950
+elemento o cuando dejamos de pasarlo cuando pasamos cuando pulsamos el botón dentro de un elemento el botón del mouse o cuando dejamos de pulsarlo cuando movemos el ratón simplemente esto
+
+00:00:33.960 --> 00:00:44.630
+también es un evento después tenemos los eventos del Keyboard que es el teclado vale que es cuando se pulsa una tecla y cuando se deja de pulsar una tecla después También tenemos los eventos de
+
+00:00:44.640 --> 00:00:56.330
+los formularios como tenemos el submit que es cuando se envía un formulario y también tenemos el Focus que cuando se hace Focus sobre un elemento en concreto que por ejemplo Cuando entras dentro de un input estás haciendo Focus dentro de
+
+00:00:56.340 --> 00:01:06.710
+ese input También tenemos eventos del propio documento que es por ejemplo que es cuando el html termina de cargar y ya está listo para que puedas empezar a hacer lo que tú quieras y después
+
+00:01:06.720 --> 00:01:18.170
+También tenemos eventos de css Como por ejemplo transition en que esto significa que una animación de css ha terminado Estos son todos los elementos que nos podemos encontrar en el Domo O sea no
+
+00:01:18.180 --> 00:01:30.289
+son todos hay muchos más No pero estos son los los más comunes digamos y los más útiles que podemos encontrarnos ahora bien Cómo podemos ejecutar estos elementos fijaos Por ejemplo yo puedo tener aquí en mi html puedo poner de
+
+00:01:30.299 --> 00:01:41.569
+aquí por ejemplo un botón voy a crear un botón vamos a poner aquí pulsar y yo podría poner aquí en el en el Button puedo poner on y ahora el nombre del evento fijaos aquí ya me salen todos los
+
+00:01:41.579 --> 00:01:52.130
+eventos que puedo hacer que son todos estos como veis hay muchísimos eventos Vale pues yo por ejemplo Aquí voy a pulsar el onclick el un clic es cuando se hace el clic sobre el botón pues se
+
+00:01:52.140 --> 00:02:04.910
+ejecuta este evento y yo aquí puedo hacer pues puedo ejecutar javascript por ejemplo puedo poner una led puedo poner aler y puedo poner aquí pues una frase que diga hola vale vamos a ejecutar nuestro Index html con live server y
+
+00:02:04.920 --> 00:02:17.030
+vamos a ver el resultado bien ya lo tenemos aquí Tenemos aquí el botón pulsar y cuando yo pulso sobre él me sale Hola vale porque se nos ha despuntado el evento de un clic y dentro del evento de un clic estamos ejecutando Este javascript de Hola también podemos
+
+00:02:17.040 --> 00:02:28.729
+ejecutar aquí o poner no solo javascript directamente sino una función yo puedo poner aquí por ejemplo Hello vale Y esta función de aquí me la puedo crear en mi archivo de js yo me vengo aquí voy a
+
+00:02:28.739 --> 00:02:40.250
+borrar todo esto y voy a quedar una función que se llama a llamar Hello y dentro del Hello puedo poner un alert vale que diga hola de esta manera ahora cuando yo pulse aquí me sale ahora
+
+00:02:40.260 --> 00:02:51.350
+también vale porque estoy ejecutando esta función de javascript que la estoy llamando desde el evento o un clic de aquí del botón directamente en el html también podemos Borrar esto de aquí vale
+
+00:02:51.360 --> 00:03:01.610
+Yo puedo tener solo el botón Vamos a ponerle una idea al botón vamos a poner ejemplo por ejemplo butto vale o Button 1 y yo podría este botón 1 aquí y
+
+00:03:01.620 --> 00:03:12.350
+decirle botón 1 punto con clic y esto igualarlo a una función por ejemplo a esta función te la puedo traer aquí y de esta manera estoy haciendo lo mismo que antes y nos venimos aquí y pulsamos
+
+00:03:12.360 --> 00:03:22.610
+veremos que también me sale Hola vale es otra manera de seleccionarlo acabo de seleccionar este botón por ID y lo que estamos moviéndole es el aquí el punto un clic y lo estoy igualando a la
+
+00:03:22.620 --> 00:03:33.530
+función eso aquí no hace falta este gel o directamente podemos igualarlo a la función veremos aquí funciona Exactamente igual Qué pasaría si por ejemplo ponemos aquí un clic como lo teníamos también yo pongo aquí el un
+
+00:03:33.540 --> 00:03:45.770
+clic y le pongo aquí un aler que diga por ejemplo Hola programador Entonces ahora tenemos aquí este un clic y después También tenemos aquí este otro clic que pone Hola Cuál
+
+00:03:45.780 --> 00:03:55.910
+de los dos hará caso bien pues vamos a comprobarlo vamos a pulsar y veis que me pone Hola Es decir me sale solo este Hola Este Hola programador no me ha salido Y esto es que si tenemos dos en
+
+00:03:55.920 --> 00:04:07.009
+realidad no podemos tener dos solo podemos tener uno y el que escribamos nosotros en javascript de esta manera sobrescribirá el resto es decir que tenemos otros son click por otro lado como por ejemplo directamente el html
+
+00:04:07.019 --> 00:04:18.830
+este pues el de javascript lo sobre escribirá vale hay que tener eso en cuenta que solo podemos tener un evento fijaos voy a borrarme esto de aquí si nosotros queremos Acceder al propio elemento si yo hago clic por ejemplo un
+
+00:04:18.840 --> 00:04:29.870
+alert y le pongo this.iner html este disque que estoy poniendo aquí es el propio botón de hecho vamos a ver aquí vamos a pulsar y me dice pulsar vale porque estamos
+
+00:04:29.880 --> 00:04:40.189
+cogiendo el botón y estamos cogiendo el html que tiene dentro que en este caso es la palabra pulsar y la estamos imprimiendo por pantalla o sea que una manera de acceder a lo que es el botón
+
+00:04:40.199 --> 00:04:52.390
+en sí o el elemento html es utilizando el dish dentro del propio evento bien Vamos a ver ahora posibles errores que para que no los cometamos cuando estamos aquí hemos dicho que teníamos el Button
+
+00:04:52.400 --> 00:05:04.310
+1.1 clic y así podíamos igualarlo a una función No si esta función Por ejemplo yo la tengo aquí arriba yo tengo aquí por ejemplo una función que sea Hello vale Y aquí hacemos un retum de Hola por
+
+00:05:04.320 --> 00:05:16.189
+ejemplo este Hello yo lo puedo igualar aquí de esta manera Hello lo que no puedo hacer lo que está mal es hacer un clic igual a Hello y ponerle los paréntesis Esto está mal vale Esto está
+
+00:05:16.199 --> 00:05:27.950
+mal y esto está bien lo que tenemos que hacerlo es igualarlo a la función no a la función ejecutándose con los dos paréntesis vale simplemente os lo digo Aquí como advertencia de que esto está mal Como se tiene que hacer es de esta
+
+00:05:27.960 --> 00:05:38.029
+manera en cambio Si queremos utilizar esta función directamente del botón aquí si lo ponemos en el onclick de aquí vale si ponemos aquí por ejemplo un clic aquí
+
+00:05:38.039 --> 00:05:50.270
+si tenemos que poner Hello poner los paréntesis Porque queremos que se ejecute la función otra cosa que está mal que no podemos hacer es utilizar el vamos a poner aquí otra vez botón 1 punto el set atribut vale el set
+
+00:05:50.280 --> 00:06:00.409
+atributo para poner por eventos o sea yo no puedo poner aquí un clic y poner Ahora aquí pues función y lo que fuese no Esto está mal vale esto de poner el
+
+00:06:00.419 --> 00:06:11.570
+un clic es todo lo que sean Aunque realmente Aquí sí que lo estamos viendo como si fuera un atributo esto es un atributo un clic es un evento Vale entonces No podemos añadirlos como atributos esto Solo sirve para los
+
+00:06:11.580 --> 00:06:22.490
+atributos normales no para los eventos los eventos no podemos hacerlos así los eventos tienen que ser como os he enseñado antes directamente poniendo así el un clic y directamente igualando a lo
+
+00:06:22.500 --> 00:06:33.230
+que fuese vale Así es como está correcto no utilicemos el set atributo para poner eventos Y por supuesto eso tiene que ir en minúscula ni se os ocurra ponerlo en mayúscula vale Esto está mal esto no
+
+00:06:33.240 --> 00:06:45.050
+funcionará tiene que ser en minúscula el un clic y todos los eventos en minúscula otra manera que tenemos también esto es utilizar el add vale aquí de esta manera podemos poner aquí el evento el nombre
+
+00:06:45.060 --> 00:06:56.930
+del evento que será clic en este caso y aquí podemos poner la función que queramos en este caso por ejemplo Hello de esta manera también funcionará vamos a poner aquí en vez de un retur 1 vale Para probarlo vale vamos a poner aquí el
+
+00:06:56.940 --> 00:07:08.450
+alert y vamos a pulsar otra vez el botón y veremos que me está saliendo el Hola es otra manera añadiéndolo con el add y ponemos el nombre del evento y ponemos la función que queremos que se ejecute
+
+00:07:08.460 --> 00:07:20.089
+de hecho tenemos algunos eventos que no funcionan A menos que utilicemos el adev por ejemplo el add disneer y aquí ponemos el down contenloaded vale Este
+
+00:07:20.099 --> 00:07:33.350
+esta función o este evento sí que funcionará con el Adam listener pero no funcionará si lo ponemos así O sea si document punto y ponemos aquí directamente el down contenloaded esto
+
+00:07:33.360 --> 00:07:45.110
+no va a funcionar vale esto de aquí está mal esto que estoy escribiendo está mal esto de aquí está mal no podemos poner el documento este solo funciona si utilizamos el add
+
+00:07:45.120 --> 00:07:56.689
+listener O sea hay que tener en cuenta de que hay algunos de que no funcionan de la otra manera así que podríamos decir que la de Listen es como más universal y sirve para todos Así que por lo general siempre utilizaremos el adem
+
+00:07:56.699 --> 00:08:07.309
+listener más que cualquier otra cosa más que poner directamente aquí el un clic el blur en lo que sea utilizaremos el ATV para crear esos eventos para
+
+00:08:07.319 --> 00:08:17.990
+escuchar a esos eventos dentro de lo que es un evento vamos a poner aquí por ejemplo el click como teníamos antes vamos a poner función Tenemos uno de los parámetros que se le pasa aquí a la
+
+00:08:18.000 --> 00:08:29.029
+función suele ser el evento Eleven y fijaos este evento Tiene ciertas cosas vamos a hacer un console.log del evento para ver lo que contiene Eleven y vamos a verlo en la consola me he abierto por
+
+00:08:29.039 --> 00:08:40.070
+aquí la consola y ahora vamos a darle a pulsar Y como veis aquí tengo un esto es un mouse even y aquí tenemos todas estas características que tenemos de leve tenemos el Time Stand tenemos la de la
+
+00:08:40.080 --> 00:08:50.750
+página a la que está el botón o donde clicado tenemos también que si es cancelable tenemos en fin botón tenemos de todo el movimiento del Ratón tenemos el path en fin Tenemos un montón de
+
+00:08:50.760 --> 00:09:02.570
+cosas relacionados con ese evento que en ciertos casos Pues nos pueden ser útiles por ejemplo tenemos el evento type y vamos a pulsar otra vez y aquí nos dice que es un evento type de click vale es
+
+00:09:02.580 --> 00:09:13.670
+un click También tenemos el evento y aquí le damos a pulsar veremos que es un botón vale Y me sale aquí el botón en sí el propio html del botón concurren
+
+00:09:13.680 --> 00:09:24.829
+Target podemos ese elemento html también podemos poner aquí por ejemplo client x y veremos que al pulsar veremos que pone 38 y Estos son las coordenadas
+
+00:09:24.839 --> 00:09:37.070
+del Ratón y si ponemos por ejemplo calayen Y pulsamos de nuevo pues veremos que es 23 esto también son las coordenadas y del propio ratón por último podemos ver que el ATV no solo
+
+00:09:37.080 --> 00:09:48.829
+podemos añadirle lo que es una función hay como segundo parámetro sino que también podemos añadirle un objeto sí como has oído un objeto Por ejemplo yo aquí Podría tener un objeto led o objeto
+
+00:09:48.839 --> 00:10:00.190
+y Puedo ponerle por ejemplo como primer parámetro handled event donde le pasamos el evento vale usa una función y aquí dentro puedo poner lo que sea un alert y puedo poner un evento
+
+00:10:00.200 --> 00:10:10.550
+de tal manera que si yo pulso ahora sobre el botón me pone click vale porque está funcionando está entrando por el objeto está entrando en el handleven y estamos imprimiendo el tipo para que nos
+
+00:10:10.560 --> 00:10:20.750
+puede servir esto por ejemplo yo puedo tener aquí varios tipos por ejemplo y Podría tener aquí un switch vale donde le pasará el evento y aquí Podría tener
+
+00:10:20.760 --> 00:10:32.930
+diferentes casos por ejemplo cuando es un clic pues quiero que me haga un aler que me diga hola pero cuando sea por ejemplo un mouse app pues Quiero que me diga otra cosa puedo poner aquí otro
+
+00:10:32.940 --> 00:10:43.610
+alert diferente y que me diga Adiós este aquí me lo quito y ahora de esta manera yo puedo utilizar varios tenemos el del click y yo puedo poner
+
+00:10:43.620 --> 00:10:55.610
+también aquí el del mouse up y estoy utilizando el mismo objeto para las dos pero la distinción de lo que voy a hacer la hago dentro de esta función vale por ejemplo vamos a pulsar y veis que me
+
+00:10:55.620 --> 00:11:05.990
+dice adiós y después me dice hola Por qué Porque primero está entrando por el mouse app y después por el clip es decir yo cuando clico y dejo de pulsar se me
+
+00:11:06.000 --> 00:11:17.150
+está ejecutando este Mouse app y después de ejecutarse este se ejecuta lo que es el clic del botón vale estamos ahí haciendo la distinción con una misma función o un mismo objeto que le estamos
+
+00:11:17.160 --> 00:11:28.970
+pasando al varios event listener entonces para resumir todo tenemos varias formas de ejecutar los eventos tenemos la primera forma que es hacerlo directamente aquí en html poniendo por ejemplo un clic o o lo que sea y ponemos
+
+00:11:28.980 --> 00:11:39.829
+aquí ya la función a la que queramos llamar o directamente el código javascript Esta es la opción número uno después tenemos la opción número 2 que es directamente aquí poniendo el clic
+
+00:11:39.839 --> 00:11:51.470
+vale un clic y podemos vincularse lo aquí a la función que sea en un clic o en lo que sea vale el evento que queramos y después tenemos la tercera opción que es la que yo te recomiendo que es la más usada la más universal que
+
+00:11:51.480 --> 00:12:02.090
+es el At even listener qué le pasamos como primer parámetro el nombre del evento por ejemplo clic y como segundo parámetro Pues el nombre de la función o la función en sí que queramos ejecutar
+
+00:12:02.100 --> 00:12:12.560
+Estas son las Tres formas que tenemos para ejecutar eventos con javascript así que ya sabemos cómo hacer eventos en javascript y estamos listos para la próxima clase

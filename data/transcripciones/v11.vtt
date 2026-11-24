@@ -1,0 +1,213 @@
+WEBVTT
+
+NOTE
+Transcripción de «Modificar el DOM» (https://www.youtube.com/watch?v=H7CC46Hi0YA).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
+
+00:00:00.000 --> 00:00:10.250
+Bueno vamos a ver en esta clase Cómo podemos Modificar el documento de html con javascript bien Vamos por ejemplo a crear una especie de mensaje una alerta de mensaje vale Yo aquí he añadido un
+
+00:00:10.260 --> 00:00:20.390
+poco de estilo este estilo de css para que se nos vea un poquito más bonito pero veis que no tengo absolutamente nada de html Vale tengo simplemente el body y nada más bien pues vamos aquí a
+
+00:00:20.400 --> 00:00:30.650
+la js lo primero que tenemos que hacer es crear nuestro dip nuestro primer dip para para lo que es la alerta vale vamos a poner aquí por ejemplo led vamos a poner dip y vamos a decirle document
+
+00:00:30.660 --> 00:00:41.690
+punto create Element vale Y este elemento que queremos crear pues le tenemos que decir que es hundido esta manera tenemos creado un dip vale Tenemos aquí un dip ahora a este dip Yo quiero ponerle la clase aler que tengo
+
+00:00:41.700 --> 00:00:53.330
+aquí pues bien Esto es tan fácil como poner aquí Di punto Class name vale Y yo le puedo decir aquí igual a alert vale De esta manera este que Acabo de crear ya tiene la clase alergen perfecto
+
+00:00:53.340 --> 00:01:03.770
+después quiero que este dip tenga dentro Pues el texto no tenga un texto de la alerta en Sí para esto tenemos el iner html vale Y esto yo lo puedo igualar a lo que yo quiera quieto ya le puedo
+
+00:01:03.780 --> 00:01:15.350
+meter texto puede decirle Por ejemplo Hola programadores Bien ya tengo aquí nuestro texto o sea primero creamos lo que es el elemento después podemos darle las clases que queramos utilizando el
+
+00:01:15.360 --> 00:01:26.210
+Class name y después con el html podemos ya meterle lo que es el contenido a ese dip bien Vamos a ver ahora una vez que tenemos creado el dip Cómo podemos meterlo dentro de nuestro documento html
+
+00:01:26.220 --> 00:01:37.429
+no de nuestro Body Bueno pues es tan fácil como hacer documento body.apen Vale y dentro de la p pues podemos ponerle ya nuestro dip directamente Y como veis aquí ya se me
+
+00:01:37.439 --> 00:01:49.130
+está viendo pone Hola programadores Esto es una alerta vale ya tenemos aquí nuestro dip que se está viendo yo aquí he utilizado el método appen para Añadir este elemento al Body Pero tenemos más tenemos unos cuantos más para poder
+
+00:01:49.140 --> 00:02:01.190
+Añadir cosas exactamente tenemos todos estos métodos de aquí para Añadir al archivo html tenemos el apén que hemos utilizado ahora esto lo que hace podemos meterle aquí un node es un elemento vale
+
+00:02:01.200 --> 00:02:12.770
+o un String y esto lo que hace es añadirlo al final del node que tengamos del padre que tengamos vale como hemos visto cuando hemos añadido al Body lo que hace es que como último elemento del Body pues te
+
+00:02:12.780 --> 00:02:23.930
+añade lo que le pongamos el cambio lo que hace es al revés lo que haces te lo añade el primero te lo añade como primer elemento el before lo que te hace es que te lo añade por fuera del elemento antes
+
+00:02:23.940 --> 00:02:35.570
+del elemento y el after lo que te hace es que te lo añade por fuera del elemento pero después del elemento y el replace with lo que te hace es que te lo cambia te cambia por uno por otro elemento que ya tengas o por otro String
+
+00:02:35.580 --> 00:02:46.130
+que ya tengas vamos a ver un ejemplo para que quede un poco más claro voy a quitarme aquí ya esto de aquí voy a quitarme el Style este de aquí y voy a poner un poco de html por aquí como veis
+
+00:02:46.140 --> 00:02:56.509
+tengo ahora una lista vale una lista numerada que la vemos aquí Tenemos uno dos y tres Vale y de valores tienen 0 1 y 2 Vale pues teniendo esta lista en mente Vámonos a nuestro archivo de
+
+00:02:56.519 --> 00:03:06.710
+javascript vamos a seleccionar lo que es la vale vamos a poner aquí un led o vamos a hacer un documento que te Element le he puesto ID no recuerdo
+
+00:03:06.720 --> 00:03:19.009
+ahora mismo sí le he puesto all Vale pues vamos a utilizarlo vamos a seleccionarlo por ID all y ahora lo que voy a hacer por ejemplo all punto voy a ponerle un before y dentro del before le
+
+00:03:19.019 --> 00:03:31.610
+voy a poner por ejemplo un antes vale que y aquí lo tenemos veis que me está poniendo aquí antes voy a darle un poquito de zoom para que lo veáis mejor pero aquí vemos que se me ha añadido antes de la lista y vamos a ponerla
+
+00:03:31.620 --> 00:03:43.190
+también aquí un gol punto after Vale y vamos a ponerle aquí un sí programador te lo has imaginado un después vale Y como veis me lo está añadiendo después de la lista o sea no está dentro de la
+
+00:03:43.200 --> 00:03:55.550
+propia lista En cambio yo aquí podría crear por ejemplo un li nuevo vale podría decirle aquí document create Element y le voy a decir que este elemento sea un Lee Vale y este y por
+
+00:03:55.560 --> 00:04:06.530
+ejemplo voy a ponerle el punto en el html para ponerle un nombre vale le voy a poner primero y este y ahora lo que vamos a hacer es añadirlo a la ol vamos a hacerle un gol
+
+00:04:06.540 --> 00:04:18.469
+punto pero lo quiero Añadir el primero Vale pues esto lo tengo que hacer con el vale el prepén Y ahora yo le añado aquí el link Y como veis aquí ya se me ha actualizado y como primera posición se
+
+00:04:18.479 --> 00:04:30.110
+me ha puesto el primero vale vamos a repetir esto mismo voy a crear otro y aquí abajo vale un segundo lee este va a ser Lee número 2 vale un Lee y este Vamos a ponerle que sea el último Vamos
+
+00:04:30.120 --> 00:04:41.150
+a ponerle aquí el pin número 2 y lo que vamos a hacer ahora es que all lo vamos a hacerle un apén vale Y vamos a añadirle el link número 2 esta manera nos va a quedar el último veis está
+
+00:04:41.160 --> 00:04:51.230
+dentro de la lista como un elemento más pero está el último si aquí ahora inspeccionamos elemento para ver el resultado vamos a ver el resultado de en html veis aquí lo estamos viendo tenemos
+
+00:04:51.240 --> 00:05:01.670
+el antes que está fuera de LOL porque le hemos utilizado un before que esto lo que hace esto lo pone por arriba vale por fuera Tenemos también aquí abajo el después que está también fuera de LOL
+
+00:05:01.680 --> 00:05:11.990
+porque estamos viajando un after vale que te lo pone Pues eso por fuera del elemento al final y después Tenemos aquí el primero y tenemos el último vale con el hemos añadido la primera opción una
+
+00:05:12.000 --> 00:05:24.230
+Li nueva y con el appen hemos añadido una última opción en lo que sería dentro del all También tenemos otra forma de hacer esto con otro Método en vez de utilizar estos métodos que hemos utilizado ahora tenemos también otro que
+
+00:05:24.240 --> 00:05:36.590
+es el siguiente es este el insertzen html este tiene varias opciones por ejemplo aquí en vez de hacer un before podríamos haber hecho un inserts aquí tiene que tenemos que
+
+00:05:36.600 --> 00:05:47.330
+pasarle un primer parámetro vale un primer parámetro que este primer parámetro puede ser una de estas cuatro opciones Y en este caso como queríamos ponerlo en un before si no recuerdo mal
+
+00:05:47.340 --> 00:05:57.650
+pues es este es before the begin esto de aquí es exactamente lo mismo que teníamos antes poniendo simplemente un aquí y aquí podemos hacer lo mismo podemos meterle este y podemos aquí
+
+00:05:57.660 --> 00:06:08.629
+darle un after podemos ponerle de opción un hámster y aquí podemos ponerle un after en vale o sea esto es lo equivalente al after veis aquí lo estamos viendo en el documento de html
+
+00:06:08.639 --> 00:06:20.510
+vemos que el resultado en html es el mismo y aquí visualmente también vale o sea son diferentes maneras de ponerlo en este caso esto es solo para meterle lo que es texto vale o sea por ejemplo al
+
+00:06:20.520 --> 00:06:34.490
+prepén y a la p no podemos sustituirlo porque aquí le estamos metiendo nodos estamos metiendo elementos pero cuando se trata de texto podemos utilizar estos vale con el before begging el after en y las otras dos que son el before en vale
+
+00:06:34.500 --> 00:06:44.870
+que aquí vemos donde no lo está poniendo no lo está poniendo antes de terminar que es aquí y también podemos utilizar el after bedding vale que nos está poniendo también por aquí el antes
+
+00:06:44.880 --> 00:06:56.809
+también igual que tenemos el text tenemos el insertzen html vale Tenemos aquí por ejemplo html vale pero en este caso si lo cambiamos por html lo que tenemos que
+
+00:06:56.819 --> 00:07:10.309
+meter aquí es una html es decir yo tengo que poner aquí escrito el html vale por ejemplo así esto sería pues una p vale o por ejemplo yo podría ponerle aquí un h1 y esto sería aquí un h1 veis aquí ya me
+
+00:07:10.319 --> 00:07:20.330
+está cambiando se me está comiendo esto un poco loco pero bueno sí tenemos aquí dentro como vemos si inspeccionó aquí tenemos un h1 que pone antes vale o sea podemos escribir aquí directamente el
+
+00:07:20.340 --> 00:07:30.909
+html lo que no va a funcionar es si le ponemos por ejemplo un link por ejemplo mira si yo cojo esto de aquí y me lo llevo aquí abajo vale y le pongo aquí por ejemplo el
+
+00:07:30.919 --> 00:07:42.529
+Vale Voy a borrarme estos dos de aquí que ya no me hacen falta y voy a utilizarlo abajo aquí abajo si me lo pongo así esto no va a funcionar como veis aquí me está dando un error chungo
+
+00:07:42.539 --> 00:07:53.089
+Me está poniendo object html Element porque aquí yo no puedo meter un node yo directamente lo que tengo que meter es un String y aquí escribir el link que yo quiera vale Yo puedo escribir aquí el
+
+00:07:53.099 --> 00:08:04.610
+html que sea vale Hola y de esta manera sí que me funciona vale o sea no le el elemento que creamos por javascript pero si podemos meter lo que es html directo
+
+00:08:04.620 --> 00:08:15.370
+esto es pues bueno otra forma de hacerlo Qué pasa Por ejemplo si yo quiero eliminar algo vale eliminar un nodo Por ejemplo yo podría hacer Aquí vamos a buscar otra vez el all como antes
+
+00:08:15.380 --> 00:08:27.230
+document punto GT Element y le voy a poner aquí vale que este es el en la lista que tenemos aquí pues es tan fácil como hacer all punto remove vale Y ya de
+
+00:08:27.240 --> 00:08:40.089
+esta manera me estaría eliminando veis aquí lo tenemos me lo ha eliminado es tan fácil como eso simplemente el punto remove lo que hace es que te lo eliminas inspeccionamos elemento veis que aquí ya no hay ningún olor vale si se lo quito
+
+00:08:40.099 --> 00:08:50.570
+esto recargará de nuevo aquí tenemos nuestro all dentro del Body y si se lo pongo pues veremos que me lo va a eliminar vale No tengo ya ese gol vamos a ver ahora por ejemplo Cómo podemos
+
+00:08:50.580 --> 00:09:01.850
+clonar nodos Cómo podemos clonar elementos vamos a poner aquí un dip Vamos a darle una ID Vamos a darle dip uno por ejemplo y vamos a ponerle aquí dentro un contenido que sea por ejemplo
+
+00:09:01.860 --> 00:09:12.590
+o la programadores y vámonos ahora al js y vamos a hacer aquí una variable led vamos a poner dip 1 y vamos a hacer un documento que de Element y vamos a
+
+00:09:12.600 --> 00:09:25.250
+buscarlo por dip uno entonces ahora lo que yo puedo hacer es aquí otra variable que sea dip dos vale Y lo puedo igualar a tip 1 punto Clon y está Clon node y
+
+00:09:25.260 --> 00:09:37.190
+aquí podemos ponerle de esta manera lo que va a hacer es que el tip 2 será un clon del dip uno y ahora podemos incluso añadirlo podemos hacer por ejemplo un VIP 1 punto after y podemos añadirle
+
+00:09:37.200 --> 00:09:47.269
+aquí el tip 2 Y aquí estamos viendo que tenemos el dip 1 y abajo tenemos añadido el dip dos que es un clon del tipo 1 vale Esta es la manera de clonar nodos o
+
+00:09:47.279 --> 00:10:00.889
+elementos con el Cloud y poniendole el parámetro a true también podríamos por ejemplo nosotros aquí cambiar el mensaje yo puedo poner el dedo podemos ponerle un Inner html igualarlo a o la Kiko y
+
+00:10:00.899 --> 00:10:11.930
+veremos que ahora el segundo tip lo que pone sola Kiko pero de que me subía esto pues por ejemplo si este dip tuviera clases vale tuviera una clase por ejemplo active Pues ahora el segundo tip
+
+00:10:11.940 --> 00:10:22.430
+también lo va a tener vale va a tener las mismas propiedades Aunque el mensaje sea diferente veréis si yo inspecciono aquí puedo ver el don y aquí lo estoy viendo tengo el dip 1 que está aquí vale
+
+00:10:22.440 --> 00:10:33.470
+que pone ahora programadores y aquí tengo la copia del dip 2 que sería el dip dos que pone la clase activa Exactamente igual vale en este caso mira me he dado cuenta de que no podríamos hacer esto así porque tenemos el ID
+
+00:10:33.480 --> 00:10:43.790
+repetido Tenemos el mismo ID aquí al Deep dog tendríamos que cambiarle el id para que no sea igual pero bueno al final es eso es así es como se clona los
+
+00:10:43.800 --> 00:10:54.590
+los elementos fijaos ahora tengo aquí una all vale una lista que la tengo vacía con el ID puesto all y vamos a ver ahora el documento vale tenemos otra manera de Añadir más html cuando tenemos
+
+00:10:54.600 --> 00:11:05.769
+un documento un trozo del documento es decir con más de un elemento y esto se los fragments los documentales Aquí vamos a poner por ejemplo fragment vale como variable vamos a decirle New
+
+00:11:05.779 --> 00:11:16.970
+document fragment y ahora vamos a crear por ejemplo una lee una lista vale vamos a poner document punto create Element Vamos a ponerle aquí Lee Vamos a ponerle
+
+00:11:16.980 --> 00:11:27.530
+el Inner html vamos a ponerlo igual a uno por ejemplo vale si yo ahora por ejemplo cojo el fragment y le digo a pen y le meto la link ahora tengo este
+
+00:11:27.540 --> 00:11:37.610
+fragmento de documento con una Li Pero esto podría repetirlo Yo podría repetir esto una segunda vez vale y ponerle aquí un dos y ahora este fragment tendría dos
+
+00:11:37.620 --> 00:11:49.670
+leads como esto Quiero poner unas cuantas lead vamos a hacer mejor un bucle vale Y nos dejamos de copiar y pegar tantas veces así que vamos a hacer aquí por ejemplo un bucle vamos a hacer un Ford vale que se repita vamos a
+
+00:11:49.680 --> 00:12:00.769
+decirle alquiler y igual a cero y vamos a ponerle y menor que por ejemplo 3 y vamos a ponerle y más más esto lo metemos dentro del Ford y ahora
+
+00:12:00.779 --> 00:12:11.509
+este uno vamos a ponerle lo que es la y mejor bien ahora tenemos aquí un fragmento que se le están añadiendo varias listas Pues ahora si cogemos nuestra all que teníamos antes hacemos
+
+00:12:11.519 --> 00:12:22.910
+una pent le podemos hacer una pend del fragment y veremos como aquí ya me está saliendo me está saliendo los tres de golpe vale las tres las tres listas que le estamos poniendo aquí al final el documento fragment para cuando tenemos
+
+00:12:22.920 --> 00:12:34.730
+más de un no tenerlos todos guardados dentro de una misma variable en este caso tenemos tres listas tres elementos listas guardados Dentro de este document fragment y a la hora de añadirlo a otro
+
+00:12:34.740 --> 00:12:46.610
+a otro nodo pues se añade todo de golpe todo de una Así que con esto ya hemos visto todos los métodos de javascript moderno para Añadir cosas y modificar lo que es el documento del html en el
+
+00:12:46.620 --> 00:12:50.449
+navegador Así que programador programadora vamos a por la próxima
