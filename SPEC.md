@@ -20,13 +20,13 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 
 | # | Pantalla | Qué hace |
 |---|---|---|
-| 1 | **Login** | El alumno entra con su usuario. En el prototipo, se elige un alumno de demo. |
+| 1 | **Login** | Entra con email y contraseña o con Google. En la demo hay usuarios de prueba de cada rol (alumno, profesor y admin). |
 | 2 | **Home** | Muestra el avatar, el nombre y los cursos. Para cada módulo, una **ruta sugerida** y su estado: dominado, en curso o pendiente. |
 | 3 | **Curso X** | Banner, descripción y lista de módulos. El alumno los recorre en el orden que quiera (no es un itinerario lineal). |
 | 4 | **Módulo Y** | Vídeos del módulo, botón al **tutor IA del módulo** y acceso a los **ejercicios de verificación**. |
 | 5 | **Tutor del módulo** | Agente limitado al temario del módulo: responde dudas y genera resúmenes, tarjetas de estudio e infografías. |
 | 6 | **Tarea / ejercicios** | Ejercicio arriba y respuesta abajo. Tras responder, hay corrección inmediata con un enlace al minuto exacto del vídeo que hay que repasar. |
-| 7 | **Foro** | Hilos de dudas entre alumnos. Está en el diseño, pero queda fuera del alcance del 30/11. |
+| 7 | **Foro** | Temas por clase. Las respuestas que la IA o un profesor validan como buenas dan puntos e insignias. Las tablas están listas; las pantallas quedan para después del 30/11. |
 | T | **Radar del tutor** (vista del tutor) | Alumnos atascados, conceptos que fallan y dudas frecuentes por módulo. |
 
 ---
@@ -53,7 +53,7 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 | H5 | tutor | ver qué alumnos están atascados y en qué conceptos | dedicar mi tiempo a quien lo necesita | **Imprescindible** | El Radar lista los alumnos con fallos repetidos o inactividad, los conceptos más fallados por módulo y un resumen de las dudas frecuentes hechas al tutor IA. |
 | H6 | alumno con experiencia | hacer un diagnóstico rápido de un módulo | no tener que ver contenido que ya domino | **Deseable** | Unas 3 preguntas. Si las acierta, el módulo queda como dominado y baja en la ruta sugerida. |
 | H7 | alumno | ver una infografía de cada concepto | entenderlo de un vistazo | **Deseable** | No es una imagen: la IA elige una de nuestras plantillas (capas, jerarquía, comparativa o pasos) y rellena sus datos, y nosotros la dibujamos en HTML. Es legible a 360 px, se genera una por concepto y, como el material común, solo se publica si una persona la ha revisado. |
-| H8 | alumno | comentar dudas con otros alumnos en un foro | aprender con los compañeros | **Fuera** | Fuera del alcance del prototipo. |
+| H8 | alumno | comentar dudas con otros alumnos en un foro y ganar puntos e insignias por las buenas respuestas | aprender con los compañeros | **Después del 30/11** | Temas por clase. La IA o un profesor validan las respuestas buenas, y el profesor prevalece. Las tablas se crean ya; las pantallas, después. |
 
 ---
 
@@ -82,12 +82,15 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
  │  · agentes           │
  └──────────┬───────────┘
             ▼
- ┌──────────────────────┐
- │ BBDD (PostgreSQL)    │  alumnos, progreso, intentos, conversaciones, material personal, límites
- └──────────────────────┘
-   catalog.json + transcripciones + ejemplos del profesor (ficheros de configuración)
+ ┌──────────────────────┐      ┌───────────────────────────┐
+ │ BBDD (PostgreSQL)    │      │ Cloudflare R2 (UE)        │  imágenes de los cursos
+ │ fuente de verdad:    │      ├───────────────────────────┤
+ │ usuarios, catálogo,  │      │ Stripe (modo test)        │  pago simulado de cursos
+ │ documentos, material,│      ├───────────────────────────┤
+ │ intentos, pagos, foro│      │ YouTube                   │  vídeos (solo se guarda el enlace)
+ └──────────────────────┘      └───────────────────────────┘
 
- Todo desplegado en Vercel con las funciones en París (UE); PostgreSQL alojado en la UE; IA en Scaleway (París).
+ Todo desplegado en Vercel con las funciones en París (UE); PostgreSQL en Neon (UE); IA en Scaleway (París).
 ```
 
 | Pieza | Qué hace |
@@ -97,9 +100,11 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 | **API** | Rutas de Next.js. Gestiona el catálogo, el progreso y los ejercicios, y orquesta los agentes. Está diseñada como API REST documentada para facilitar la integración futura con la plataforma de 480 Academy. |
 | **Filtro de privacidad** | Es código, no IA. Antes de cualquier llamada a la IA sustituye la identidad del alumno por un seudónimo y elimina datos personales del texto libre (emails, teléfonos, DNI, nombres conocidos). |
 | **IA** | Modelo de pesos abiertos alojado por un proveedor europeo. Los datos no salen de la UE. Se accede a través de una capa propia que permite cambiar de proveedor sin tocar el resto. |
-| **BBDD** | PostgreSQL alojado en una región de la UE (Neon o Supabase, conectado desde Vercel). Guarda alumnos, progreso, intentos, conversaciones, material personal y el límite diario de consultas. Se accede con un ORM (Drizzle o Prisma) para no depender del proveedor. |
+| **BBDD** | PostgreSQL en **Neon** (región UE), con **Drizzle** como ORM. Es la **única fuente de verdad**: usuarios, catálogo, transcripciones y apuntes en markdown, material generado, ejercicios, intentos, pagos y foro. Detalle en [`docs/bbdd/README.md`](docs/bbdd/README.md). |
+| **Inicio de sesión** | **Better Auth**, con email y contraseña (guardada como hash) o Google. Roles: alumno, profesor y admin; el visitante es quien no ha entrado. El acceso a un curso se da a un email. |
+| **Ficheros e imágenes** | Bucket de **Cloudflare R2** con jurisdicción UE. La BBDD solo guarda la URL. |
+| **Pagos** | **Stripe en modo test**: Checkout con tarjetas de prueba y un webhook verificado que crea la matrícula. No se mueve dinero real. |
 | **Despliegue** | Vercel, conectado al repositorio de GitHub: cada cambio en `main` se publica solo y cada PR tiene su propia URL de prueba. Las funciones se ejecutan en **París** (`vercel.json`), así que los datos del alumno se procesan en la UE, junto a Scaleway. Da HTTPS, que la PWA necesita para poder instalarse. |
-| **Ficheros de configuración** | `catalog.json` (curso, módulos y vídeos), las transcripciones y los ejemplos de ejercicios del profesor. No hay panel de administración. |
 
 **Integración futura:** la plataforma actual no tiene API. Por eso el prototipo es independiente, pero cada interacción relevante (vídeo visto, ejercicio resuelto, duda planteada) se guarda como un evento con forma **xAPI**, el estándar de registros de aprendizaje. Así se podrá volcar a un LRS o a la plataforma cuando exista una vía de integración.
 
@@ -109,16 +114,13 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 
 ### Entidades principales
 
-| Entidad | Campos clave |
-|---|---|
-| `Alumno` | id, nombre, email, es_menor, consentimiento_tutor_legal |
-| `Curso` / `Modulo` / `Video` | id, título, orden sugerido, url YouTube, transcripción, conceptos |
-| `PlantillaEjercicio` | módulo, tipo, ejemplos del profesor, rúbrica |
-| `Ejercicio` | módulo, concepto, enunciado, solución o rúbrica, vídeo y minuto de referencia, estado (borrador / aprobado) |
-| `Intento` | alumno, ejercicio, respuesta, puntuación, feedback, fecha |
-| `Progreso` | alumno, módulo, estado (pendiente / en curso / dominado / completado), aciertos por concepto |
-| `Conversacion` / `Mensaje` | alumno (seudónimo), módulo, texto, fecha. Caducan a los 90 días |
-| `MaterialGenerado` | módulo, tipo (resumen / tarjetas / infografía), contenido. Se comparte entre alumnos |
+El modelo completo (31 tablas), sus reglas y el formato en que la IA guarda el material están en [`docs/bbdd/README.md`](docs/bbdd/README.md). Resumen:
+
+- **Catálogo:** Categoría → Curso → Módulo → Clase (un vídeo con su transcripción y apuntes en markdown). Los módulos llevan etiquetas que usa el diagnóstico para proponer una ruta personal.
+- **Usuarios:** alumno, profesor y admin, con acceso a cada curso por email (invitación o compra).
+- **Aprendizaje:** ejercicios, intentos, progreso, evaluaciones (diagnóstico, test y examen) y material generado por la IA, que se guarda la primera vez y se reutiliza.
+- **Tutor IA:** conversaciones (caducan a los 90 días) y límite diario de consultas.
+- **Foro:** temas por clase, respuestas validadas por la IA o un profesor, e insignias.
 
 ### Qué sale hacia la IA y qué no
 
@@ -221,7 +223,10 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 | Entra | Por qué |
 |---|---|
 | PWA mobile-first con Home, Curso y Módulo, y ruta sugerida | Es el recorrido de la demo, que se hará desde el teléfono |
-| Catálogo de 4 módulos y 12 vídeos en `catalog.json` | Condición del reto: el catálogo se da por cargado |
+| Catálogo de 4 módulos y 12 vídeos, cargado en la BBDD con el seed (desde `catalog.json`) | Condición del reto: el catálogo se da por cargado |
+| Inicio de sesión (email y contraseña o Google) con usuarios de demo de cada rol | Permite enseñar las vistas de alumno y de profesor, y el acceso a cursos por email |
+| Diagnóstico inicial y ruta personal por etiquetas | Responde a «los itinerarios son iguales para todos» |
+| Compra simulada de un curso con Stripe en modo test | Enseña el circuito completo: compra → matrícula → acceso |
 | Tutor del módulo: dudas, resumen y tarjetas | Es el núcleo de la propuesta de IA |
 | Ejercicios de verificación pregenerados, con corrección y enlace al minuto | Responde a «se saltan vídeos» y a «no sabemos si aprende» |
 | Radar del tutor básico | Es nuestra idea original |
@@ -231,8 +236,8 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 
 | Queda fuera | Por qué |
 |---|---|
-| Login real y gestión de usuarios | Se usan alumnos de demo y no aporta a la demo |
-| Foro | No resuelve ninguno de los cuatro problemas mejor que el tutor y el Radar |
+| Pantallas del foro, insignias y exámenes con nota | Las tablas quedan creadas; las pantallas no caben en 4 horas |
+| Iniciar sesión con Apple | Exige una cuenta de pago de Apple Developer |
 | Notificaciones push y repaso espaciado | Encaja como evolución, pero no cabe en 4 horas |
 | Integración con la plataforma actual | Sin API. Lo dejamos preparado con eventos xAPI |
 | RAG | Con 12 vídeos cabe el temario entero en el contexto. Sí entra en producción por coste |
@@ -256,7 +261,7 @@ Las instrucciones completas de cada agente estarán en `agents/` (Markdown).
 | El proveedor de IA tarda o falla durante la demo | Material pregenerado y respuestas de reserva para las preguntas del guion de la demo |
 | Respuestas pobres del modelo abierto en español | Probarlo esta semana. La capa propia permite cambiar de modelo o de proveedor con un cambio de configuración |
 | Poca experiencia en frontend | Componentes ya hechos y un responsable de la base visual y la navegación |
-| Las tareas paralelas chocan el 30/11 | El contrato (tipos compartidos, formato de `catalog.json` y de los ejercicios) queda cerrado antes de la sesión |
+| Las tareas paralelas chocan el 30/11 | El contrato (tipos compartidos, esquema de la BBDD y formato de los ejercicios) queda cerrado antes de la sesión |
 | La versión desplegada falla el día de la demo | Plan B: la app arrancada en un portátil conectado al punto de acceso del móvil (sin depender de la wifi del aula) |
 
 ### Preguntas abiertas al cliente

@@ -37,6 +37,8 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm run lint` | Revisa el código |
 | `npm test` | Ejecuta los tests |
 | `npm run test:ia` | Prueba la conexión real con el proveedor de IA (necesita la clave en `.env.local`) |
+| `npm run db:up` / `npm run db:down` | Arranca o para la BBDD local en Docker, en el puerto 5433 (ver [docs/bbdd](docs/bbdd/README.md#5-entornos-y-variables-de-entorno)) |
+| `npm run db:validar` | Comprueba el borrador del esquema en una BBDD temporal (no toca tus datos) |
 | `npm run generar:material` | Genera el resumen y las tarjetas comunes de los módulos con transcripciones (`-- m2-css` para uno solo, `-- --forzar` para regenerar). Revisa el resultado y pon `"revisado": true` |
 | `npm run generar:infografias` | Genera una infografía por concepto (mismas opciones). Revisa el resultado y pon `"revisado": true` |
 
@@ -70,9 +72,10 @@ const { texto } = await completar({
 ## Estructura
 
 ```
-data/
-  catalog.json          Curso, módulos, vídeos y conceptos (sin panel de administración)
+data/                   Origen del seed (catálogo, transcripciones, material). Se borrará cuando
+                        el código lea de la BBDD: no añadas ficheros de datos nuevos aquí
 docs/                   Decisiones, API, fotos de los bocetos
+  bbdd/                 Modelo de datos, reglas y variables de entorno (la BBDD manda)
 src/
   app/
     api/                Endpoints de la API (ver docs/api.md)
@@ -91,9 +94,9 @@ Para añadir componentes de shadcn/ui: `npx shadcn@latest add <componente>`.
 
 - El repositorio está conectado a Vercel: cada cambio en `main` se publica solo, y cada PR tiene su propia URL de prueba.
 - Las funciones se ejecutan en **París** (`vercel.json`), así que los datos de los alumnos se procesan en la UE.
-- Las variables de `.env.example` se configuran en el panel de Vercel (Settings → Environment Variables), nunca en el repositorio. `DATABASE_URL` la crea la integración de PostgreSQL (Neon o Supabase, en una región de la UE).
+- Las variables de `.env.example` se configuran en el panel de Vercel (Settings → Environment Variables), nunca en el repositorio. Qué es cada una y de dónde sale: [docs/bbdd/README.md](docs/bbdd/README.md#5-entornos-y-variables-de-entorno).
 - `next.config.ts` incluye en el despliegue `agents/` y `data/`, que el servidor lee al responder.
 
 ## Tecnologías
 
-Next.js 16 (TypeScript) · Tailwind CSS 4 · shadcn/ui · PostgreSQL · Vercel (funciones en París) · modelos de pesos abiertos alojados en la UE (API compatible con OpenAI).
+Next.js 16 (TypeScript) · Tailwind CSS 4 · shadcn/ui · PostgreSQL en Neon (UE) con Drizzle · Better Auth · Cloudflare R2 (UE) · Stripe (modo test) · Vercel (funciones en París) · modelos de pesos abiertos alojados en la UE (API compatible con OpenAI).

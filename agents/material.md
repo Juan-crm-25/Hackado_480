@@ -6,6 +6,8 @@
 
 Genera, **una vez por módulo**, un resumen por apartados y un juego de tarjetas de estudio a partir de las transcripciones del módulo. El resultado se guarda en `data/material/<módulo>.json`, lo revisa una persona y lo ven todos los alumnos.
 
+> **Cambio previsto (#13):** el material pasará a generarse **por clase** y a guardarse en la tabla `material_clase` de la BBDD, siguiendo el flujo de [`docs/bbdd/README.md`](../docs/bbdd/README.md#4-cómo-guarda-la-ia-el-material-que-genera). Mientras tanto, este agente sigue escribiendo el fichero.
+
 ## Modelo y por qué
 
 `gemma-4-26b-a4b-it` en Scaleway (UE), sin razonamiento. Como se ejecuta una vez por módulo y no por alumno, su coste es despreciable (unos 0,002 € por módulo). Si la calidad no basta, se puede cambiar `AI_MODEL_GENERADOR` por un modelo mayor sin tocar el código.
