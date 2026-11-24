@@ -115,14 +115,16 @@ El acceso se da a un email (invitación o compra). Para que nadie se registre co
 
 ```ts
 // src/app/api/clases/[id]/temas/route.ts
-import { ruta } from "@/server/compartido/http/ruta";
+import { ruta } from "@/server/compartido/http";
 import { crearTema } from "@/server/foro/servicio";
-import { esquemaCrearTema } from "@/server/foro/esquemas";
+import { esquemaCrearTema, esquemaParamsClase } from "@/server/foro/esquemas";
 
 // ruta() comprueba la sesión; crearTema() comprueba con requerirAccesoCurso() que el usuario
 // tiene acceso al curso de esa clase (matriculado, profesor del curso o admin).
-export const POST = ruta({ acceso: "usuario", cuerpo: esquemaCrearTema }, ({ usuario, params, cuerpo }) =>
-  crearTema(usuario, params.id, cuerpo),
+// params, query y cuerpo solo existen si se declara su esquema (si no, llegan como undefined).
+export const POST = ruta(
+  { acceso: "usuario", params: esquemaParamsClase, cuerpo: esquemaCrearTema },
+  ({ usuario, params, cuerpo }) => crearTema(usuario, params.id, cuerpo),
 );
 ```
 

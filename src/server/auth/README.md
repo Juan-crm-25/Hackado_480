@@ -6,3 +6,8 @@ Better Auth (email y contraseña, Google) sobre Drizzle. `obtenerSesion()` y niv
 - **Endpoints:** `/api/auth/[...all]`
 
 Patrón y reglas: [docs/arquitectura.md](../../../docs/arquitectura.md).
+
+## Uso
+
+- `obtenerSesion(request)` (`sesion.ts`): `UsuarioSesion | null`. Hasta el paso 2 (Better Auth) siempre devuelve `null`: todos son visitantes.
+- `cumpleAcceso(usuario, nivel)` (`roles.ts`) y los tipos `NivelAcceso`, `RolUsuario` (enum `rol_usuario` de la BBDD) y `UsuarioSesion`. Lo usa `ruta()`; no hace falta llamarlo desde los endpoints.
