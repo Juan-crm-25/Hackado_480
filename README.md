@@ -89,12 +89,15 @@ const { texto } = await completar({
 data/                   Origen del seed (catálogo, transcripciones, material). Se borrará cuando
                         el código lea de la BBDD: no añadas ficheros de datos nuevos aquí
 docs/                   Decisiones, API, fotos de los bocetos
+  arquitectura.md       Capas de la API, permisos y mapa de endpoints (léelo antes de crear uno)
   bbdd/                 Modelo de datos, reglas y variables de entorno (la BBDD manda)
 drizzle/                Migraciones SQL generadas con npm run db:generate (no se editan a mano)
 src/
   app/
-    api/                Endpoints de la API (ver docs/api.md)
+    api/                Endpoints: solo adaptadores HTTP con ruta() (ver docs/arquitectura.md)
     page.tsx            Pantalla de inicio (provisional, ver #14)
+  server/               Lógica del servidor por dominio: auth, usuarios, catalogo, matriculas,
+                        pagos, aprendizaje, evaluaciones, material, tutor, foro, recompensas, radar
   components/ui/        Componentes de shadcn/ui
   lib/
     types.ts            Tipos compartidos: EL CONTRATO. Avisa antes de cambiarlos

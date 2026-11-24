@@ -28,6 +28,17 @@ The database is the single source of truth. Full reference: [`docs/bbdd/README.m
 - **Run only the tests the change affects**, not the whole suite on every change:
   - the test file you wrote or changed: `npx vitest run src/lib/db/client.test.ts`
   - tests that import the files you changed: `npx vitest related --run <changed files>`
-  - code that reads data files (VTT, JSON) is not in the import graph: find its tests by name (e.g. `grep -rl transcripcion src --include=*.test.ts`) and run them.
+  - code that reads data files (VTT, JSON) is not in the import graph: search the test files for the name of the module or data you changed and run those.
 - Run the full suite (`npm test`), `npx tsc --noEmit` and `npm run lint` once before opening or updating a PR.
-- Tests that need the database use a throwaway database in the local Docker container, never the developer's `hackado` database and never production.
+- Tests that need the database use a throwaway database in the local Docker container `hackado-db` (`npm run db:up`), created and dropped by the test itself, never the developer's `hackado` database and never production. Setup: [`docs/bbdd/README.md`](docs/bbdd/README.md), section 5.
+
+## API architecture (read before creating an endpoint)
+
+Full reference: [`docs/arquitectura.md`](docs/arquitectura.md).
+
+- `src/app/api/**/route.ts` is a thin HTTP adapter built with `ruta()` from `src/server/compartido/http`: session → access level → Zod validation → service → JSON. No business logic, no DB queries, no AI calls there.
+- Business logic lives in `src/server/<module>/servicio.ts`, DB queries only in `src/server/<module>/repositorio.ts`, input schemas in `esquemas.ts`. Every file in `src/server/` starts with `import "server-only"`.
+- Two separate checks: role (`publico`, `usuario`, `alumno`, `profesor`, `admin`; admin ⊃ profesor ⊃ alumno) in `ruta()`; ownership/enrollment of the specific resource in the service (`requerirAccesoCurso()`). Missing session → 401, not allowed → 403.
+- `src/proxy.ts` (Next 16 name for middleware) only does optimistic cookie checks and redirects for pages. It is never the authorization layer.
+- Errors are `ErrorApp` with a `codigo`; `ruta()` maps them to HTTP status and `{ error, codigo, detalles? }`.
+- Existing endpoints keep working; migrate them to this structure one per PR without breaking `src/lib/types.ts`.
