@@ -141,6 +141,24 @@ docker compose down -v   # lo para y BORRA los datos locales
 - Los comandos `db:generate`, `db:migrate` y `db:studio` leen `DATABASE_URL` de `.env.local` (o del entorno, si ya está definida).
 - **Driver en producción:** el cliente usa `prepare: false`, porque la cadena *pooled* de Neon no admite sentencias preparadas.
 
+### Sembrar los datos de la demo
+
+```bash
+npm run db:seed                            # BBDD local (DATABASE_URL de .env.local)
+SEED_PERMITIR_REMOTO=1 npm run db:seed     # otra BBDD (p. ej., Neon), solo a propósito
+```
+
+- **Qué crea:** la categoría `programacion`; el curso de `data/catalog.json` (gratis y publicado) con sus 4 módulos, sus conceptos y una clase por vídeo (`video_url` de YouTube); **10 alumnos** (los dos primeros son los de `src/lib/datos-prueba.ts`: Lucía `lucia@demo.test` y Pablo `pablo@demo.test`), **1 profesor** (`profesora@demo.test`) y **1 admin** (`admin@demo.test`), todos con el email verificado; y la matrícula por invitación de los alumnos y del profesor (este, como `profesor` del curso). El admin no necesita matrícula.
+- **No crea** transcripciones ni documentos (los importará el conversor), ni cuentas ni sesiones (llegan con el login).
+- **Se puede repetir:** inserta o actualiza por clave natural (`slug`, `email`, `(curso, email)`…), así que ejecutarlo dos veces deja los mismos datos.
+- **Solo la BBDD local:** se niega si el host de `DATABASE_URL` no es `localhost` o `127.0.0.1`, salvo con `SEED_PERMITIR_REMOTO=1`.
+- Código: `scripts/seed.ts` (conexión) y `src/lib/db/seed/` (datos y `sembrar()`).
+- El **límite diario de IA** (`uso_ia`, un contador por alumno y día UTC) y el **material personal** (`material_personal`, los 20 más recientes por alumno) ya se guardan en la BBDD. `/api/tutor` y `/api/material-personal` responden 404 si falta el seed.
+
+### Tests con BBDD
+
+Los tests de integración crean su propia BBDD en el Docker local (`hackado_test_…`), le aplican las migraciones de `drizzle/`, la usan y la borran: `crearBdPrueba()` en `src/lib/db/test-utils.ts`. Si el Docker no está arrancado, esos tests se saltan con un aviso. Nunca tocan la BBDD `hackado`.
+
 ### Variables
 
 Las claves van en `.env.local` (en tu ordenador) y en Vercel (*Settings → Environment Variables*). **Nunca en el repositorio.** Lista completa en `.env.example`.

@@ -28,8 +28,8 @@ El mismo formato que el material común: `{"resumen": [...]}` o `{"tarjetas": [.
 
 - Solo el temario del módulo. Si el enfoque pide algo que no está, se ciñe al temario.
 - **No se revisa**: se muestra como «Generado por IA».
-- Se guarda por alumno (los 20 últimos). Hoy en memoria; con #13, en la BBDD.
-- Al Radar (#5) solo le llega **qué concepto y qué tipo** se pidió, nunca el texto del enfoque.
+- Se guarda en la tabla `material_personal`: los 20 más recientes de cada alumno (al guardar uno nuevo se borran los más antiguos). Código: `src/server/material/repositorio.ts`.
+- Al Radar (#5) solo le debe llegar **qué concepto y qué tipo** se pidió (columnas de `material_personal`), nunca el texto del enfoque.
 
 ## Instrucciones (prompt de sistema)
 

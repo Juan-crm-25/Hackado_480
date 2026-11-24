@@ -40,6 +40,7 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm run db:up` / `npm run db:down` | Arranca o para la BBDD local en Docker, en el puerto 5433 (ver [docs/bbdd](docs/bbdd/README.md#5-entornos-y-variables-de-entorno)) |
 | `npm run db:generate` | Genera la migración SQL en `drizzle/` a partir del esquema (`src/lib/db/schema/`) |
 | `npm run db:migrate` | Aplica las migraciones pendientes a la BBDD de `DATABASE_URL` |
+| `npm run db:seed` | Crea los datos de la demo (curso, 10 alumnos, profesor y admin). Se puede repetir. Solo en la BBDD local, salvo `SEED_PERMITIR_REMOTO=1` (ver [docs/bbdd](docs/bbdd/README.md#sembrar-los-datos-de-la-demo)) |
 | `npm run db:studio` | Abre Drizzle Studio para ver y editar los datos |
 | `npm run generar:material` | Genera el resumen y las tarjetas comunes de los módulos con transcripciones (`-- m2-css` para uno solo, `-- --forzar` para regenerar). Revisa el resultado y pon `"revisado": true` |
 | `npm run generar:infografias` | Genera una infografía por concepto (mismas opciones). Revisa el resultado y pon `"revisado": true` |

@@ -1,5 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { demandaDeMaterial, guardarMaterialPersonal, listarMaterialPersonal, reiniciarMaterialPersonal } from "../material-personal";
+import { describe, expect, it, vi } from "vitest";
 import type { Modulo, PeticionMaterialPersonal } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
 import { ErrorMaterial, generarMaterialPersonal } from "./material-personal";
@@ -70,24 +69,5 @@ describe("generarMaterialPersonal", () => {
     await expect(
       generarMaterialPersonal({ modulo, peticion: peticion(), nombresOcultos: [] }, deps(JSON.stringify({ tarjetas: tarjetas.slice(0, 2) }))),
     ).rejects.toThrow(/tarjetas/);
-  });
-});
-
-describe("almacén del material personal", () => {
-  beforeEach(() => reiniciarMaterialPersonal());
-
-  it("guarda por alumno, del más reciente al más antiguo, y registra la demanda sin el texto libre", () => {
-    const base = { alumnoId: "a1", moduloId: "m2-css", tipo: "tarjetas" as const, nivel: "normal" as const, generado: "" };
-    guardarMaterialPersonal({ ...base, id: "1", conceptoId: "css-especificidad", enfoque: "secreto" });
-    guardarMaterialPersonal({ ...base, id: "2", conceptoId: "css-especificidad" });
-    guardarMaterialPersonal({ ...base, id: "3", alumnoId: "a2", moduloId: "m1-html" });
-
-    expect(listarMaterialPersonal("a1").map((m) => m.id)).toEqual(["2", "1"]);
-    expect(listarMaterialPersonal("a1", "m1-html")).toEqual([]);
-    expect(demandaDeMaterial()).toEqual([
-      { moduloId: "m2-css", conceptoId: "css-especificidad", tipo: "tarjetas", peticiones: 2 },
-      { moduloId: "m1-html", conceptoId: null, tipo: "tarjetas", peticiones: 1 },
-    ]);
-    expect(JSON.stringify(demandaDeMaterial())).not.toContain("secreto");
   });
 });
