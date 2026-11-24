@@ -156,7 +156,8 @@ Las claves van en `.env.local` (en tu ordenador) y en Vercel (*Settings → Envi
 | `R2_BUCKET` | Nombre del bucket | El que creéis, con jurisdicción UE |
 | `R2_PUBLIC_URL` | URL pública de las imágenes (la que se guarda en `curso_imagen.url`) | Dominio público del bucket (`r2.dev` o uno propio) |
 | `STRIPE_SECRET_KEY` | Crear sesiones de Checkout | Stripe en **modo test** → *Developers → API keys* (`sk_test_…`) |
-| `STRIPE_WEBHOOK_SECRET` | Comprobar que el aviso de pago viene de Stripe | En local, `stripe listen --forward-to localhost:3000/api/stripe/webhook` (`whsec_…`); en Vercel, el del webhook creado en el panel |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Caché compartida (opcional) | Vercel → *Storage → Marketplace → Upstash Redis* (región UE): se añaden solas. Sin ellas, la app usa caché en memoria |
+| `STRIPE_WEBHOOK_SECRET` | Comprobar que el aviso de pago viene de Stripe | En local, `stripe listen --forward-to localhost:3000/api/pagos/webhook` (`whsec_…`); en Vercel, el del webhook creado en el panel |
 
 Better Auth, el SDK de R2 y Stripe **aún no están instalados**: se instalan en la PR que use cada uno. Iniciar sesión con Apple queda fuera del MVP: exige una cuenta de pago de Apple Developer.
 
@@ -164,7 +165,7 @@ Better Auth, el SDK de R2 y Stripe **aún no están instalados**: se instalan en
 
 1. «Comprar» crea un `pedido` en estado `pendiente` y una sesión de **Stripe Checkout** con el precio de `curso.precio_centimos`.
 2. El alumno paga en la página de Stripe con una tarjeta de prueba (`4242 4242 4242 4242`, fecha futura, cualquier CVC). No se mueve dinero real.
-3. Stripe llama al webhook. El servidor **comprueba la firma** con `STRIPE_WEBHOOK_SECRET`, marca el pedido como `pagado` y crea la `matricula` con `origen = 'compra'`.
+3. Stripe llama al webhook. El servidor **comprueba la firma** con `STRIPE_WEBHOOK_SECRET`, marca el pedido como `pagado` y crea la `matricula` con `origen = 'compra'`, en una sola transacción y sin repetir nada si Stripe reenvía el aviso (detalle en [`docs/arquitectura.md`](../arquitectura.md#webhook-de-stripe)).
 
 ---
 

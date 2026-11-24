@@ -1,6 +1,6 @@
 # auth
 
-Better Auth (email y contraseña, Google) sobre Drizzle. `obtenerSesion()`, niveles de acceso (publico, usuario, alumno, profesor, admin) y `requerirAccesoCurso()`. Los emails se guardan en minúsculas.
+Better Auth (email y contraseña, Google) sobre Drizzle. `obtenerSesion()` y niveles de acceso globales (publico, usuario, alumno, profesor, admin). Los emails se guardan en minúsculas. Los permisos sobre un curso concreto NO van aquí: están en `matriculas`.
 
 - **Tablas:** usuario, cuenta, sesion, verificacion
 - **Endpoints:** `/api/auth/[...all]`

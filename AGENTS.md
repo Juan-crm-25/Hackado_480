@@ -38,7 +38,8 @@ Full reference: [`docs/arquitectura.md`](docs/arquitectura.md).
 
 - `src/app/api/**/route.ts` is a thin HTTP adapter built with `ruta()` from `src/server/compartido/http`: session → access level → Zod validation → service → JSON. No business logic, no DB queries, no AI calls there.
 - Business logic lives in `src/server/<module>/servicio.ts`, DB queries only in `src/server/<module>/repositorio.ts`, input schemas in `esquemas.ts`. Every file in `src/server/` starts with `import "server-only"`.
-- Two separate checks: role (`publico`, `usuario`, `alumno`, `profesor`, `admin`; admin ⊃ profesor ⊃ alumno) in `ruta()`; ownership/enrollment of the specific resource in the service (`requerirAccesoCurso()`). Missing session → 401, not allowed → 403.
+- Two separate checks: role (`publico`, `usuario`, `alumno`, `profesor`, `admin`; admin ⊃ profesor ⊃ alumno) in `ruta()`; ownership/enrollment of the specific resource in the service (`requerirAccesoCurso()`, `requerirProfesorDelCurso()` from `src/server/matriculas`). The global `profesor` role never grants access to every course: teacher endpoints also check the teacher teaches THAT course. `admin` always passes both checks, on every course, without an enrollment. Missing session → 401, not allowed → 403.
+- Enrollments are keyed by email and only linked to a user whose email is verified. The Stripe webhook is idempotent and transactional. Forum AI validation runs with `after()` and never overwrites a teacher's decision. Details: `docs/arquitectura.md`.
 - `src/proxy.ts` (Next 16 name for middleware) only does optimistic cookie checks and redirects for pages. It is never the authorization layer.
 - Errors are `ErrorApp` with a `codigo`; `ruta()` maps them to HTTP status and `{ error, codigo, detalles? }`.
 - Existing endpoints keep working; migrate them to this structure one per PR without breaking `src/lib/types.ts`.
