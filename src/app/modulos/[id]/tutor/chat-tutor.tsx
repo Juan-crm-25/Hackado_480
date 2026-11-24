@@ -1,10 +1,13 @@
 "use client";
 
+import { Info } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { EstadoCargando, EstadoVacio } from "@/components/estado";
 import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ALUMNO_DEMO_ID } from "@/lib/formato";
+import { mensajeDeError } from "@/lib/peticiones";
 import type { ErrorApi, Mensaje, PeticionTutor, RespuestaTutor } from "@/lib/types";
 
 type Burbuja = Mensaje & { fueraDeTemario?: boolean; error?: boolean };
@@ -25,7 +28,8 @@ export function ChatTutor({
   const finRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    finRef.current?.scrollIntoView({ behavior: "smooth" });
+    const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    finRef.current?.scrollIntoView({ behavior: reducido ? "auto" : "smooth" });
   }, [mensajes, enviando]);
 
   async function enviar(pregunta: string) {
@@ -51,8 +55,7 @@ export function ChatTutor({
       setMensajes((prev) => [...prev, { ...datos.mensaje, fueraDeTemario: datos.fueraDeTemario }]);
       if (typeof datos.consultasRestantes === "number") setRestantes(datos.consultasRestantes);
     } catch (e) {
-      const mensaje = e instanceof Error && e.message !== "Failed to fetch" ? e.message : "Sin conexión. Inténtalo de nuevo.";
-      setMensajes((prev) => [...prev, { rol: "tutor", texto: mensaje, error: true }]);
+      setMensajes((prev) => [...prev, { rol: "tutor", texto: mensajeDeError(e), error: true }]);
     } finally {
       setEnviando(false);
     }
@@ -60,28 +63,37 @@ export function ChatTutor({
 
   return (
     <>
-      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4" aria-live="polite">
+      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
         {mensajes.length === 0 && (
-          <div className="flex flex-col gap-3">
-            <p className="text-sm text-muted-foreground">
-              Pregúntame lo que quieras sobre este módulo. Solo respondo con lo que se explica en sus vídeos, y te digo en qué
-              minuto está.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {sugerencias.map((s) => (
-                <Button key={s} variant="outline" size="sm" className="h-auto whitespace-normal text-left" onClick={() => enviar(s)}>
-                  {s}
-                </Button>
-              ))}
-            </div>
-          </div>
+          <EstadoVacio
+            acciones={
+              <div className="flex flex-wrap gap-2">
+                {sugerencias.map((s) => (
+                  <Button
+                    key={s}
+                    variant="outline"
+                    className="h-auto min-h-11 py-2 text-left whitespace-normal"
+                    onClick={() => enviar(s)}
+                  >
+                    {s}
+                  </Button>
+                ))}
+              </div>
+            }
+          >
+            Pregúntame lo que quieras sobre este módulo. Solo respondo con lo que se explica en sus vídeos, y te digo en qué
+            minuto está.
+          </EstadoVacio>
         )}
 
-        {mensajes.map((m, i) => (
-          <BurbujaMensaje key={i} mensaje={m} videos={videos} />
-        ))}
+        {/* Solo la conversación es región viva (role="log"): se anuncian los mensajes nuevos, no toda la pantalla. */}
+        <div role="log" aria-label="Conversación con el tutor" className="flex flex-col gap-3">
+          {mensajes.map((m, i) => (
+            <BurbujaMensaje key={i} mensaje={m} videos={videos} />
+          ))}
+        </div>
 
-        {enviando && <p className="text-sm text-muted-foreground">El tutor está escribiendo…</p>}
+        {enviando && <EstadoCargando texto="El tutor está escribiendo…" />}
         <div ref={finRef} />
       </div>
 
@@ -110,7 +122,7 @@ export function ChatTutor({
           />
           {restantes !== null && <p className="text-xs text-muted-foreground">Te quedan {restantes} preguntas hoy</p>}
         </div>
-        <Button type="submit" className="h-11" disabled={enviando || !texto.trim()}>
+        <Button type="submit" variant="accent" disabled={enviando || !texto.trim()}>
           Enviar
         </Button>
       </form>
@@ -118,7 +130,7 @@ export function ChatTutor({
   );
 }
 
-function BurbujaMensaje({ mensaje, videos }: { mensaje: Burbuja; videos: VideoResumen[] }) {
+export function BurbujaMensaje({ mensaje, videos }: { mensaje: Burbuja; videos: VideoResumen[] }) {
   const esAlumno = mensaje.rol === "alumno";
   const estilo = esAlumno
     ? "self-end bg-primary text-primary-foreground"
@@ -129,7 +141,14 @@ function BurbujaMensaje({ mensaje, videos }: { mensaje: Burbuja; videos: VideoRe
         : "self-start bg-muted";
 
   return (
-    <div className={`flex max-w-[85%] flex-col gap-2 rounded-2xl px-4 py-3 text-sm whitespace-pre-wrap ${estilo}`}>
+    <div className={`flex max-w-[85%] flex-col gap-2 rounded-lg px-4 py-3 text-sm whitespace-pre-wrap ${estilo}`}>
+      {/* Marca con texto e icono (no solo con color) las respuestas fuera del temario. */}
+      {!esAlumno && !mensaje.error && mensaje.fueraDeTemario && (
+        <p className="flex items-center gap-1 text-xs font-semibold">
+          <Info className="size-3.5 shrink-0" aria-hidden />
+          Fuera del temario
+        </p>
+      )}
       <p>
         {/* Los trozos entre `comillas invertidas` son código: se muestran en monoespaciada. */}
         <TextoConCodigo texto={mensaje.texto} />

@@ -5,6 +5,7 @@ Prototipo para **480 Academy**: una web móvil (PWA) en la que cada módulo del 
 - Diseño completo: [SPEC.md](SPEC.md)
 - Decisiones: [docs/decisiones.md](docs/decisiones.md)
 - Contrato de la API: [docs/api.md](docs/api.md)
+- Guía de estilo (colores, tipografía, componentes): [docs/estilo.md](docs/estilo.md)
 - Cómo trabajamos: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Bitácora: [BITACORA.md](BITACORA.md)
 - Tablero: [GitHub Projects](https://github.com/users/Juan-crm-25/projects/3)

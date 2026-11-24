@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     // Carga .env.local solo para la prueba de conexión real (npm run test:ia).
     env: mode === "ia" ? loadEnv("development", process.cwd(), "") : {},
   },
