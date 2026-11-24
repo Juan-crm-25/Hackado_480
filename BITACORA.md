@@ -100,4 +100,4 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 - ~~Fusionar la PR #25 (infografías).~~ Hecho.
 - **#11:** vídeos reales y transcripciones. Hoy solo el módulo CSS tiene contenido, y es de prueba.
 - Resto del backlog: ejercicios (#3, #4), Radar (#5), diagnóstico (#6), BBDD (#13), pantallas y PWA (#14), presentación (#17).
-- Material personal y límite diario se guardan en memoria hasta que exista la BBDD (#13).
+- ~~Material personal y límite diario se guardan en memoria hasta que exista la BBDD (#13).~~ Hecho: tablas `material_personal` y `uso_ia`.

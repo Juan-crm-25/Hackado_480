@@ -12,11 +12,11 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/modulos/:id/ejercicios` | `EjercicioPublico[]` (sin solución ni rúbrica) | 🧪 Prueba | #4 banco, #3 selección |
 | `POST /api/intentos` | `Intento` | 🧪 Test corregido por código; abiertas pendientes | #3 corrector, #13 guardar |
 | `GET /api/progreso?alumnoId=` | `Progreso[]` | 🧪 Prueba | #13 |
-| `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). Solo m2-css tiene transcripciones (de prueba) | #11 transcripciones reales, #13 alumnos reales |
+| `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). Límite diario en la tabla `uso_ia`. Necesita el seed (`npm run db:seed`); si no, 404. Solo m2-css tiene transcripciones (de prueba) | #11 transcripciones reales, #13 login |
 | `GET /api/radar` | `InformeRadar` | 🧪 Prueba | #5 |
 | `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (lee `data/material/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #2 |
 | `POST /api/material-personal` | `RespuestaMaterialPersonal` | ✅ Real (IA). Cuenta para el límite diario. Errores 400/404/422/429/502 | #2 |
-| `GET /api/material-personal?alumnoId=&moduloId=` | `MaterialPersonal[]` | ✅ En memoria hasta #13 | #13 |
+| `GET /api/material-personal?alumnoId=&moduloId=` | `MaterialPersonal[]` | ✅ Real (tabla `material_personal`). Necesita el seed (`npm run db:seed`); si no, 404 | #13 login |
 | `GET /api/modulos/:id/infografias` | `InfografiasModulo` | ✅ Real (lee `data/infografias/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #7 |
 
 ## Ejemplos

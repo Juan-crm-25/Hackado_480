@@ -3,13 +3,14 @@ import { consumirConsulta } from "@/lib/ai/limite";
 import { preguntarAlTutor } from "@/lib/agentes/tutor";
 import { getCurso, getModulo } from "@/lib/catalogo";
 import { alumnosDemo } from "@/lib/datos-prueba";
+import { buscarUsuarioDemo, MENSAJE_SIN_SEED } from "@/server/matriculas/demo";
 import type { ErrorApi, PeticionTutor, RespuestaTutor } from "@/lib/types";
 
 const MAX_CARACTERES = 1000;
 
 /**
  * POST /api/tutor — pregunta al tutor del módulo (issue #1). Ver agents/tutor.md.
- * Los alumnos salen de los datos de prueba hasta que exista la BBDD (#13).
+ * Hasta el login, el alumno llega en `alumnoId` y se busca en la BBDD con el puente de src/server/matriculas/demo.ts.
  */
 export async function POST(req: Request) {
   let peticion: PeticionTutor;
@@ -30,8 +31,10 @@ export async function POST(req: Request) {
   if (!modulo) return error(`No existe el módulo "${peticion.moduloId}"`, 404);
   const alumno = alumnosDemo.find((a) => a.id === peticion.alumnoId);
   if (!alumno) return error(`No existe el alumno "${peticion.alumnoId}"`, 404);
+  const usuario = await buscarUsuarioDemo(alumno.id);
+  if (!usuario) return error(`El alumno "${alumno.id}" no está en la base de datos. ${MENSAJE_SIN_SEED}`, 404);
 
-  const limite = consumirConsulta(alumno.id);
+  const limite = await consumirConsulta(usuario.id);
   if (!limite.permitido) {
     return error("Has llegado al límite de preguntas de hoy. Mañana podrás seguir preguntando.", 429);
   }
