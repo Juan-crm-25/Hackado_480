@@ -1,26 +1,135 @@
 WEBVTT
 
 NOTE
-TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
-Se sustituirá por la transcripción real del vídeo (#11).
+Transcripción de «Colores, tipografía y unidades» (https://www.youtube.com/watch?v=4CC1wxHQQ5k).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
 
-00:00:00.000 --> 00:00:14.000
-Vamos a ver cómo se escriben los colores, cómo se elige la tipografía y qué unidades de medida tenemos en CSS.
+00:00:00.000 --> 00:00:08.930
+en este vídeo perteneciente al curso de css de este canal vamos a ver los colores programador programador a mi nombre es kiko palmarés y vamos a
 
-00:00:14.000 --> 00:00:40.000
-Los colores se pueden escribir por nombre, como red; en hexadecimal, como #ff0000; o con rgb, como rgb(255, 0, 0). Con rgba o con una barra en rgb podemos añadir transparencia.
+00:00:15.040 --> 00:00:27.779
+los colores se especifican usando los nombres de los colores o también se pueden utilizar en los modelos de color rgb hexadecimal hsr en fin tenemos varios que recibe a oeste de s a
 
-00:00:40.000 --> 00:01:05.000
-Para el texto usamos font-family, que es la lista de fuentes por orden de preferencia, font-size para el tamaño y font-weight para el grosor. Terminad siempre la lista con una familia genérica, como sans-serif.
+00:00:27.789 --> 00:00:37.950
+y vamos a ver nombres de colores el primera primera forma de nombre de crear un color o sea de utilizar un color es utilizando su nombre directamente su nombre en inglés especificaron color por ejemplo aquí
 
-00:01:05.000 --> 00:01:30.000
-Sobre las unidades: px son píxeles, una unidad absoluta. Sirve para bordes finos o detalles que no deben cambiar de tamaño.
+00:00:37.960 --> 00:00:49.970
+tenemos unos cuantos en producto meditó el slate blue violet todos estos pues son nombres de colores que soporta html y podemos utilizarlos en css y por
 
-00:01:30.000 --> 00:02:00.000
-Las unidades relativas se adaptan. rem es relativo al tamaño de letra de la raíz de la página, normalmente 16px, así que 2rem son 32px. em es relativo al tamaño de letra del propio elemento, y se acumula si anidas elementos.
+00:00:49.980 --> 00:01:00.890
+ejemplo tenemos más de 140 nombres no perdón 140 nombres de color soportados te tienes que saber todos pues no porque directamente los seres que se utilizan ya te los sugieren cuando empieza a
 
-00:02:00.000 --> 00:02:25.000
-El porcentaje es relativo al elemento padre. Y vw y vh son relativos al tamaño de la pantalla: 100vw es todo el ancho de la ventana.
+00:01:00.900 --> 00:01:11.719
+escribir los pares pero que sepáis que podemos utilizar los colores que ya tenemos predeterminados con sus nombres color de fondo puedes cambiar el color de fondo con la propiedad para ground color tenemos en
 
-00:02:25.000 --> 00:02:50.000
-Mi recomendación: usad rem para tamaños de letra y espacios, porque respeta el tamaño de letra que el usuario haya elegido en su navegador. Eso es clave para la accesibilidad.
+00:01:11.729 --> 00:01:21.920
+cs la propiedad vaga un color que podemos ponerle ahí en este caso tenemos puesto el nombre del color y de esa manera el elemento html lo que hace que cambia el color de la cara con el color
+
+00:01:21.930 --> 00:01:32.930
+de fondo color del texto podemos cambiar el color del texto con la propiedad color ahí tenemos un ejemplo en por ejemplo en h1 y en 2h y en 2 p es el que tuvimos la primera color y le damos
+
+00:01:32.940 --> 00:01:43.790
+diferentes colores y esto pues nos cambia el color del texto podemos cambiar también el color del borde utilizando la propiedad border en este caso tenemos la propiedad borde que estamos ese ejemplo de ahí voy a leer el
+
+00:01:43.800 --> 00:01:55.190
+ejemplo que pone border 2 pixel solid es calvo le estamos dando dos píxeles de ancho que sea un color sólido y le estamos después dando el color siempre hay que ponerlo en este orden para que
+
+00:01:55.200 --> 00:02:08.120
+funcione y de esa manera podemos darle color a los bordes de nuestros elementos html valores de color hemos dicho que tenemos varias formas de dar el mismo color en css en css los colores también
+
+00:02:08.130 --> 00:02:20.509
+se pueden especificar utilizando valores de rgb valores hexadecimal es valores hs y valores rgb hay valores hsd a al aquí tenemos un ejemplo con el mismo color en
+
+00:02:20.519 --> 00:02:30.770
+diferente este es el color tomato y es el mismo podrías utilizar la palabra tomato directamente o podríamos utilizar los valores de rgb queremos ahí o los valores extra decimal o o lo que sea
+
+00:02:30.780 --> 00:02:41.330
+todo el mismo todo es el mismo color con diferentes valores por sus valores los soporta css y este mes rgb responde a esta fórmula que tenemos aquí arriba que es rgb y el primer lugar
+
+00:02:41.340 --> 00:02:51.740
+ponemos un valor para el color rojo en segundo lugar ponemos un valor para el verde y en tercer lugar ponemos un valor para el color azul cada parámetro rojo verde y azul define la intensidad del
+
+00:02:51.750 --> 00:03:02.810
+color entre 0 y 255 donde 0 pues es 0 de intensidad sería pues nada negro y 255 sería a tope de ese color es decir si ponemos 255 en el
+
+00:03:02.820 --> 00:03:14.180
+rojo quiere decir que está el rojo el balón del rojo a tope y al final el color que se muestra es una mezcla de los tres colores estos son como los tres colores primarios donde se mezclan y forman el resto de colores vale tenemos
+
+00:03:14.190 --> 00:03:24.650
+por ejemplo tenemos ahí tres ejemplos no de rgb 250 y 500 esto significaría que es rojo por qué porque tenemos el rojo al tope que es 255 el verde lo tenemos a
+
+00:03:24.660 --> 00:03:36.050
+0 decir no tenemos verde el azul también no tenemos a 0 es decir no tengo azul pues que nos queda pues rojo sólo nos queda rojo entonces se muestra de color rojo después tenemos el rgb 000
+
+00:03:36.060 --> 00:03:48.260
+esto es negro porque no tenemos ni rojo ni verde ni azul tenemos no tenemos nada por lo tanto es 0 y el blanco como es pues con los tres colores a tope cuales tenemos 255 255 y 255 esto es blanco
+
+00:03:48.270 --> 00:03:59.930
+ahora y tenemos tres ejemplos aquí tenemos algunos ejemplos más para que los veáis en diferentes colores vale con diferentes valores ahí podemos echar un vistazo y aquí también tenemos algunos ejemplos con las escalas de
+
+00:03:59.940 --> 00:04:13.460
+grises como veis siempre que sea un gris o blanco o negro los valores que tenemos de azul de rojo y de verde son los mismos ahí tenemos por ejemplo ciento veinte 120 120 240 140 140 todos son
+
+00:04:13.470 --> 00:04:24.730
+valores de chrysler cada vez que queráis poner un valor de gris siempre son los mismos valores en los tres en los tres colores después tenemos por otro lado el hexa decimal vale que responde a esa fórmula que podemos ver ahí arriba de
+
+00:04:24.740 --> 00:04:35.990
+r&amp;b de que al final son rojo verde y azul son los valores extra decimales entre 0 0 y ff que es lo mismo que teníamos antes de 270 y dos periodos 155
+
+00:04:36.000 --> 00:04:47.300
+del 0 0 ese es el cero de antes del egb y el ffs de 255 es lo que esta vez pasado a hexadecimal para ahí tenemos algunos ejemplos por ejemplo el ff 0000
+
+00:04:47.310 --> 00:04:58.399
+es rojo todo lleno de fs es blanco y todo de cero es negro posiblemente sea el que más utiliza al menos yo personalmente utilizo más el formato exa a poner los colores es el que más me
+
+00:04:58.409 --> 00:05:09.230
+gusta ahí podemos ver ahora por pantalla algunos otros ejemplos para que también le echéis un vistazo y vamos a ver ahora los ejemplos en escala de grises ahí como veis pues vuelve a ser también los
+
+00:05:09.240 --> 00:05:20.689
+tres valores suelen tener el mismo valor bueno su entreno tienen el mismo valor vamos a pasar ahora al otro modo de color al hs l hs l responde a la fórmula que tenemos allá arriba de tono
+
+00:05:20.699 --> 00:05:32.290
+saturación y luminosidad donde todo no es una rueda de color que va desde 0 hasta 360 grados 0 es el color rojo 120 es el color verde y 240 es el color azul
+
+00:05:32.300 --> 00:05:43.040
+saturación es un porcentaje de que va desde 0% que ir hasta el 100% que es el máximo y luminosidad también es un porcentaje que va desde 0% es negro
+
+00:05:43.050 --> 00:05:53.839
+hasta el 100% que es blanco aquí tenemos varios ejemplos con este modelo de color también ahí le podéis echar un vistazo y aquí podemos ver un ejemplo donde modificamos la saturación
+
+00:05:53.849 --> 00:06:03.950
+de un mismo color tenemos el color rojo que era el color cero recordáis que era una ruleta de color que va desde cero atrás 230 donde 0 es el rojo vale pues tenemos el color rojo y en
+
+00:06:03.960 --> 00:06:14.510
+estos dos éstos es el mismo color es el mismo color rojo pero estamos cambiando el parámetro de medio que trata saturación primero tenemos 100 80 60 40 20 0 en fin vamos modificando la
+
+00:06:14.520 --> 00:06:25.790
+saturación aquí podemos ver un ejemplo en lo que le que modificamos es la luminosidad volvemos a tener dentro de los casos es el color rojo es el mismo color pero en este caso le modificamos lo que es la luminosidad del primero
+
+00:06:25.800 --> 00:06:37.700
+ponemos el cero que es negro la universidad pero no hay luminosidad y en el último podemos ver que le ponemos luminosidad 100 que esto se convierte en black y ahora podemos a ver aquí la escala de grises donde todo es es ceros
+
+00:06:37.710 --> 00:06:49.070
+a la saturación es cero entonces eso es gris y el viento no nos da un poco igual la saturación me trató de ciertas mientras la saturación sea cero pues pase más vamos a tener ahí nuestra
+
+00:06:49.080 --> 00:07:00.830
+escala de grises y después es ir jugando con la luminosidad vamos a ver el hereje vea es lo mismo que el hereje bbva le teníamos el rojo el verde y el azul sólo cada tenemos un parámetro más que es el alfa el parámetro alzaba desde cero
+
+00:07:00.840 --> 00:07:13.010
+punto cero que es transparente completamente hasta 1.0 que es no transparente a la y vemos algunos ejemplos donde tenemos el color rojo y vemos que vamos cambiando su transparencia utilizando el alfa al esta
+
+00:07:13.020 --> 00:07:25.070
+es la manera en que podemos utilizar hacer colores transparentes en el css y lo mismo pasa con el hs l también tenemos el hs leaf también tiene su parámetro alfa vale que es lo mismo de
+
+00:07:25.080 --> 00:07:36.740
+antes va desde cero punto 0 hasta 1.0 que no es transparente y ahí tenemos otra vez el ejemplo rojo con diferentes valores es la otra manera de hacer elementos colores transparentes así que
+
+00:07:36.750 --> 00:07:47.420
+con esto terminamos la clase de colores espero que os haya quedado un poco claro las diferentes maneras que tenemos de de crear colores o de poner colores a las cosas bueno espero que te haya gustado el vídeo que hayas aprendido cosas
+
+00:07:47.430 --> 00:07:59.270
+nuevas por aquí te voy a dejar el curso de css para que puedas seguir formándote en esta tecnología de front-end de maquetación y por aquí te voy a dejar el canal para que te puedas suscribir que sé que estás deseando programador
+
+00:07:59.280 --> 00:08:01.610
+programadora nos vemos en el próximo

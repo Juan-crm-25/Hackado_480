@@ -1,32 +1,126 @@
 WEBVTT
 
 NOTE
-TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
-Se sustituirá por la transcripción real del vídeo (#11).
+Transcripción de «Selectores y especificidad» (https://www.youtube.com/watch?v=_Nnrb5zwydc).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
 
-00:00:00.000 --> 00:00:12.000
-Hola, en este vídeo vamos a ver qué son los selectores en CSS y cómo decide el navegador qué regla gana cuando dos reglas chocan.
+00:00:00.000 --> 00:00:10.940
+en css tenemos hasta 5 tipos de selectores diferentes en este vídeo vamos a ver el primer tipo de selector el selector simple si quieres saber cuáles son los otros cuatro tipos
 
-00:00:12.000 --> 00:00:31.000
-Un selector es la parte de la regla que dice a qué elementos se aplica el estilo. Los más básicos son el selector de etiqueta, por ejemplo button o p, que se aplica a todas las etiquetas de ese tipo.
+00:00:10.950 --> 00:00:22.440
+suscríbete al canal que en próximos vídeos los vamos a traer y los vamos a explicar programador programador a mi nombre es kiko palomares y comenzamos
 
-00:00:31.000 --> 00:00:52.000
-Después tenemos el selector de clase, que empieza por un punto, como .boton. Se aplica a todos los elementos que tengan class="boton". Una misma clase se puede usar en muchos elementos.
+00:00:24.750 --> 00:00:36.380
+bueno pues para empezar yo tengo por aquí virtud visual estudio code y lo primero que necesitamos es un archivo de html mi index html el cual lo vamos a inicializar con html5 y ahora lo que
 
-00:00:52.000 --> 00:01:10.000
-Y el selector de id, que empieza por almohadilla, como #enviar. Un id debe ser único en la página, así que solo se aplica a un elemento.
+00:00:36.390 --> 00:00:48.860
+necesitamos es un documento de css bien pues para ello vamos a crear un nuevo documento vamos a llamarle styles css y vamos a vincular selo a nuestro archivo de index.hr ml por aquí con el link ya
 
-00:01:10.000 --> 00:01:34.000
-También se pueden combinar. Por ejemplo, div button selecciona los botones que están dentro de un div. A esto lo llamamos selector descendiente.
+00:00:48.870 --> 00:00:59.510
+lo tenemos por aquí vinculado a lo que vamos a hacer es ejecutar el index html con el open with lights server para ver el resultado y ahora ya tenemos por aquí el navegador al mismo tiempo que el código para que vayamos viendo el
 
-00:01:34.000 --> 00:02:05.000
-Ahora, la especificidad. Cuando dos reglas dan valores distintos a la misma propiedad de un elemento, gana la más específica. Podemos pensar en la especificidad como tres contadores: ids, clases y etiquetas. Se comparan de izquierda a derecha.
+00:00:59.520 --> 00:01:11.540
+resultado en tiempo real piel lo primero que vamos a hacer es crear un párrafo vale que se va a ser nuestro párrafo a seleccionar vamos a crearlo aquí con loren ipsum por ejemplo aquí lo tenemos ahora vámonos al ceses y vamos a ver qué
 
-00:02:05.000 --> 00:02:32.000
-Un selector de id vale uno, cero, cero. Una clase vale cero, uno, cero. Una etiqueta vale cero, cero, uno. Por eso #enviar siempre gana a .boton, aunque .boton esté escrito después en el fichero: un solo id pesa más que cualquier número de clases.
+00:01:11.550 --> 00:01:22.430
+es el lector como podemos seleccionar ese párrafo desde css bien pues es tan fácil como poner p abrimos las llaves y ya está ya tenemos seleccionado ese párrafo en realidad no sólo tenemos seleccionador de párrafo bueno en este
 
-00:02:32.000 --> 00:02:55.000
-Si dos selectores tienen exactamente la misma especificidad, entonces gana el que aparece más tarde en el CSS. Eso es la cascada.
+00:01:22.440 --> 00:01:33.020
+caso sí porque sólo tenemos un párrafo de esta manera tenemos eliminado todos los párrafos por ejemplo si yo ahora quisiera cambiarle el tamaño de fuente podemos poner font size y le puedo dar aquí por
 
-00:02:55.000 --> 00:03:20.000
-Y un último aviso: los estilos escritos en el atributo style de la etiqueta ganan a todos los selectores, y !important gana incluso a eso. Usad !important lo menos posible, porque hace el CSS muy difícil de mantener.
+00:01:33.030 --> 00:01:43.550
+ejemplo 45 píxeles ale de esta manera veremos que el párrafo se me hace ahí enorme pero qué pasa si añadimos otro párrafo vamos a añadir otro párrafo un segundo párrafo para que veáis pues que
+
+00:01:43.560 --> 00:01:54.410
+realmente se me están seleccionando varios párrafos aquí ya tengo el párrafo número dos de hecho voy a ponerle aquí un 2 y aquí vamos a dejarle un 1 y como estamos viendo aquí los dos párrafos se
+
+00:01:54.420 --> 00:02:06.620
+me están haciendo grandes se está aplicando el css que hemos puesto aquí a los dos párrafos porque la pista ha seleccionado todos los párrafos después tenemos también lo que sería el selector por haití es decir si por ejemplo ya
+
+00:02:06.630 --> 00:02:17.810
+aquí en el primer párrafo tuviera el atributo ayby y lo igualó por ejemplo al primero vale puedo seleccionar sólo este párrafo utilizando el atributo ayby
+
+00:02:17.820 --> 00:02:29.360
+primero si nos vamos al css yo puedo poner la almohadilla primero y abro las las llaves y ahora aquí puedo hacer lo que quiera ese párrafo por ejemplo puedo hacerle color red de esta manera sólo el
+
+00:02:29.370 --> 00:02:39.470
+primer párrafo como estamos sabiendo a que aquí se me está aplicando el color rojo porque estamos seleccionando sólo ese párrafo por haití importante que el haití debe ser único
+
+00:02:39.480 --> 00:02:50.660
+es decir yo no puedo ponerle aquí al segundo párrafo otro haití y que sea primero no porque la idea es único solo pertenece a un elemento muy importante esto en el caso de que queramos aplicar
+
+00:02:50.670 --> 00:03:01.130
+el mismo estilo a varios párrafos pero no lo queremos aplicar a todos por ejemplo supongamos que yo tengo aquí tres párrafos vale tengo tres párrafos y quiero aplicarles a todos el mismo
+
+00:03:01.140 --> 00:03:12.500
+estilo menos al párrafo segundo por ejemplo pues para eso tenemos las clases yo aquí lo que puedo poner es class igual a por ejemplo párrafo vale le doy
+
+00:03:12.510 --> 00:03:24.409
+aquí una clase párrafo por ejemplo le ponen el nombre que queramos y ahora esta clase que sí que se puede repetir en otros elementos me la voy a copiar al tercer párrafo de forma que el segundo párrafo no lo pongo así entonces ahora
+
+00:03:24.419 --> 00:03:36.289
+con esta clase párrafo si me voy a los styles le vamos a borrar esta ya igual que las ideas los utilizamos la almohadilla para seleccionar los párrafos se utiliza el punto los párrafos no perdón las clases las clases
+
+00:03:36.299 --> 00:03:46.580
+se utiliza el punto haré el punto seguido del nombre de la clase que tengamos que en este caso es párrafo y ahora aquí pues le puedo pagar el color por ejemplo blue y de esta
+
+00:03:46.590 --> 00:03:57.350
+manera estamos viendo que es solo los párrafos que tienen la clase párrafo se me están poniendo de color azul es una manera de seleccionar varias cosas al mismo tiempo utilizando clases por ejemplo qué pasaría si yo tuviera aquí
+
+00:03:57.360 --> 00:04:07.610
+un h1 ahora vamos a crear un h uno voy a poner hola programadores y qué pasa si yo ahora cojo y le meto también la clase párrafo a la h1 pues veremos que
+
+00:04:07.620 --> 00:04:18.229
+realmente pues se me va a poner también de color azul es decir no tiene por qué ser el mismo elemento ahora qué pasa si yo quiero que la clase párrafo sólo afecte realmente a los que son un párrafo pues bien lo que podemos hacer
+
+00:04:18.239 --> 00:04:28.670
+aquí en el selector es antes de la clase puedo poner la p de esta manera sólo estará afectando a todos los elementos que sean penn y que tengan la clase párrafo veis que ya ya no está azul el
+
+00:04:28.680 --> 00:04:39.770
+h1 tocará sólo estamos afectando a la p más el párrafo vale son esos dos selectores en uno podríamos decir puede ser que por ejemplo yo quiera que estos dos párrafos sean azules como está pero
+
+00:04:39.780 --> 00:04:51.110
+que el primer párrafo en concreto sea por ejemplo más grande voy a poner peak por ejemplo que es grande en inglés pues yo puedo ponerle aquí dos clases como estamos viendo ese párrafo y puedo ponerle una segunda
+
+00:04:51.120 --> 00:05:04.010
+clase que sea vi entonces yo puedo irme después a los estilos crear otra clase que sea bic y aquí le puedo poner el font size por ejemplo pues más grande como por ejemplo a 25 píxeles a leer y
+
+00:05:04.020 --> 00:05:15.020
+de esa manera veremos que el primer párrafo que estamos aplicando las dos clases al mismo tiempo la de párrafo que no está poniendo azul y la de bill que me lo está poniendo grande o sea podemos poner todas las clases que queramos
+
+00:05:15.030 --> 00:05:25.490
+dentro de un mismo elemento otro selector interesante que tenemos es el selector universal que para ello se utiliza el asterisco de esta manera poniéndola estricto estamos diciendo todos los elementos por
+
+00:05:25.500 --> 00:05:37.310
+ejemplo si yo la pongo aquí color red veremos que todos los elementos me van a poner de color ahí estamos viendo si por ejemplo en vez de color rey yo pongo border y pongo solid un píxel y pongo
+
+00:05:37.320 --> 00:05:48.500
+black veremos que todos los elementos se me van a poner se me va a poner un borde en todos los elementos como estamos viendo aquí pues dentro del body dentro de la h1 dentro de todos los párrafos todo para esto es la manera de
+
+00:05:48.510 --> 00:06:01.220
+seleccionar todos los elementos al mismo tiempo por ejemplo algo muy común que se puede hacer es que yo quiero a lo mejor quitarle los marlins me ponen por defecto los navegadores y puedo poner margin 0 y padding pero
+
+00:06:01.230 --> 00:06:11.900
+también y esto se lo doy a todos los elementos de esa manera es una manera rápida de resetear todos los márgenes del navegador como estamos viendo aquí pues ahora no hay márgenes ya partir de ahí yo puedo escribir los que yo quiera
+
+00:06:11.910 --> 00:06:22.340
+bien hay alguna manera de por ejemplo agrupar estilos por ejemplo yo quiero que en este caso el h1 pues tenga el color red vale pero qué pasa yo por
+
+00:06:22.350 --> 00:06:33.680
+ejemplo quiero que los párrafos también tengan el color red pues estoy poniendo aquí varias veces el color red d en varias lenguas en varios elementos
+
+00:06:33.690 --> 00:06:45.140
+cuando podría agruparlos en un solo sitio como pues tan fácil como poner h 1b y de esta manera ya no nos hace falta este segundo porque todo lo estamos definiendo aquí y yo podría seguir
+
+00:06:45.150 --> 00:06:55.520
+poniendo aquí todos los elementos que quisieras pues por ejemplo si tenemos una si tenemos una lista todo todo lo podemos meter concatenados dejar en el mismo sitio y no tenemos que estar
+
+00:06:55.530 --> 00:07:05.750
+repitiendo el mismo estilo una y otra vez espero que te haya gustado el vídeo que hayas aprendido cosas nuevas por aquí te voy a dejar el curso de css completo recuerda que vamos a sacar en próximos vídeos
+
+00:07:05.760 --> 00:07:16.340
+los otros cuatro tipos de selectores que tenemos en css así que estaré muy atento por supuesto suscríbete al canal para no perderte esos próximos vídeos programador programadora nos vemos en el
+
+00:07:16.350 --> 00:07:19.250
+próximo vídeo

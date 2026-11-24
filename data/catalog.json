@@ -15,9 +15,9 @@
           { "id": "html-semantica", "nombre": "Etiquetas semánticas y formularios" }
         ],
         "videos": [
-          { "id": "v01", "titulo": "Qué es la web y cómo funciona", "youtubeId": "81u19umYU_E", "duracionSegundos": 403 },
-          { "id": "v02", "titulo": "Estructura de un documento HTML", "youtubeId": "_MTZx8H-Fo4", "duracionSegundos": 432 },
-          { "id": "v03", "titulo": "Etiquetas semánticas y formularios", "youtubeId": "FeXpLU515AI", "duracionSegundos": 289 }
+          { "id": "v01", "titulo": "Qué es la web y cómo funciona", "youtubeId": "81u19umYU_E", "duracionSegundos": 403, "transcripcion": "v01.vtt" },
+          { "id": "v02", "titulo": "Estructura de un documento HTML", "youtubeId": "_MTZx8H-Fo4", "duracionSegundos": 432, "transcripcion": "v02.vtt" },
+          { "id": "v03", "titulo": "Etiquetas semánticas y formularios", "youtubeId": "FeXpLU515AI", "duracionSegundos": 289, "transcripcion": "v03.vtt" }
         ]
       },
       {
@@ -47,9 +47,9 @@
           { "id": "resp-media", "nombre": "Media queries y mobile-first" }
         ],
         "videos": [
-          { "id": "v07", "titulo": "Flexbox", "youtubeId": "-nVJwYKx6H8", "duracionSegundos": 661 },
-          { "id": "v08", "titulo": "CSS Grid", "youtubeId": "edEG0CoM5gw", "duracionSegundos": 711 },
-          { "id": "v09", "titulo": "Media queries y mobile-first", "youtubeId": "pu6ArfDxxpE", "duracionSegundos": 320 }
+          { "id": "v07", "titulo": "Flexbox", "youtubeId": "-nVJwYKx6H8", "duracionSegundos": 661, "transcripcion": "v07.vtt" },
+          { "id": "v08", "titulo": "CSS Grid", "youtubeId": "edEG0CoM5gw", "duracionSegundos": 711, "transcripcion": "v08.vtt" },
+          { "id": "v09", "titulo": "Media queries y mobile-first", "youtubeId": "pu6ArfDxxpE", "duracionSegundos": 320, "transcripcion": "v09.vtt" }
         ]
       },
       {
@@ -63,9 +63,9 @@
           { "id": "js-eventos", "nombre": "Eventos" }
         ],
         "videos": [
-          { "id": "v10", "titulo": "Variables, tipos y funciones", "youtubeId": "oqXYMnmq3c8", "duracionSegundos": 1232 },
-          { "id": "v11", "titulo": "El DOM", "youtubeId": "H7CC46Hi0YA", "duracionSegundos": 771 },
-          { "id": "v12", "titulo": "Eventos", "youtubeId": "griNhCfEIOM", "duracionSegundos": 731 }
+          { "id": "v10", "titulo": "Variables, tipos y funciones", "youtubeId": "oqXYMnmq3c8", "duracionSegundos": 1232, "transcripcion": "v10.vtt" },
+          { "id": "v11", "titulo": "El DOM", "youtubeId": "H7CC46Hi0YA", "duracionSegundos": 771, "transcripcion": "v11.vtt" },
+          { "id": "v12", "titulo": "Eventos", "youtubeId": "griNhCfEIOM", "duracionSegundos": 731, "transcripcion": "v12.vtt" }
         ]
       }
     ]

@@ -1,0 +1,201 @@
+WEBVTT
+
+NOTE
+Transcripción de «CSS Grid» (https://www.youtube.com/watch?v=edEG0CoM5gw).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
+
+00:00:00.000 --> 00:00:11.749
+programador programadora en este vídeo vamos a aprender en tiempo récord la tecnología de css grit layout como veis para este vídeo lo que yo tengo aquí es un html y css vale aquí tengo iniciado
+
+00:00:11.759 --> 00:00:23.300
+en sml con extreme l5 que tengo vinculado aquí una hoja de estilos vale en la cual no tengo absolutamente nada y aquí a mi derecha lo que tenemos es el html mirándolo en el navegador vale lo
+
+00:00:23.310 --> 00:00:34.370
+que es el resultado de este bien pues para hacerse s creed layout lo que necesitamos primero es tener un bit que será nuestro container nuestro grid container así que yo voy a crear allí un
+
+00:00:34.380 --> 00:00:44.540
+delay a pone una clase y la voy a llamar grid container también lo que necesitamos para el beat container o sea dentro del beat containers son los hijos necesitamos grid items y para eso pues
+
+00:00:44.550 --> 00:00:55.970
+yo voy a crear aquí una serie de tips que se dan los hijos de este container serán los items bien aquí tengo ya creado nueve ítems vale 9 en britain´s y ahora ya vámonos a por el css como veis
+
+00:00:55.980 --> 00:01:08.820
+aquí ya se empieza a ver un poquito el resultado vámonos al css a la hoja de estilos vamos a quedar aquí la clase grit container y lo que vamos a hacer es ponerle un display grid al esta
+
+00:01:08.830 --> 00:01:19.800
+es la manera de inicializar o de crear la rejilla como veis todavía no está cambiando nada lo que vamos a hacer para visualizar lo mejor es ponerle colores vale vamos a ponerle un background color
+
+00:01:19.810 --> 00:01:31.260
+a lo que es la rejilla y vamos a ponerle también un background color a lo que son los sitios para eso voy a por hacer aquí el bit container team porque son los dips que están dentro de del container y
+
+00:01:31.270 --> 00:01:43.260
+poner también un background color bien aquí lo estamos viendo ya ahora como hacemos que esto sea un grid de varias columnas porque como veis ahora mismo pues tan sólo tenemos una columna no pues es fácil aquí tenemos la propiedad
+
+00:01:43.270 --> 00:01:54.480
+de grid template con un vale el y de esta manera podemos darle definir el template de cuántas columnas queremos tener por ejemplo yo puedo ponerle auto auto auto y de esta manera lo que va a
+
+00:01:54.490 --> 00:02:05.910
+hacer es que automáticamente me va a calcular pues tres columnas aquí estamos viendo que tenemos pues tres columnas y aquí he cambiado un poquito de estilo al balear le ha añadido el color white para que sea mejor los números y le he puesto
+
+00:02:07.210 --> 00:02:17.940
+para que veamos dónde termina y dónde empieza cada cosa ahora se ve bastante más claro bien como decíamos aquí tenemos definido pues tres columnas no de forma auto cuando le ponemos auto lo que hace es que te calcula el tamaño de
+
+00:02:17.950 --> 00:02:28.470
+las columnas o de las filas o lo que sea de forma automática veis como veis aquí pues ocupa pues todo lo que van pudiendo el respecto a la tamaño de pantalla que va teniendo pero qué pasa si las
+
+00:02:28.480 --> 00:02:39.090
+columnas queremos definir le un valor no pues que sean 20 píxeles 50 mil 6 pues también podemos hacerlo en vez de poner alto podemos decir que la primera columna sean 30 píxeles la segunda sea
+
+00:02:39.100 --> 00:02:49.470
+auto y la última sea pues 50 píxeles vale y de esta manera aquí tenemos que la primera pues son 30 píxeles la última 50 y la del medio pues como el puesto
+
+00:02:49.480 --> 00:03:01.140
+auto se va calculando y va cogiendo todo el espacio que va pudiendo aquí pues lo estamos viendo podemos hacer exactamente lo mismo con el grid templates rose vales por ejemplo yo le puedo decir aquí
+
+00:03:01.150 --> 00:03:11.160
+que la primera fila pues ocupe 50 píxeles vale de alto como veis aquí pues se me está cambiando y le puedo decir que la segunda fila sea un auto y la
+
+00:03:11.170 --> 00:03:22.320
+tercera fila sea 100 píxeles por ejemplo y como veis aquí pues me está cambiando el grito después también tenemos en el beat container la propiedad de justified content vale que
+
+00:03:22.330 --> 00:03:33.660
+como veis sirve para para alinear el contenido dentro si yo le pongo por ejemplo centre aquí vamos a ver que todo el contenido me lo centra dentro del container saberlo lo intenta centrar a
+
+00:03:33.670 --> 00:03:44.910
+lo máximo estos autos ya no hacen el efecto de ocuparlo todo sino que hacen el efecto de ocupar lo justo y necesario es decir para que quepa el número 8 el número 5 y el número 2 en este caso vale
+
+00:03:44.920 --> 00:03:55.680
+igual que tenemos centre tenemos más opciones como puede ser el space event li vale que como veis aquí pues nos hacía algo parecido a lo que hace en un fred box es exactamente lo mismo tenemos
+
+00:03:55.690 --> 00:04:07.319
+aquí también el space around y tenemos también el space between vale que como veis aquí pues empieza a las otras te maneja en el centro y la última puesto la deja alineada al final también
+
+00:04:07.329 --> 00:04:17.610
+tenemos the stars que podemos alinearlo lo que es al principio todo vale y también tenemos el end donde podemos alinearlos si lo has adivinado al final también podemos hacer esto verticalmente
+
+00:04:17.620 --> 00:04:28.140
+con la con una propiedad de alain content por ejemplo vamos a darle center aquí no cambia nada o parece que no cambia nada porque para esto el grid container
+
+00:04:28.150 --> 00:04:38.700
+debería de tener un hey así que vamos a darle a new game por ejemplo de 600 píxeles y veremos que ahora sí que me cambia voy a darle de menos 400 píxeles y aquí lo estamos viendo caras así que
+
+00:04:38.710 --> 00:04:51.149
+me lo centra y verticalmente y lo mismo tenemos aquí pues más opciones como puede ser aquí el space between que vimos antes pues lo mismo sólo que verticalmente el space around aquí vemos
+
+00:04:51.159 --> 00:05:02.010
+también el efecto del space around y el space heavenly también lo tenemos por aquí y ahí estamos viendo space e-mail y también podemos hacerlo al mirándolo todo al principio con el start es decir
+
+00:05:02.020 --> 00:05:12.629
+a la parte de arriba o al final a la parte de abajo con el énfasis en esa línea a la parte del final bien vamos a quitarle esto de la line con te vamos a quitarle también el cei y vamos a pasar
+
+00:05:12.639 --> 00:05:23.999
+ahora a las propiedades que tienen los hijos vale porque ya hemos visto las propiedades que se pueden crear o utilizar dentro del grid container pero vamos a ver ahora dentro de los hijos a ver qué propiedades tenemos para eso yo
+
+00:05:24.009 --> 00:05:34.379
+me voy a venir aquí y le voy dar clases a cada uno de ellos para poder distinguir diferentes y posibilidad de poner y tengo uno y te en dos y así a todos bien ya les tenemos dado clases a todos y cada uno de ellos
+
+00:05:34.389 --> 00:05:45.600
+y ahora podemos tocarlos individualmente pues vámonos a la hoja de estilos y lo que vamos a hacer es poner aquí pues y tengo uno y vamos a ponerle aquí la propiedad grid collum bien que le
+
+00:05:45.610 --> 00:05:56.430
+podemos indicar aquí aquí le podemos indicar por ejemplo dos valores para decirles cuántas columnas quiero que ocupe élite en 1 para indicar estos valores tenemos que indicar la donde queremos que comience y dónde queremos
+
+00:05:56.440 --> 00:06:07.920
+que termine pero para tener esto claro el inicio o el final de cada columna va dividido por estas líneas por ejemplo en esta primera línea de aquí es la línea número uno vales el valor 1
+
+00:06:07.930 --> 00:06:18.180
+esta segunda de aquí sería el valor número 2 esta de aquí sería el valor número 3 y la última sería el valor número 4 es decir cómo tenemos que definir las propiedades de witt con un
+
+00:06:18.190 --> 00:06:30.270
+es con las líneas entre columna y columna vale o sea aquí cuando tenemos tres columnas lo que tenemos son cuatro líneas vale son los espacios que quedan entre columna y columna es decir si yo
+
+00:06:30.280 --> 00:06:40.980
+quiero que la número uno o el y tengo un número uno ocupe dos columnas tiene que comenzar en la línea número uno en la línea 1 que es esta de aquí que es donde comienza hasta
+
+00:06:40.990 --> 00:06:52.379
+ahora y le ponemos aquí muy flash y quiero que termine en la 1 no en la 2 es donde termina actualmente y aquí es en la 3 quiero que termine en la 3 de esta manera pues veremos que el 1 ahora pues
+
+00:06:52.389 --> 00:07:02.549
+me está ocupando dos columnas voy a quitar le voy a poner las todas en auto para que estén mejor que esto que debe darle diferentes tamaños pues creo que va a liar un poco venga aquí ahora ya
+
+00:07:02.559 --> 00:07:12.989
+que lo que se ve bastante mejor vale de esta manera le hemos indicado al número uno que ocupe dos columnas también otra manera que tenemos de hacer esto es decirle pues bien el número uno quiero
+
+00:07:12.999 --> 00:07:24.209
+que ocupe pues quiero que comience en el número uno y quiero que me ocupe dos columnas vale que sea el ancho de dos columnas pues para eso yo puedo poner aquí la palabra spam vale y ponerle un 2
+
+00:07:24.219 --> 00:07:34.290
+de esta manera lo que está haciendo es que el 1 que está ocupando dos columnas y si por ejemplo yo cambias aquí y que ahora está comenzando en el 1 si pusiera que comenzarán el 2 veréis que pues me
+
+00:07:34.300 --> 00:07:44.670
+está comenzando en el 2 y está ocupando dos columnas es una manera de no tener que indicarle de cuánta cuánta columna de qué número a qué número llegar vale simplemente dices
+
+00:07:44.680 --> 00:07:54.990
+cuánto quiere que ocupes otra forma también muy útil dándole aquí pues el spam tenemos exactamente la misma propiedad de grit collum pero grid road aquí estamos aplicando el grito road y
+
+00:07:55.000 --> 00:08:05.279
+como veis ahora pues aquí me ha cambiado vamos a borrar esto para empezar desde cero vamos a ponerle que vaya desde la 1 hasta la 2 a ver qué hace como veis no va a hacer nada vale porque ahora mismo
+
+00:08:05.289 --> 00:08:16.710
+van desde la 1 que es esta línea de aquí arriba horizontal ahora estamos viendo líneas horizontales hasta la línea número 2 que es esta de aquí para esta de aquí es la 3 y esta es la 4 pues bien si le decimos que la 1 vaya hasta la
+
+00:08:16.720 --> 00:08:28.620
+línea número 3 veremos ahora que la élite número 1 me está ocupando tanto la fila número 1 como la fila número 2 al mismo tiempo y aquí lo mismo de antes podemos también jugar con los spams yo
+
+00:08:28.630 --> 00:08:38.969
+puedo poner aquí un spam de dos y me va a ocupar lo mismo que está ocupando ahora si yo le diera que me ocupara un expande 3 veremos que me va a ocupar 3 filas también tenemos una propiedad a la
+
+00:08:38.979 --> 00:08:49.500
+cual main global las dos que hemos visto roe que es el área y con el área lo que tiene es que le podemos dar hasta cuatro valores como veis yo aquí le dado pues
+
+00:08:49.510 --> 00:09:01.500
+unos cuatro valores a ley esto indica pues el número uno indica que empieza en la fila número uno vale esto está en la fila número uno el número 2 indica que comienza en la columna al es donde la
+
+00:09:01.510 --> 00:09:13.410
+columna número 2 y efectivamente tenemos la columna número 1 y empieza en la columna número 2 el número 5 indica hasta que road tiene que finalizar en qué línea the road finaliza y efectivamente tenemos aquí está es la 1
+
+00:09:13.420 --> 00:09:25.470
+aquí sería la 2 la 3 la 4 y la 5 efectivamente termina en la fila número 5 y lo mismo con este 6 de aquí y cada una con tendría que haber sido un 5 para que no se me fuera y se me d'esquadra no
+
+00:09:25.480 --> 00:09:35.670
+entonces lo mismo sólo que verticalmente 1 2 3 4 y 5 y aquí es donde termina ar es una manera de definir los dos anteriores en una sola propiedad el
+
+00:09:35.680 --> 00:09:46.890
+gritar ya otra forma también muy útil es definir áreas por ejemplo en vez de hacer aquí un griten plate con un yo le puedo decir aquí un grid template área en el cual puedo definir nombres por
+
+00:09:46.900 --> 00:09:58.180
+ejemplo yo puedo poner quien string y decirle a heather de esta manera en la primera fila va a ser todo g de la segunda fila pues por aquí otro sting y le puedo decir menú
+
+00:09:58.190 --> 00:10:09.829
+main y a-6 y la tercera fila le puedo decir que sea footer food de disfrute de esta manera yo me he creado un layout en el cual la primera
+
+00:10:09.839 --> 00:10:20.090
+fila va a ser todo header la del medio va a tener el menú el main y la side y la última va a tener el footer y ahora lo único que tenemos que decir es a cada ítem decirle qué área es para eso le
+
+00:10:20.100 --> 00:10:31.189
+decimos aquí en grid área a lo que es élite si él y tengo uno yo quiero que sea el g de la ley y este nombre que yo le daba aquí este head que yo he dado aquí es este header de aquí me está ocupando tres columnas cómo está viendo
+
+00:10:31.199 --> 00:10:41.449
+aquí tres columnas tres columnas y una sola fila por ejemplo élite el número dos vamos a hacer que sea el menú vale os vamos a poner lo exactamente igual que esté simplemente aquí cambiamos
+
+00:10:41.459 --> 00:10:52.310
+shalit el número dos y vamos a hacer aquí que sea el menú como es aquí está colocado en el lugar del menú todavía no ha cambiado nada necesitamos otro que sea el mail bien pues vamos a el
+
+00:10:52.320 --> 00:11:03.620
+ítem número tres y le vamos a poner aquí el mail y vamos a poner aquí que sea elite número tres al ítem número 4 vamos a darle la side a poner aquí a side y
+
+00:11:03.630 --> 00:11:15.380
+aquí tengo número 4 que admite el número 5 vamos a decirle que sea el fútbol vamos a decirle aquí footer estáis viendo ahora aquí se me están recolocando vamos a eliminar los ítems
+
+00:11:15.390 --> 00:11:26.660
+que nos sobran vales que son los del 6 para arriba y como veis ahora aquí pues se me ha creado este template tal cual yo le he dicho aquí dentro del grid área template exactamente todo en el mismo
+
+00:11:26.670 --> 00:11:37.220
+orden y aquí por ejemplo yo sólo utilizado filas pero si por ejemplo este menú le digo que aquí es donde el futur el primero será también el menú como veis aquí pues se me va a colocar el menú de esa manera de esta manera es
+
+00:11:37.230 --> 00:11:49.280
+súper fácil definir templates gracias al beat template área si quieres aprender más sobre grit la yautía dejar por aquí un curso completo de este canal sobre esta tecnología programador programadora
+
+00:11:49.290 --> 00:11:53.089
+nos vemos en el próximo vídeo

@@ -1,29 +1,117 @@
 WEBVTT
 
 NOTE
-TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
-Se sustituirá por la transcripción real del vídeo (#11).
+Transcripción de «El modelo de caja» (https://www.youtube.com/watch?v=UCc0bJfqsmk).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
 
-00:00:00.000 --> 00:00:15.000
-En este vídeo vamos a entender el modelo de caja, que es la base de cómo se colocan y miden todos los elementos en una página.
+00:00:04.590 --> 00:00:16.039
+bien en esta clase vamos a ver un poco el tema de los tamaños los márgenes los rellenos y a ver de qué trata todo esto bueno como estáis viendo primero voy a cambiar un poco los estilos que tenemos que no me acaban de gustar mucho voy a
 
-00:00:15.000 --> 00:00:38.000
-Para el navegador, cada elemento es una caja con cuatro capas. De dentro hacia fuera: el contenido, el padding, el borde y el margen.
+00:00:16.049 --> 00:00:26.450
+borrar el aire que teníamos de los encabezados llamar todos los encabezados iguales vale voy a borrar este aid y voy a borrar también la clase que teníamos para los encabezados que esto no nos va
 
-00:00:38.000 --> 00:01:02.000
-El padding es el relleno: el espacio interior entre el contenido y el borde. Si el elemento tiene color de fondo, el fondo también pinta el padding.
+00:00:26.460 --> 00:00:37.010
+a hacer falta y voy a dejar los encabezados tal cual y les voy a poner un color que sea por ejemplo negro oscuro bueno negro oscuro no gris oscuro perdón que es 333 por ejemplo es un
 
-00:01:02.000 --> 00:01:25.000
-El borde rodea al padding. Se define con border, por ejemplo border: 2px solid black, que es grosor, estilo y color.
+00:00:37.020 --> 00:00:47.420
+color que es muy conocido también y es oscuro y de background colom le voy a poner por ejemplo otro que sea más por ejemplo el coral este y de fondo no le
 
-00:01:25.000 --> 00:01:50.000
-El margen es el espacio exterior, fuera del borde. Separa la caja de las cajas vecinas y siempre es transparente. Un truco para recordarlo: padding dentro, margin fuera.
+00:00:47.430 --> 00:00:57.590
+voy a poner ninguno al body vale voy a quitarle el color de fondo al body voy a dejar esto así para que sea todo un poquito más sencillo y vamos a ver ahora pues que son lo vamos a empezar por el
 
-00:01:50.000 --> 00:02:20.000
-Ojo con el ancho. Por defecto, width solo mide el contenido. Si pongo width: 100px, padding de 10px y borde de 5px, la caja ocupa en total 100 más 20 más 10, es decir, 130px de ancho.
+00:00:57.600 --> 00:01:08.600
+margin que es el margin borel margin es el margen que hay entre una cosa y otra aquí como podemos ver este encabezado de este tiene un margen ya está separado qué pasaría si a esto le ponemos que no
 
-00:02:20.000 --> 00:02:48.000
-Esto se puede cambiar con box-sizing: border-box. Con border-box, el width incluye el padding y el borde, así que la caja mide exactamente 100px. Es lo que casi todo el mundo usa hoy.
+00:01:08.610 --> 00:01:20.600
+haya margen que sean margin pero vamos a verlo se nos juntan porque ya el navegador de por defecto da una serie de estilos si quisiéramos resetear todos los estilos del navegador lo que
 
-00:02:48.000 --> 00:03:10.000
-Por último, los márgenes verticales de dos bloques seguidos se fusionan: si uno tiene margin-bottom de 20px y el siguiente margin-top de 30px, la separación es de 30px, no de 50.
+00:01:20.610 --> 00:01:32.090
+tendríamos que hacer es con el asterisco que es el selector universal hacer un margin 0 esto lo que va a hacer es darle a todo 0 y un padding que es el relleno que ahora explicaremos más grandes que
+
+00:01:32.100 --> 00:01:43.669
+también 0 de esta manera se nos resetean todos los valores ves cada todos realmente es 0 entonces voy a quitarle el margen de aquí este para que veáis que ahora mismo ahora sí que no hay ni márgenes ni padding y relleno ni nada
+
+00:01:43.679 --> 00:01:55.010
+porque hemos reseteado todos esos márgenes entonces yo ahora puedo ponerle un margin por ejemplo un margin bottom de 20 píxeles y de esta manera por la parte de abajo se nos va a separar veis
+
+00:01:55.020 --> 00:02:05.779
+que se han separado por abajo este por ejemplo está pegado arriba si yo quisiera separarlo también de arriba puedo darle un margin top en este caso de 10 píxeles por ejemplo de esta manera
+
+00:02:05.789 --> 00:02:18.260
+se nos separa también de arriba 10 píxeles vamos a hacer lo mismo con los con las pes con los párrafos que tenemos vamos a darle un martín pero esta vez vamos a darle un margen con la propiedad margin a secas y le vamos 20 píxeles de
+
+00:02:18.270 --> 00:02:28.640
+esta manera quedarán 20 píxeles de margen por todos lados tanto por arriba como por la izquierda como por abajo como por la derecha es una manera más corta de poner un margen en todos los
+
+00:02:28.650 --> 00:02:40.370
+lados del elemento vamos a ver ahora que de qué se trata esto del relleno es todo el padrón vale relleno en castellano son las súper raro sas no digas nunca relleno de padding bien esto del pad y vamos a ponerle el padding a laxe una
+
+00:02:40.380 --> 00:02:51.560
+vez que lo que hace página seca vamos a ponerle 30 píxeles de paddy y vamos a ver qué es lo que hace como veis nos está dando relleno nos está dando padding entre lo que es el final el
+
+00:02:51.570 --> 00:03:02.600
+borde que tiene ese elemento y el contenido que tiene que es la palabra encabezado nos ha dado ese relleno por dentro es como el scope es parecido al margen pero él me va por dentro vale e
+
+00:03:02.610 --> 00:03:12.710
+incluye el color del fondo sigue se sigue viendo el fondo en ese margen en ese relleno que le damos también tenemos las mismas opciones que teníamos con el padding en el yo le puedo dar aquí un
+
+00:03:12.720 --> 00:03:23.520
+patín sólo por el top por la parte de arriba le puedo dar 20 píxeles vale por ejemplo entonces solo marapa dyn por arriba o le puedan también un padre
+
+00:03:23.530 --> 00:03:33.930
+para de inglés que es un país solo por la parte de la izquierda vale ahí lo vemos y lo mismo con rabbit y con botón vale se pueden poner los padres vamos a
+
+00:03:33.940 --> 00:03:46.260
+añadirle ahora estos encabezados un borde para el borde tenemos la propiedad border que es borde en inglés y le podemos decir que sea un borde de dos píxeles que sea sólido el borde y que
+
+00:03:46.270 --> 00:03:56.910
+sea de color por ejemplo negro que es el color 000 ahí lo tenemos ya vemos que se nos ha puesto un borde alrededor de la de la caja de nuestra caja de encabezado
+
+00:03:56.920 --> 00:04:07.350
+vamos a ponerle un poquito más ancho vamos a poner lo que sea de 5 píxeles del borde aquí lo vemos más claro vamos a probar también a ponerle bordea los párrafos para que lo veamos border vamos
+
+00:04:07.360 --> 00:04:18.630
+a ponerle otros 5 píxeles esta vez vamos a hacer que sea alá set que es como punteado y vamos a ponerle de color red de color rojo que se vean bien ahí lo tenemos ahí tenemos el borde el borde
+
+00:04:18.640 --> 00:04:29.760
+como veis está completamente pegado al contenido porque porque estos estos párrafos no tienen dado padding si nosotros ahora aquí le damos un padding de 10 píxeles nos lo va a separar el
+
+00:04:29.770 --> 00:04:42.060
+borde el padding es lo que hay entre el contenido y el borde al aquí se ve muy claro le dan un poquito más 20 píxeles y aquí nos queda un poquito mejor en css también tenemos las propiedades de with
+
+00:04:42.070 --> 00:04:52.140
+i hate que esto es para darle tamaño a las cosas por ejemplo si yo estos párrafos quiero que sean de un tamaño fijo yo le puedo decir aquí el wef que es el tamaño y le puedo decir que sea
+
+00:04:52.150 --> 00:05:03.150
+por ejemplo de ello que se 400 píxeles a ley de esta manera las cajas de los párrafos se me mueven y se me ajustan a 400 píxeles y no son ni más grande ni
+
+00:05:03.160 --> 00:05:15.200
+más pequeñas esto mide desde aquí hasta aquí mide 400 píxeles vale y lo mismo puedo hacer con el alto yo le puedo decir aquí en height que es el alto y le puedo dar por ejemplo pues 500 píxeles
+
+00:05:15.210 --> 00:05:26.970
+500 píxeles de alto y como veis aquí aunque ya no haya contenido para seguir rellenando el menor me lo pone a la medida que yo he dicho que son 500 píxeles ar es una manera de ajustar las medidas a nuestros elementos como
+
+00:05:26.980 --> 00:05:37.690
+nosotros queramos vamos a probar también a ponerle un uy tal a los h 1 vamos a darle un wifi y vamos a darle un bit de 100 píxeles para que lo veáis y aquí lo
+
+00:05:37.700 --> 00:05:50.110
+vemos en este caso como el contenido es se pasa es más grande que el propio aunque el propio elemento que el propio width pues se nos sale se nos descoloca hay que tener cuidado con este tipo de cosas y vamos a darle también un height
+
+00:05:50.120 --> 00:06:00.190
+sigamos un hey también sube el pequeñito como por ejemplo de 40 píxeles nos va a pasar lo mismo vale aquí lo veis que eso nos va a salir del contenido pero bueno eso hay que tenerlo en cuenta a la hora
+
+00:06:00.200 --> 00:06:10.210
+de ir maquetando estas dos propiedades por defecto lo que están es a auto auto lo que hace es pues según el contenido pues se pone de una manera u otra y si ponemos nuestro auto pues lo mismo
+
+00:06:10.220 --> 00:06:20.530
+también se nos pone al cien por cien en este caso hemos visto ya lo que es el pad y vale que hemos dicho que era el espacio que hay el margen que hay entre elemento y elemento hemos visto también
+
+00:06:20.540 --> 00:06:33.580
+en lo que es el padding que hemos dicho que es el relleno que es ese espacio que hay entre lo que es el contenido y el borde y hemos visto también lo que es el borde que como hemos dicho ésta es lo que está más allá del padding y más para
+
+00:06:33.590 --> 00:06:44.250
+acá del martín vale el borde esta es lo que está entre el padre y el martín y por último hemos visto también el juicio el hate con el que podemos darle tamaños fijos a nuestras casas a nuestros
+
+00:06:44.260 --> 00:06:49.270
+elementos así que con esto podemos pasar a la siguiente clase

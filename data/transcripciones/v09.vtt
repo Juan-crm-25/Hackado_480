@@ -1,0 +1,93 @@
+WEBVTT
+
+NOTE
+Transcripción de «Media queries y mobile-first» (https://www.youtube.com/watch?v=pu6ArfDxxpE).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
+
+00:00:00.000 --> 00:00:10.820
+en este vídeo vamos a ver cómo combinar las medias cuerdas de css con flex box para hacer las outs responsive así que estar atento programador programador a mi nombre es
+
+00:00:10.830 --> 00:00:22.259
+kiko palmarés y comenzamos para ver cómo combinar los media queréis con fred box yo tengo por aquí abierto
+
+00:00:22.269 --> 00:00:33.240
+el visual studio code donde me voy a crear pues un archivo que será mi index html vale que lo voy a inicializar con html5 y le voy a cambiar por aquí el título vamos a poner por ejemplo flex
+
+00:00:33.250 --> 00:00:45.180
+box y lo primero que necesito es crear pues mi elemento de vale donde será mi 3 container y voy a poner aquí la clase de places container y después necesito tener elementos dentro vale yo voy a
+
+00:00:45.190 --> 00:00:56.549
+poner beats voy a ponerle por ejemplo con una numeración bien ya tenemos aquí nuestros elementos yo lo voy a hacer ahora es abrir esto en el navegador con el open with lights server de visual studio code ya lo tenemos por aquí abierto estamos viendo aquí a un lado el
+
+00:00:56.559 --> 00:01:08.340
+navegador con el resultado y por aquí estamos viendo el código bien a lo que vamos a hacer es empezar a crear el css voy a crear aquí mi mis estilos de css y a poner el flex container y lo que vamos
+
+00:01:08.350 --> 00:01:18.480
+a hacer es hacerle el display flex para que sea pues cumples container si no pues no lo serán ya hemos visto que por aquí no se está cambiando esto ya es un press container y vamos ahora poner un
+
+00:01:18.490 --> 00:01:29.710
+poquito bonito para que lo veamos sobre todo nosotros vamos a poner aquí por ejemplo un color de fondo vamos también a cambiarle a los hijos a los vips de dentro del container
+
+00:01:29.720 --> 00:01:40.900
+vamos a ponerle también otro color para que lo podamos visualizar bien y también vamos a darle un margen y entre ellos para saber dónde empieza y dónde acaba cada uno bien aquí tenemos nuestros
+
+00:01:40.910 --> 00:01:53.200
+elementos también voy a cambiarle el color del de las letras vale dar con el lay white para que se vean mejor que están ahí que no se ven muy bien y vamos a darle también un ancho vamos a darle por ejemplo un width de unos 50 píxeles
+
+00:01:53.210 --> 00:02:04.870
+a ver cómo queda y aquí lo tenemos vale vamos a estirar esto para que lo veáis vale y vamos a comprimir lo también para que lo veáis set proyecto que se está haciendo ahí su trabajo vamos poner un poquito más grande en vez del wing de 50
+
+00:02:04.880 --> 00:02:16.390
+que sea de 100 para que ocupen más vale vamos a volver a estirarlo aquí lo estamos viendo vale ya mejor y xxi cuando sea comprime pues también está ahí comprimiéndose haciendo flexión su
+
+00:02:16.400 --> 00:02:27.490
+trabajo vale pues como veis ahora mismo es tres container tiene un flex direction que es el por defecto que tiene lo tiene puesto a robot y yo lo pongo aquí rojo pues no va a cambiar y pues actualizamos no cambia
+
+00:02:27.500 --> 00:02:37.869
+absolutamente nada porque está por defecto pero qué pasa si esto en vez de cajas fuera un menú por ejemplo voy a ponerle un menú vale como si fuera un menú voy a ponerle aquí por ejemplo home
+
+00:02:37.879 --> 00:02:48.039
+ya ponerle aquí productos y voy a ponerle aquí pues contacta por ejemplo para que estamos viendo pues que cuando se hace esto pequeño pues las letras se
+
+00:02:48.049 --> 00:02:58.449
+nos salen ya no cabe aquí bien cuando es grande el menú pues funciona perfectamente pero cuando es pequeño no cuando es pequeño lo ideal sería poner uno debajo de otro bien pues complete
+
+00:02:58.909 --> 00:03:11.050
+es muy fácil combinándolo con los media queréis hacer esto podemos poner aquí un media query mucho con él aquí arroba media entre paréntesis le decimos un más width de por ejemplo vamos a darle 600
+
+00:03:11.060 --> 00:03:22.960
+píxeles por ejemplo ahora mismo no sé calcular muy bien porque le tengo metido zoom al navegador para que lo veáis esto más grande pero bueno le damos un matt witt de 600 píxeles y ahora el flex dirección que tenía el container yo sólo
+
+00:03:22.970 --> 00:03:34.080
+puedo cambiar aquí es decir le voy a copiar esto vale me lo voy a pegar aquí y ahorrarle todo esto que no me hace falta y me voy a dejar solo el dirección que es lo único que quiero modificar
+
+00:03:34.090 --> 00:03:45.820
+vale y este direction en row lo puedo poner en columna de esta manera veis ya me ha cambiado esto vale me ha cambiado la forma de columna vamos a estirarlo a ver si los seiscientos creado es muy
+
+00:03:45.830 --> 00:03:57.760
+grande si es muy grande 600 600 está por aquí así que vamos a darle mucho menos vamos a darle 300 a ver qué tal 300 y vamos a volver a estirar esto y como
+
+00:03:57.770 --> 00:04:09.130
+veis aquí pues se me pone en modo de fila vale cuando hay espacio y cuando ya no hay espacio pues me salta y se me convierte en modo columna lo cual pues ya nos viene bien otra cosa que podemos
+
+00:04:09.140 --> 00:04:21.729
+hacer para que estos ítems ocupen todo cuando están en modo columna es por ejemplo esto del prsc ontinyent y y cambiarle el tamaño que le puedo dar aquí un wifi del 100% valley aquí
+
+00:04:21.739 --> 00:04:32.770
+estamos viendo ya pues que me está cambiando el wifi al cien por cien aunque es más correcto diría yo en vez de ponerle un wifi ponerle un basics valer un flex veis es como estáis viendo ahora el facebook sis no me está
+
+00:04:32.780 --> 00:04:44.800
+haciendo nada si yo no parece que funciona el facebook sis y es porque aquí le tenemos puesto un width aquí tendríamos que usar también el facebook si es para que esto funcione correctamente vale ahora ya sí que
+
+00:04:44.810 --> 00:04:55.750
+tenemos el facebook si funcionando bien vale aquí tenemos 2100 y aquí pues ya nos mide el cien por cien variada y 100 píxeles y aquí el cien por cien como veis es muy fácil con fred vos
+
+00:04:55.760 --> 00:05:07.390
+combinándolo con los media queries obtener pues cosas de este tipo totalmente responsive no el hecho de poder cambiar de columna y fila nos viene muy bien pues ya conoces este pequeño truquito para convertir tus la
+
+00:05:07.400 --> 00:05:17.469
+jaws en responsive utilizando los medios y flex box voy a dejar por aquí una lista de reproducción de tenemos el curso completo de straight box que puedes hacer programado el programador a
+
+00:05:17.479 --> 00:05:21.280
+nos vemos en el próximo vídeo
