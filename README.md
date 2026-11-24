@@ -37,7 +37,8 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm run lint` | Revisa el código |
 | `npm test` | Ejecuta los tests |
 | `npm run test:ia` | Prueba la conexión real con el proveedor de IA (necesita la clave en `.env.local`) |
-| `npm run db:up` / `npm run db:down` | Arranca o para la BBDD local en Docker (ver [docs/bbdd](docs/bbdd/README.md#5-entornos-y-variables-de-entorno)) |
+| `npm run db:up` / `npm run db:down` | Arranca o para la BBDD local en Docker, en el puerto 5433 (ver [docs/bbdd](docs/bbdd/README.md#5-entornos-y-variables-de-entorno)) |
+| `npm run db:validar` | Comprueba el borrador del esquema en una BBDD temporal (no toca tus datos) |
 | `npm run generar:material` | Genera el resumen y las tarjetas comunes de los módulos con transcripciones (`-- m2-css` para uno solo, `-- --forzar` para regenerar). Revisa el resultado y pon `"revisado": true` |
 | `npm run generar:infografias` | Genera una infografía por concepto (mismas opciones). Revisa el resultado y pon `"revisado": true` |
 
@@ -93,7 +94,7 @@ Para añadir componentes de shadcn/ui: `npx shadcn@latest add <componente>`.
 
 - El repositorio está conectado a Vercel: cada cambio en `main` se publica solo, y cada PR tiene su propia URL de prueba.
 - Las funciones se ejecutan en **París** (`vercel.json`), así que los datos de los alumnos se procesan en la UE.
-- Las variables de `.env.example` se configuran en el panel de Vercel (Settings → Environment Variables), nunca en el repositorio. Qué es cada una y de dónde sale: [docs/bbdd/README.md](docs/bbdd/README.md#5-variables-de-entorno).
+- Las variables de `.env.example` se configuran en el panel de Vercel (Settings → Environment Variables), nunca en el repositorio. Qué es cada una y de dónde sale: [docs/bbdd/README.md](docs/bbdd/README.md#5-entornos-y-variables-de-entorno).
 - `next.config.ts` incluye en el despliegue `agents/` y `data/`, que el servidor lee al responder.
 
 ## Tecnologías

@@ -52,10 +52,11 @@ Decisiones de diseño:
 
 - **Visitante** no es una fila: es quien no ha iniciado sesión. Los roles son `alumno`, `profesor` y `admin`.
 - **Iniciar sesión** con email y contraseña o con Google es una fila de `cuenta` por método. La contraseña se guarda **solo como hash** (`cuenta.password_hash`) y la calcula Better Auth, nunca nuestro código.
-- **El acceso a un curso se da a un email** (`matricula`), aunque esa persona aún no se haya registrado. Al entrar por primera vez se enlaza con su usuario.
-- **La matrícula por compra solo la crea el webhook de Stripe**, nunca el navegador.
+- **El acceso a un curso se da a un email** (`matricula`), aunque esa persona aún no se haya registrado. Al entrar por primera vez se enlaza con su usuario. **Los emails se guardan siempre en minúsculas** (la BBDD lo exige), para que `Ana@x.es` y `ana@x.es` sean la misma persona: el código los pasa a minúsculas antes de guardar o buscar.
+- **La matrícula por compra solo la crea el webhook de Stripe**, nunca el navegador. La BBDD exige que una matrícula por compra tenga su pedido y que una invitación no lo tenga.
+- **`matricula.orden_modulos`** es una lista de ids: PostgreSQL no puede comprobar claves ajenas dentro de una lista, así que el código comprueba que todos los módulos son de ese curso.
 - **Diagnóstico y ruta personal:** cada opción del diagnóstico suma puntos a unas etiquetas; el módulo que más encaja (`suma(puntos × peso)`) pasa a ser el principal y se guarda el orden en `matricula.orden_modulos`.
-- **Los puntos del foro no se guardan:** se calculan a partir de las respuestas validadas como buenas. Las insignias sí (`usuario_insignia`). Valida la IA o un profesor, y el profesor prevalece.
+- **Los puntos del foro no se guardan:** se calculan a partir de las respuestas validadas como buenas. Las insignias sí (`usuario_insignia`). Valida la IA o un profesor, y el profesor prevalece. Un comentario pendiente no tiene validador ni fecha; uno validado tiene los dos. Si se borra la cuenta del profesor, la validación se conserva.
 - **El dinero se guarda en céntimos** (`integer`), como hace Stripe.
 
 ---
@@ -96,19 +97,22 @@ Cada persona trabaja con **su propia BBDD en Docker**: puede romperla y regenera
 
 | Entorno | BBDD | `DATABASE_URL` |
 |---|---|---|
-| Local | Postgres 17 en Docker (`docker-compose.yml`) | `postgres://hackado:hackado@localhost:5432/hackado` |
+| Local | Postgres 17 en Docker (`docker-compose.yml`) | `postgres://hackado:hackado@localhost:5433/hackado` |
 | Producción | Neon (UE) | La cadena *pooled* de Neon (la que lleva `-pooler`). **Solo está en Vercel; no se comparte con el equipo** |
 
 ```bash
-npm run db:up      # arranca Postgres (necesita Docker Desktop abierto)
-npm run db:down    # lo para; los datos se conservan
+npm run db:up        # arranca Postgres (necesita Docker Desktop abierto)
+npm run db:down      # lo para; los datos se conservan
+npm run db:validar   # comprueba el borrador del esquema en una BBDD temporal
 docker compose down -v   # lo para y BORRA los datos locales
 ```
 
 - Requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (en Windows, con WSL2).
+- **Puerto 5433, no 5432:** así no choca con un PostgreSQL instalado en el ordenador. Si hubiera un Postgres en 5432, una `DATABASE_URL` con ese puerto se conectaría a él sin dar error. Para usar otro puerto: variable `DB_PORT` al arrancar y el mismo puerto en `DATABASE_URL`.
+- **Solo desde tu ordenador:** el puerto escucha en `127.0.0.1`, así que nadie de la misma wifi puede entrar, aunque la contraseña `hackado` esté en el repositorio.
 - **Plan B sin Docker:** una rama propia de Neon (una copia aislada de la BBDD), nunca la de producción.
 - **Driver:** se usa el driver estándar de PostgreSQL con Drizzle, no el driver HTTP de Neon, porque este último no conecta con un Postgres normal y el Docker local no serviría.
-- Para comprobar el borrador del esquema: `docker compose exec -T db psql -U hackado -d hackado -v ON_ERROR_STOP=1 < docs/bbdd/esquema-borrador.sql` (mejor sobre una BBDD vacía).
+- `db:validar` funciona igual en PowerShell, cmd o bash (se ejecuta dentro del contenedor), crea la BBDD temporal en una sola transacción y la borra al terminar. Se puede repetir aunque falle a medias.
 
 ### Variables
 
@@ -116,7 +120,7 @@ Las claves van en `.env.local` (en tu ordenador) y en Vercel (*Settings → Envi
 
 | Variable | Para qué | De dónde sale |
 |---|---|---|
-| `DATABASE_URL` | Conexión a PostgreSQL | En local, la de la tabla de arriba. En producción, Neon → proyecto en región UE → *Connection string* (pooled) |
+| `DATABASE_URL` | Conexión a PostgreSQL | En local, la de la tabla de arriba (puerto 5433). En producción, Neon → proyecto en región UE → *Connection string* (pooled) |
 | `BETTER_AUTH_SECRET` | Firma las sesiones | Cadena aleatoria de 32+ caracteres: `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | URL base de la app | `http://localhost:3000` en local; la URL de Vercel en producción |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Iniciar sesión con Google | Google Cloud Console → *Credentials* → *OAuth client ID* (web). Redirección: `<BETTER_AUTH_URL>/api/auth/callback/google` |

@@ -8,7 +8,7 @@
 CREATE TABLE usuario (
   id                          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   nombre                      text NOT NULL,
-  email                       text NOT NULL UNIQUE,
+  email                       text NOT NULL UNIQUE CHECK (email = lower(email)), -- always stored lowercase
   email_verificado            boolean NOT NULL DEFAULT false,
   imagen_url                  text,
   rol                         text NOT NULL DEFAULT 'alumno' CHECK (rol IN ('alumno', 'profesor', 'admin')),
@@ -157,16 +157,18 @@ CREATE TABLE pedido (
 CREATE TABLE matricula ( -- access to a course is granted to an EMAIL, even before the user signs up
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   curso_id     uuid NOT NULL REFERENCES curso(id) ON DELETE CASCADE,
-  email        text NOT NULL,
+  email        text NOT NULL CHECK (email = lower(email)), -- lowercase, so it matches usuario.email on first sign-in
   usuario_id   uuid REFERENCES usuario(id) ON DELETE SET NULL, -- linked on first sign-in
   rol_en_curso text NOT NULL DEFAULT 'alumno' CHECK (rol_en_curso IN ('alumno', 'profesor')),
   origen       text NOT NULL CHECK (origen IN ('compra', 'invitacion')),
   pedido_id    uuid REFERENCES pedido(id), -- only for origen = 'compra', created by the Stripe webhook
   -- Personal route, set by the diagnostic. NULL = default order (modulo.orden_sugerido).
   modulo_principal_id  uuid REFERENCES modulo(id) ON DELETE SET NULL,
+  -- PostgreSQL cannot enforce foreign keys inside arrays: code must check that every id belongs to this course.
   orden_modulos        uuid[], -- module ids in the order this student will see them
   creado       timestamptz NOT NULL DEFAULT now(),
-  UNIQUE (curso_id, email)
+  UNIQUE (curso_id, email),
+  CHECK ((origen = 'compra') = (pedido_id IS NOT NULL)) -- a purchase always has its order; an invitation never does
 );
 
 -- ─── AI-generated material (generated once, then reused) ────────────────────
@@ -333,7 +335,12 @@ CREATE TABLE comentario_foro (
   validado_por    text CHECK (validado_por IN ('ia', 'profesor')),
   profesor_id     uuid REFERENCES usuario(id) ON DELETE SET NULL, -- only when validado_por = 'profesor'
   validado_en     timestamptz,
-  creado          timestamptz NOT NULL DEFAULT now()
+  creado          timestamptz NOT NULL DEFAULT now(),
+  -- Pending means nobody validated it; validated means we know who and when.
+  CHECK ((validacion = 'pendiente') = (validado_por IS NULL AND validado_en IS NULL)),
+  -- A teacher id only for teacher validations. The reverse is not enforced on purpose: if the teacher's
+  -- account is deleted, profesor_id becomes NULL and the validation must survive. Code always sets it.
+  CHECK (profesor_id IS NULL OR validado_por = 'profesor')
 );
 
 CREATE TABLE insignia ( -- e.g. "Primera buena respuesta", "Experto en CSS"
