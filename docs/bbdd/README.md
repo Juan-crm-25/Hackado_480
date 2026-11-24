@@ -1,6 +1,6 @@
 # Base de datos
 
-> Issue #13 · Estado: **borrador en revisión por el equipo**. El esquema vigente es [`esquema-borrador.sql`](esquema-borrador.sql) hasta que exista `src/lib/db/schema.ts` (Drizzle). Cuando exista, **ese fichero manda** y el `.sql` se borra.
+> Issue #13 · El esquema vive en [`src/lib/db/schema/`](../../src/lib/db/schema/) (Drizzle) y **es la fuente de verdad**: si este documento y el código no coinciden, manda el código y se corrige el documento.
 
 Este documento es la referencia para personas **y para las IAs** que trabajen en el proyecto. Si algo de aquí choca con otro documento, gana este y hay que corregir el otro.
 
@@ -11,7 +11,7 @@ Este documento es la referencia para personas **y para las IAs** que trabajen en
 1. **La BBDD es la única fuente de verdad** de todo lo que la app guarda: usuarios, catálogo, documentos, material generado, intentos, progreso, pagos y foro.
 2. **No se crean ficheros de datos nuevos** en `data/`. Los que hay (`catalog.json`, `material/`, `infografias/`, `transcripciones/`) son **solo el origen del seed**: se importan a la BBDD una vez y, cuando el código lea de la BBDD, se borran.
 3. **El esquema define qué se guarda y cómo.** Se rellenan exactamente los campos que pide cada tabla, con el tipo y el formato que pide. No se añaden campos que no existen ni se guardan datos «por si acaso» en un JSON libre.
-4. **Cambiar el esquema es cambiar el contrato.** Se hace con una migración de Drizzle en una PR propia y se avisa al equipo antes de fusionar (ver `CONTRIBUTING.md`).
+4. **Cambiar el esquema es cambiar el contrato.** Se hace con una migración de Drizzle en una PR propia y se avisa al equipo antes de fusionar (ver `CONTRIBUTING.md` y el apartado 3).
 
 ---
 
@@ -45,6 +45,31 @@ Opcional: un script exportará los markdown a `conocimiento/<curso>/<modulo>/<cl
 | Evaluaciones | `evaluacion`, `pregunta_evaluacion`, `intento_evaluacion` |
 | Tutor IA | `conversacion`, `mensaje`, `uso_ia` |
 | Foro | `tema_foro`, `comentario_foro`, `insignia`, `usuario_insignia` |
+
+### El esquema en código
+
+| Qué | Dónde |
+|---|---|
+| Tablas, un fichero por bloque (`usuarios`, `catalogo`, `acceso`, `material`, `ejercicios`, `evaluaciones`, `tutor`, `foro`) | `src/lib/db/schema/` |
+| Valores fijos (rol, tipo de ejercicio, estado del pedido…) como `enum` de PostgreSQL | `src/lib/db/schema/enums.ts` |
+| Cliente para consultar: `getDb()`. Se crea en el primer uso (no al importar) y abre como mucho 1 conexión por instancia | `src/lib/db/client.ts` |
+| Migraciones SQL generadas | `drizzle/` |
+
+Para cambiar el esquema:
+
+1. Edita las tablas en `src/lib/db/schema/`.
+2. `npm run db:generate -- --name que_cambia` crea la migración SQL en `drizzle/`.
+3. **Revisa el SQL generado** (que no borre columnas o datos sin querer).
+4. `npm run db:migrate` la aplica a tu BBDD local.
+
+**Una migración por PR**, y una migración que ya se ha aplicado no se edita: se crea otra.
+
+**Dos tipos de tipos:**
+
+- **Tipos de fila** (`Usuario`, `NuevoUsuario`, `MaterialClase`…): salen del esquema (`typeof usuario.$inferSelect` / `$inferInsert`) y se exportan desde `src/lib/db/schema/`. Son **solo para la capa de datos** (consultas e inserciones).
+- **`src/lib/types.ts`**: el contrato de la API con el frontend y la IA. No se cambia para parecerse a la BBDD; la capa de datos convierte una cosa en la otra. Algunos nombres coinciden (`Curso`, `Modulo`, `Intento`…): importa cada uno de su sitio.
+
+Los `enum` que también existen en `types.ts` (`TipoEjercicio`, `EstadoModulo`, `TipoMaterial`…) tienen que tener los mismos valores: lo comprueba `src/lib/db/schema.test.ts`.
 
 Jerarquía del catálogo: **Categoría → Curso → Módulo → Clase**. Cada clase es un vídeo con sus documentos. Los temas (HTML, CSS, lógica…) **no son un nivel**: son `etiqueta`s de los módulos.
 
@@ -102,8 +127,9 @@ Cada persona trabaja con **su propia BBDD en Docker**: puede romperla y regenera
 
 ```bash
 npm run db:up        # arranca Postgres (necesita Docker Desktop abierto)
+npm run db:migrate   # crea o actualiza las tablas con las migraciones de drizzle/
+npm run db:studio    # abre Drizzle Studio para ver los datos
 npm run db:down      # lo para; los datos se conservan
-npm run db:validar   # comprueba el borrador del esquema en una BBDD temporal
 docker compose down -v   # lo para y BORRA los datos locales
 ```
 
@@ -112,7 +138,26 @@ docker compose down -v   # lo para y BORRA los datos locales
 - **Solo desde tu ordenador:** el puerto escucha en `127.0.0.1`, así que nadie de la misma wifi puede entrar, aunque la contraseña `hackado` esté en el repositorio.
 - **Plan B sin Docker:** una rama propia de Neon (una copia aislada de la BBDD), nunca la de producción.
 - **Driver:** se usa el driver estándar de PostgreSQL con Drizzle, no el driver HTTP de Neon, porque este último no conecta con un Postgres normal y el Docker local no serviría.
-- `db:validar` funciona igual en PowerShell, cmd o bash (se ejecuta dentro del contenedor), crea la BBDD temporal en una sola transacción y la borra al terminar. Se puede repetir aunque falle a medias.
+- Los comandos `db:generate`, `db:migrate` y `db:studio` leen `DATABASE_URL` de `.env.local` (o del entorno, si ya está definida).
+- **Driver en producción:** el cliente usa `prepare: false`, porque la cadena *pooled* de Neon no admite sentencias preparadas.
+
+### Sembrar los datos de la demo
+
+```bash
+npm run db:seed                            # BBDD local (DATABASE_URL de .env.local)
+SEED_PERMITIR_REMOTO=1 npm run db:seed     # otra BBDD (p. ej., Neon), solo a propósito
+```
+
+- **Qué crea:** la categoría `programacion`; el curso de `data/catalog.json` (gratis y publicado) con sus 4 módulos, sus conceptos y una clase por vídeo (`video_url` de YouTube); **10 alumnos** (los dos primeros son los de `src/lib/datos-prueba.ts`: Lucía `lucia@demo.test` y Pablo `pablo@demo.test`), **1 profesor** (`profesora@demo.test`) y **1 admin** (`admin@demo.test`), todos con el email verificado; y la matrícula por invitación de los alumnos y del profesor (este, como `profesor` del curso). El admin no necesita matrícula.
+- **No crea** transcripciones ni documentos (los importará el conversor), ni cuentas ni sesiones (llegan con el login).
+- **Se puede repetir:** inserta o actualiza por clave natural (`slug`, `email`, `(curso, email)`…), así que ejecutarlo dos veces deja los mismos datos.
+- **Solo la BBDD local:** se niega si el host de `DATABASE_URL` no es `localhost` o `127.0.0.1`, salvo con `SEED_PERMITIR_REMOTO=1`.
+- Código: `scripts/seed.ts` (conexión) y `src/lib/db/seed/` (datos y `sembrar()`).
+- El **límite diario de IA** (`uso_ia`, un contador por alumno y día UTC) y el **material personal** (`material_personal`, los 20 más recientes por alumno) ya se guardan en la BBDD. `/api/tutor` y `/api/material-personal` responden 404 si falta el seed.
+
+### Tests con BBDD
+
+Los tests de integración crean su propia BBDD en el Docker local (`hackado_test_…`), le aplican las migraciones de `drizzle/`, la usan y la borran: `crearBdPrueba()` en `src/lib/db/test-utils.ts`. Si el Docker no está arrancado, esos tests se saltan con un aviso. Nunca tocan la BBDD `hackado`.
 
 ### Variables
 
@@ -129,15 +174,16 @@ Las claves van en `.env.local` (en tu ordenador) y en Vercel (*Settings → Envi
 | `R2_BUCKET` | Nombre del bucket | El que creéis, con jurisdicción UE |
 | `R2_PUBLIC_URL` | URL pública de las imágenes (la que se guarda en `curso_imagen.url`) | Dominio público del bucket (`r2.dev` o uno propio) |
 | `STRIPE_SECRET_KEY` | Crear sesiones de Checkout | Stripe en **modo test** → *Developers → API keys* (`sk_test_…`) |
-| `STRIPE_WEBHOOK_SECRET` | Comprobar que el aviso de pago viene de Stripe | En local, `stripe listen --forward-to localhost:3000/api/stripe/webhook` (`whsec_…`); en Vercel, el del webhook creado en el panel |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Caché compartida (opcional) | Vercel → *Storage → Marketplace → Upstash Redis* (región UE): se añaden solas. Sin ellas, la app usa caché en memoria |
+| `STRIPE_WEBHOOK_SECRET` | Comprobar que el aviso de pago viene de Stripe | En local, `stripe listen --forward-to localhost:3000/api/pagos/webhook` (`whsec_…`); en Vercel, el del webhook creado en el panel |
 
-Better Auth, Drizzle, el SDK de R2 y Stripe **aún no están instalados**: se instalan en la PR que use cada uno. Iniciar sesión con Apple queda fuera del MVP: exige una cuenta de pago de Apple Developer.
+Better Auth, el SDK de R2 y Stripe **aún no están instalados**: se instalan en la PR que use cada uno. Iniciar sesión con Apple queda fuera del MVP: exige una cuenta de pago de Apple Developer.
 
 ### Pago simulado con Stripe (modo test)
 
 1. «Comprar» crea un `pedido` en estado `pendiente` y una sesión de **Stripe Checkout** con el precio de `curso.precio_centimos`.
 2. El alumno paga en la página de Stripe con una tarjeta de prueba (`4242 4242 4242 4242`, fecha futura, cualquier CVC). No se mueve dinero real.
-3. Stripe llama al webhook. El servidor **comprueba la firma** con `STRIPE_WEBHOOK_SECRET`, marca el pedido como `pagado` y crea la `matricula` con `origen = 'compra'`.
+3. Stripe llama al webhook. El servidor **comprueba la firma** con `STRIPE_WEBHOOK_SECRET`, marca el pedido como `pagado` y crea la `matricula` con `origen = 'compra'`, en una sola transacción y sin repetir nada si Stripe reenvía el aviso (detalle en [`docs/arquitectura.md`](../arquitectura.md#webhook-de-stripe)).
 
 ---
 
