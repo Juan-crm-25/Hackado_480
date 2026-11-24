@@ -21,7 +21,8 @@ const TABLAS = [
   "tema_foro", "comentario_foro", "insignia", "usuario_insignia",
 ];
 
-// Lista completa de una unión: si falta un valor, el tipo es `never` y tsc falla; si sobra, falla `satisfies`.
+// Lista completa de una unión: si falta un valor, el tipo es `never` y tsc falla;
+// si sobra uno, tsc también falla porque no cumple `T extends readonly U[]`.
 type Completa<U, T extends readonly U[]> = [U] extends [T[number]] ? T : never;
 const lista =
   <U>() =>
@@ -29,16 +30,18 @@ const lista =
     valores;
 
 // Igualdad de tipos: el enum de la BBDD y la unión del contrato deben ser el mismo conjunto.
+// Es una comprobación solo de tsc: si alguno no es `true`, `Afirmar` no compila.
 type Igual<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+type Afirmar<T extends true> = T;
 type ValoresDe<E extends { enumValues: readonly string[] }> = E["enumValues"][number];
-const mismosTipos: [
-  Igual<ValoresDe<typeof schema.tipoEjercicio>, TipoEjercicio>,
-  Igual<ValoresDe<typeof schema.estadoEjercicio>, EstadoEjercicio>,
-  Igual<ValoresDe<typeof schema.estadoModulo>, EstadoModulo>,
-  Igual<ValoresDe<typeof schema.tipoMaterial>, TipoMaterial>,
-  Igual<ValoresDe<typeof schema.nivelMaterial>, NivelMaterial>,
-  Igual<ValoresDe<typeof schema.rolMensaje>, RolMensaje>,
-] = [true, true, true, true, true, true];
+export type EnumsIgualesAlContrato = [
+  Afirmar<Igual<ValoresDe<typeof schema.tipoEjercicio>, TipoEjercicio>>,
+  Afirmar<Igual<ValoresDe<typeof schema.estadoEjercicio>, EstadoEjercicio>>,
+  Afirmar<Igual<ValoresDe<typeof schema.estadoModulo>, EstadoModulo>>,
+  Afirmar<Igual<ValoresDe<typeof schema.tipoMaterial>, TipoMaterial>>,
+  Afirmar<Igual<ValoresDe<typeof schema.nivelMaterial>, NivelMaterial>>,
+  Afirmar<Igual<ValoresDe<typeof schema.rolMensaje>, RolMensaje>>,
+];
 
 describe("esquema de la BBDD", () => {
   it("exporta exactamente las 31 tablas del modelo de datos", () => {
@@ -60,7 +63,6 @@ describe("esquema de la BBDD", () => {
       [schema.rolMensaje.enumValues, lista<RolMensaje>()(["alumno", "tutor"])],
     ];
 
-    expect(mismosTipos.every(Boolean)).toBe(true);
     for (const [enumBbdd, union] of casos) {
       expect([...enumBbdd].sort()).toEqual([...union].sort());
     }

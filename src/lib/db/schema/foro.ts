@@ -89,4 +89,4 @@ export type NuevoComentarioForo = typeof comentarioForo.$inferInsert;
 export type Insignia = typeof insignia.$inferSelect;
 export type NuevaInsignia = typeof insignia.$inferInsert;
 export type UsuarioInsignia = typeof usuarioInsignia.$inferSelect;
-export type NuevaUsuarioInsignia = typeof usuarioInsignia.$inferInsert;
+export type NuevoUsuarioInsignia = typeof usuarioInsignia.$inferInsert;

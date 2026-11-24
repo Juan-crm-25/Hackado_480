@@ -52,7 +52,7 @@ Opcional: un script exportará los markdown a `conocimiento/<curso>/<modulo>/<cl
 |---|---|
 | Tablas, un fichero por bloque (`usuarios`, `catalogo`, `acceso`, `material`, `ejercicios`, `evaluaciones`, `tutor`, `foro`) | `src/lib/db/schema/` |
 | Valores fijos (rol, tipo de ejercicio, estado del pedido…) como `enum` de PostgreSQL | `src/lib/db/schema/enums.ts` |
-| Cliente para consultar (`db`) | `src/lib/db/client.ts` |
+| Cliente para consultar: `getDb()`. Se crea en el primer uso (no al importar) y abre como mucho 1 conexión por instancia | `src/lib/db/client.ts` |
 | Migraciones SQL generadas | `drizzle/` |
 
 Para cambiar el esquema:
