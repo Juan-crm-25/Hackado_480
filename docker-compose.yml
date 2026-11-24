@@ -1,0 +1,25 @@
+# Local PostgreSQL for development only. Production uses Neon (EU); its URL lives only in Vercel.
+# Start: npm run db:up · Stop: npm run db:down · Wipe all local data: docker compose down -v
+# Connection string for .env.local:
+#   DATABASE_URL=postgres://hackado:hackado@localhost:5432/hackado
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: hackado-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hackado
+      POSTGRES_PASSWORD: hackado # local only, never used outside this container
+      POSTGRES_DB: hackado
+    ports:
+      - "5432:5432"
+    volumes:
+      - hackado-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hackado -d hackado"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  hackado-db:
