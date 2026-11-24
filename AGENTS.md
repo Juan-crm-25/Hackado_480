@@ -43,3 +43,16 @@ Full reference: [`docs/arquitectura.md`](docs/arquitectura.md).
 - `src/proxy.ts` (Next 16 name for middleware) only does optimistic cookie checks and redirects for pages. It is never the authorization layer.
 - Errors are `ErrorApp` with a `codigo`; `ruta()` maps them to HTTP status and `{ error, codigo, detalles? }`.
 - Existing endpoints keep working; migrate them to this structure one per PR without breaking `src/lib/types.ts`.
+
+## Frontend rules (read before building UI)
+
+Full reference: [`docs/estilo.md`](docs/estilo.md). Read it first.
+
+- Colours: only semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-brand`, `bg-surface-dark`, `chart-*`…). Never raw Tailwind palette classes (`gray-*`, `sky-*`…) or hex/rgb/arbitrary colours. `src/estilo.test.ts` enforces this on `src/app` and `src/components`.
+- Use shadcn components (`src/components/ui`, style `base-nova` on `@base-ui/react`) before hand-made controls: `Tabs`, `ToggleGroup`, `Select`, `Card`, `Badge`, `Button`. Add new ones with `npx shadcn@latest add <name>` and adapt them to the guide (import `cn` from `@/lib/utils`).
+- Touch targets are at least 44 px tall. `Button`, `Toggle`, `TabsList` and `SelectTrigger` already default to that; do not shrink them on touch screens. Use `variant="accent"` for the one highlighted action per screen.
+- Keyboard focus is always visible (blue ring in light mode, green in dark). Never remove it with `outline-none` without a `focus-visible:ring-ring` replacement.
+- Loading, empty and error states use `EstadoCargando`, `EstadoVacio` and `EstadoError` from `src/components/estado.tsx`. Never swallow a fetch error: read API responses with `leerRespuesta()` / `mensajeDeError()` from `src/lib/peticiones.ts`. Module screens use `CabeceraPantalla`.
+- Mobile-first at 360 px inside `mx-auto max-w-md px-4`. Nothing may rely on colour alone (add text or an icon).
+- Respect reduced motion: entrance animations use `motion-safe:`.
+- UI copy is in Spanish.

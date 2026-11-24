@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
+import { EstadoVacio } from "@/components/estado";
 import { VistaInfografia } from "@/components/infografia";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Concepto, Infografia, MaterialComun, SeccionResumen, Tarjeta } from "@/lib/types";
 import { MiMaterial } from "./mi-material";
 
@@ -43,40 +46,48 @@ export function VistaMaterial({
 
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4 px-4 py-4">
-      <div className="grid rounded-lg bg-muted p-1" style={{ gridTemplateColumns: `repeat(${pestanas.length}, minmax(0, 1fr))` }} role="tablist">
-        {pestanas.map((p) => (
-          <button
-            key={p.id}
-            role="tab"
-            aria-selected={pestana === p.id}
-            onClick={() => setPestana(p.id)}
-            className={`rounded-md py-2 text-sm font-medium ${pestana === p.id ? "bg-background shadow-sm" : "text-muted-foreground"}`}
-          >
-            {p.texto}
-          </button>
-        ))}
-      </div>
-
-      {!material && (
-        <p className="text-sm text-muted-foreground">Este módulo todavía no tiene material de repaso del curso, pero puedes crearte el tuyo.</p>
-      )}
-
-      {pestana === "resumen" && material && <Resumen secciones={material.resumen} videos={videos} />}
-      {pestana === "tarjetas" && material && <Tarjetas tarjetas={material.tarjetas} videos={videos} />}
-      {pestana === "visual" && (
-        <div className="flex flex-col gap-3">
-          {infografias.map((info) => (
-            <VistaInfografia key={info.conceptoId} infografia={info} videos={videos} />
+      {/* Tabs de shadcn (Base UI): roles tab/tabpanel y flechas del teclado incluidos. */}
+      <Tabs value={pestana} onValueChange={(v: Pestana) => setPestana(v)} className="gap-4">
+        <TabsList className="grid w-full grid-flow-col auto-cols-fr">
+          {pestanas.map((p) => (
+            <TabsTrigger key={p.id} value={p.id}>
+              {p.texto}
+            </TabsTrigger>
           ))}
-        </div>
-      )}
-      {pestana === "mio" && (
-        <MiMaterial moduloId={moduloId} conceptos={conceptos} videos={videos} hayTranscripciones={hayTranscripciones} />
-      )}
+        </TabsList>
+
+        {!material && (
+          <EstadoVacio>Este módulo todavía no tiene material de repaso del curso, pero puedes crearte el tuyo.</EstadoVacio>
+        )}
+
+        {material && (
+          <TabsContent value="resumen">
+            <Resumen secciones={material.resumen} videos={videos} />
+          </TabsContent>
+        )}
+        {material && (
+          <TabsContent value="tarjetas">
+            <Tarjetas tarjetas={material.tarjetas} videos={videos} />
+          </TabsContent>
+        )}
+        {infografias.length > 0 && (
+          <TabsContent value="visual" className="flex flex-col gap-3">
+            {infografias.map((info) => (
+              <VistaInfografia key={info.conceptoId} infografia={info} videos={videos} />
+            ))}
+          </TabsContent>
+        )}
+        <TabsContent value="mio">
+          <MiMaterial moduloId={moduloId} conceptos={conceptos} videos={videos} hayTranscripciones={hayTranscripciones} />
+        </TabsContent>
+      </Tabs>
 
       <p className="mt-auto pt-2 text-center text-sm text-muted-foreground">
         ¿Te queda alguna duda?{" "}
-        <Link href={enlaceTutor} className="font-medium text-foreground underline underline-offset-4">
+        <Link
+          href={enlaceTutor}
+          className="inline-flex min-h-11 items-center rounded-sm font-medium text-foreground underline underline-offset-4"
+        >
           Pregúntale al tutor
         </Link>
       </p>
@@ -88,16 +99,24 @@ export function Resumen({ secciones, videos }: { secciones: SeccionResumen[]; vi
   return (
     <ol className="flex flex-col gap-3">
       {secciones.map((s) => (
-        <li key={s.titulo} className="flex flex-col gap-2 rounded-xl border p-4">
-          <h2 className="font-semibold">{s.titulo}</h2>
-          <p className="text-sm leading-relaxed">
-            <TextoConCodigo texto={s.texto} />
-          </p>
-          {s.fuente && (
-            <div>
-              <FuenteVideo fuente={s.fuente} videos={videos} />
-            </div>
-          )}
+        <li key={s.titulo}>
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <h2>{s.titulo}</h2>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <p className="text-base leading-relaxed">
+                <TextoConCodigo texto={s.texto} />
+              </p>
+              {s.fuente && (
+                <div>
+                  <FuenteVideo fuente={s.fuente} videos={videos} />
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </li>
       ))}
     </ol>
@@ -125,12 +144,12 @@ export function Tarjetas({ tarjetas, videos }: { tarjetas: Tarjeta[]; videos: Vi
       <button
         onClick={() => setGirada((g) => !g)}
         aria-label={girada ? "Ver la pregunta" : "Ver la respuesta"}
-        className={`flex min-h-56 flex-col items-center justify-center gap-3 rounded-2xl border-2 p-6 text-center transition-colors ${
+        className={`flex min-h-56 flex-col items-center justify-center gap-3 rounded-lg border-2 p-6 text-center shadow-sm transition-colors duration-150 ease-in-out ${
           girada ? "border-primary bg-primary/5" : "bg-card"
         }`}
       >
-        <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{girada ? "Respuesta" : "Pregunta"}</span>
-        <span className={`w-full break-words ${girada ? "text-base" : "text-lg font-semibold"}`}>
+        <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{girada ? "Respuesta" : "Pregunta"}</span>
+        <span className={`w-full break-words ${girada ? "text-base" : "text-xl leading-tight font-bold"}`}>
           <TextoConCodigo texto={girada ? tarjeta.respuesta : tarjeta.pregunta} />
         </span>
       </button>
@@ -142,10 +161,10 @@ export function Tarjetas({ tarjetas, videos }: { tarjetas: Tarjeta[]; videos: Vi
       )}
 
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="outline" className="h-11" onClick={() => ir(indice - 1)}>
+        <Button variant="outline" onClick={() => ir(indice - 1)}>
           ← Anterior
         </Button>
-        <Button className="h-11" onClick={() => ir(indice + 1)}>
+        <Button onClick={() => ir(indice + 1)}>
           Siguiente →
         </Button>
       </div>
