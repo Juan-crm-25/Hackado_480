@@ -1,0 +1,123 @@
+WEBVTT
+
+NOTE
+Transcripción de «Estructura de un documento HTML» (https://www.youtube.com/watch?v=_MTZx8H-Fo4).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
+
+00:00:05.000 --> 00:00:16.150
+En esta primera clase vamos a ver una pequeña introducción, así que comenzamos. Bien, en primer lugar veamos qué es HTML. HTML es el lenguaje de marcado estándar para crear páginas web.
+
+00:00:16.160 --> 00:00:27.230
+HTML significa Hypertext Markup Language, que es lenguaje de marcado de hipertexto en español. HTML lo que hace es describir la estructura de una página web. Consiste en una serie de elementos,
+
+00:00:27.240 --> 00:00:38.270
+HTML se compone de una serie de elementos y estos elementos lo que hacen es que le dicen al navegador cómo mostrar ese contenido que contiene nuestro documento de HTML. Estos elementos de HTML se representan con
+
+00:00:38.280 --> 00:00:48.550
+etiquetas. Y estas etiquetas lo que hacen es encapsular el tipo de contenido que tiene ese documento, como por ejemplo, pueden ser títulos, párrafos, tablas, etcétera. Tenemos un montón de
+
+00:00:48.560 --> 00:00:59.830
+tipos de de contenidos. Y por último, los navegadores no muestran las etiquetas HTML. Lo que hacen es usar esas etiquetas HTML para representar el contenido de la página, para saber qué es cada cosa, por ejemplo, saber qué es
+
+00:00:59.840 --> 00:01:10.510
+un título, qué es un párrafo, etcétera. Aquí podemos ver un ejemplo de un documento de HTML. Aquí podemos ver el contenido, que sería esto es el titular y esto es un párrafo, eso es el contenido, y podemos ver también las
+
+00:01:10.520 --> 00:01:22.350
+etiquetas, es lo que hablábamos antes de que HTML lo que tiene es etiquetas para encapsular ese contenido. Vamos a ver ahora parte por parte qué significa cada cosa. En primer lugar, lo que tenemos es el doctype HTML, que esto lo que hace es
+
+00:01:22.360 --> 00:01:32.630
+definir que el documento es HTML 5, es decir, que estamos usando la versión 5 de HTML. El siguiente elemento que teníamos es HTML y este es el elemento raíz de la página. Todas las páginas
+
+00:01:32.640 --> 00:01:43.470
+HTML contienen esta etiqueta y dentro de esta etiqueta ya va todo el contenido del HTML. Después veíamos que teníamos la etiqueta head. Esta etiqueta lo que tiene es información sobre el documento
+
+00:01:43.480 --> 00:01:54.590
+en sí, esta información no se ve, tan solo es información para el documento, pero no se renderiza, no se visualiza, en el navegador no se ve esta información. Después teníamos el dentro de la etiqueta head teníamos el title.
+
+00:01:54.600 --> 00:02:05.510
+Esta etiqueta de title es el título del documento, que este título, por ejemplo, es el que se ve en la barra del navegador arriba, en la pestaña, ese es el título. Después tenemos la etiqueta body. Aquí ya están los elementos
+
+00:02:05.520 --> 00:02:15.910
+visibles, es decir, todo lo que pongamos dentro de la etiqueta body es lo que va a renderizar el navegador, es lo que se va a ver en el nuestra página web. Después teníamos la etiqueta h1, que lo que hace es definir un encabezado o un
+
+00:02:15.920 --> 00:02:26.390
+titular de la página, y la etiqueta p, que lo que hace es definir un párrafo. HTML tags, tags es etiqueta en inglés. Unas veces me oiréis decir tag, porque estoy acostumbrado a decirlo así, pero
+
+00:02:26.400 --> 00:02:37.790
+son las etiquetas, ¿vale? Cuando decimos tag o etiquetas, nos estamos refiriendo a la misma cosa. Las etiquetas a las etiquetas HTML son nombres de elementos rodeados de corchetes angulares. Los corchetes angulares son estos que vemos
+
+00:02:37.800 --> 00:02:48.310
+aquí, son los símbolos de mayor y menor que también. Y una estructura con una etiqueta es esta que teníamos aquí, ¿vale? Primero tendríamos la etiqueta, como vemos en el ejemplo de aquí, después tenemos el contenido y después
+
+00:02:48.320 --> 00:02:58.310
+tenemos el cierre de la etiqueta. Esto es lo más normal, es la estructura más normal que tienen las etiquetas HTML. Estas etiquetas HTML normalmente vienen en pares, es decir, vienen de dos en
+
+00:02:58.320 --> 00:03:09.229
+dos, como por ejemplo, ahí vemos la etiqueta p, ¿no? Que viene primero la etiqueta p y después la etiqueta p, pero con un slash antes de de lo que es la p. La primera etiqueta es la etiqueta de inicio o de apertura, son los dos
+
+00:03:09.239 --> 00:03:20.590
+nombres que se le puede dar. Y la segunda etiqueta es la etiqueta de final o de cierre, son los otros dos nombres para esa etiqueta final. Y la etiqueta está final, como vemos, se escribe igual que la etiqueta de inicio, pero con una
+
+00:03:20.600 --> 00:03:30.710
+barra diagonal insertada antes del nombre, con ese slash que tenemos ahí. Esta es la manera de distinguir una etiqueta de apertura de una etiqueta de cierre. Por otro lado, tenemos los navegadores. Los navegadores, el
+
+00:03:30.720 --> 00:03:42.190
+propósito de un navegador es poder renderizar, poder leer los documentos HTML y mostrarlo. Todos conocéis muchos navegadores, seguramente ahora mismo me estás viendo desde un navegador, que puede ser Chrome, Edge, Firefox, Safari,
+
+00:03:42.200 --> 00:03:53.230
+en fin, tenemos varios, aquí cada uno elige el que más le gusta. Y el navegador lo que hace no es mostrar las etiquetas HTML, o sea, las etiquetas en sí no se muestran, no se ven, pero las utiliza para determinar cómo va a ser
+
+00:03:53.240 --> 00:04:04.670
+ese ese contenido. Aquí tenemos el ejemplo del que hemos visto antes, que teníamos escrito ahí su titular dentro de la etiqueta H1 y esto es un párrafo dentro de la etiqueta P, y como vemos, el navegador lo que está renderizando,
+
+00:04:04.680 --> 00:04:15.110
+lo que está mostrando por pantalla es esto de aquí, que como vemos tenemos tamaños diferentes, porque el navegador sabe que un titular, pues es más importante y los pone más grande, y un párrafo no y lo pone más pequeñito. De
+
+00:04:15.120 --> 00:04:25.510
+eso dependerá según donde metamos la información dentro de una etiqueta a otra, de cómo el navegador a mostrar. Vale, y ahora tenemos por aquí la estructura de una página web. Para que os hagáis la idea, para que te hagas a
+
+00:04:25.520 --> 00:04:37.190
+la idea, yo lo que quiero que te quedes con el concepto de que al final las etiquetas son como cajas, vale, son como cajas y dentro de estas cajas tenemos más cajas, y aquí en esta estructura yo creo que se ve bastante bien, que primero tenemos como la etiqueta grande,
+
+00:04:37.200 --> 00:04:47.510
+la caja grande, que es el HTML, y dentro de ahí tenemos más cajas, la etiqueta head era la siguiente, y ahí, que eso es otra caja con más cosas, con información que no se va a renderizar, con
+
+00:04:47.520 --> 00:04:58.350
+información que no se va a ver, eso son datos. Y después tenemos la caja del body, digamos, la etiqueta del body, que todo lo que metamos ahí, que es la zona que tenemos en esta imagen de color blanco, esa es la zona que sí que se va
+
+00:04:58.360 --> 00:05:10.030
+a ver, que sí que va a mostrar el el navegador. Como podemos ver, tenemos o la caja del título, la del párrafo, en fin, quiero que te hagas a la idea y que veas exactamente que la estructura de un HTML son como eso, son como cajas dentro
+
+00:05:10.040 --> 00:05:21.950
+de cajas, por lo tanto es muy importante que la caja esté cerrada, no podríamos aquí poner, por ejemplo, el HTML arriba y abajo no ponerlo, porque la caja quedaría abierta y no ahí tendríamos un fallo, ¿vale? O sea, imagínatelo así,
+
+00:05:21.960 --> 00:05:33.070
+como como cajitas dentro de cajitas. La declaración doctype, vale, la declaración doctype lo que hace es representar el tipo de documento para que los navegadores sepan qué versión de HTML5 de, perdón, de HTML estamos
+
+00:05:33.080 --> 00:05:43.510
+utilizando y en función de eso mostrarlo de una manera u otra. Esta declaración debe aparecer tan solo una vez y lo tiene que hacer arriba del todo, ¿vale? Antes de abrir la etiqueta de HTML, antes de abrir nuestra primera caja,
+
+00:05:43.520 --> 00:05:55.230
+deberíamos de poner esta eh lo que es el doctype, y como hemos visto antes, el ejemplo que hemos visto, eh tenemos la declaración doctype HTML 5, que es como la que vemos ahí, que es la que vas a utilizar tú, ya que es la última versión
+
+00:05:55.240 --> 00:06:05.550
+y no vamos a utilizar otra versión de HTML, así que siempre pondremos ese doctype en todos nuestros documentos de HTML. Las versiones de HTML, tenemos varias versiones de HTML desde el año 91
+
+00:06:05.560 --> 00:06:15.790
+que salió la primera hasta el 2014 que salió HTML 5, que es la última, ¿vale? Y la más actualizada, o sea, tú usarás la versión de HTML 5 y la verdad es que tienes suerte de utilizar la versión de
+
+00:06:15.800 --> 00:06:26.270
+HTML 5, porque yo cuando comencé todavía no existía HTML 5. Cuando yo comencé empezaron a a hacer pre-release de HTML 5 y se sabía que iba a ser de tal
+
+00:06:26.280 --> 00:06:37.350
+manera, estaba en versiones de prueba y tal, pero todavía eh teníamos que utilizar HTML 4.0.1. Y eso la verdad es que comparado con HTML 5 era un jaleo.
+
+00:06:37.360 --> 00:06:49.670
+Menos mal que salió HTML 5, yo empecé a lo mejor hm sobre el 2010 o por ahí a aprender HTML y ahí ya se empezaban a rondar las cosas que iban a salir en HTML 5 y la verdad es que, por ejemplo,
+
+00:06:49.680 --> 00:07:00.790
+en los formularios, en la en los vídeos, todo esto antes era un jaleo hacerlo con con las versiones anteriores a HTML 5, o sea, la verdad es que tú tienes mucha suerte de comenzar con esta versión. Así
+
+00:07:00.800 --> 00:07:06.390
+que nada, con esta pequeña introducción empezamos el curso y ya estás listo para ir a la siguiente clase. Te espero por

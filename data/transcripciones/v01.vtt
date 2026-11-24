@@ -1,0 +1,117 @@
+WEBVTT
+
+NOTE
+Transcripción de «Cómo están hechas las páginas web» (https://www.youtube.com/watch?v=81u19umYU_E).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
+
+00:00:00.000 --> 00:00:10.750
+En esta clase vamos a ver cómo está hecha una página web. ¿Cómo está hecha una página web? Bueno, las páginas web no son más que documentos de texto, ¿vale? Para que te hagas una idea, es son documentos de
+
+00:00:10.760 --> 00:00:21.190
+texto y estos documentos de texto están escritos con un lenguaje de marcado que es HTML, ¿vale? Y este lenguaje es capaz los navegadores de interpretarlo y de
+
+00:00:21.200 --> 00:00:33.030
+esta manera se muestran las páginas web con el aspecto final que tiene, que repito, están escritas en el lenguaje de marcado HTML. Que ojo, que HTML es un lenguaje de marcado, no es un lenguaje
+
+00:00:33.040 --> 00:00:45.350
+de programación, que con esto hay mucha confusión y mucha gente va diciendo por ahí que sabe programar en HTML y no es así, porque realmente no es un lenguaje de programación. Eh lo que hacen los lenguajes de marcado
+
+00:00:45.360 --> 00:00:56.230
+son meter entre etiquetas o entre tags, que se diría en inglés, el tipo de contenido, es decir, lo que hacemos es almacenar el contenido e indicarle qué tipo de contenido es para que el
+
+00:00:56.240 --> 00:01:06.430
+navegador sepa interpretarlo. Por ejemplo, si tengo una frase que es un párrafo, pues esto va entre una etiqueta que indica, que le indica al navegador que eso es un párrafo. Tú ahí lo que
+
+00:01:06.440 --> 00:01:16.910
+estás haciendo es almacenando la información, pero en realidad no hay ningún tipo de lógica. Por eso no es un lenguaje de programación, porque ahí no tienes ni bucles, ni tienes if, ni tienes, no tienes nada de lógica, ¿vale?
+
+00:01:16.920 --> 00:01:27.350
+Entonces, muy importante que sepas aquí diferenciar hm la la diferencia, valga la redundancia, de que esto no es un lenguaje de programación, es un lenguaje de marcado.
+
+00:01:27.360 --> 00:01:38.190
+De hecho, recuerdo que hace, justo hace unos cuantos días, una de mis seguidoras de Instagram me me preguntaba, ¿no? Por esto y me decía que HTML era un lenguaje de programación. Y ella estaba
+
+00:01:38.200 --> 00:01:49.430
+totalmente convencida, ¿eh? Pero pero totalmente convencida, me costó un trabajo poder explicarle, de hecho, le mandé vídeos míos de YouTube donde explico esto, las diferencias, tal y cual, y me seguía diciendo que no, que
+
+00:01:49.440 --> 00:02:01.950
+HTML era un lenguaje de programación y yo le preguntaba, "¿Pero por qué piensas esto? Si ya te lo he justificado, ya te te que no, no sé qué." Y ella me decía, "No, es que en el instituto tenemos una
+
+00:02:01.960 --> 00:02:13.590
+una asignatura que se llama programación en HTML." Entonces, claro, si los profesores le ponen una un nombre a una asignatura que es programación en HTML, pues eh HTML
+
+00:02:13.600 --> 00:02:23.590
+debe ser un un lenguaje de programación y por eso estaba ya convencida. O sea, para que no cometamos, para que vosotros, para que tú no cometas los errores que han cometido, por ejemplo,
+
+00:02:23.600 --> 00:02:33.670
+este profesor o profesores de poner a una asignatura programación en HTML cuando eso es imposible, no puedes programar en HTML, por eso quiero que te quede claro, ¿vale? Y tú sí sepas
+
+00:02:33.680 --> 00:02:45.270
+distinguir la diferencia. Al final la seguidora quedó convencida y ya se le encendió la bombilla y dijo, "Ah, vale, ahora lo entiendo, ¿no?" Pero pero me costó, me costó trabajo.
+
+00:02:45.280 --> 00:02:55.510
+Aquí vemos un ejemplo, ¿vale? Un archivo HTML sería algo así, algo como lo que estáis viendo ahora por pantalla. Vale, ahí podemos ver, por ejemplo, que hay una etiqueta title, que ahí pones el
+
+00:02:55.520 --> 00:03:06.670
+título de la página, tienes otra para el titular, ahí como vemos la etiqueta P es para indicar párrafo, en fin, no te preocupes que iremos viendo en las etiquetas más adelante. Vale, esto es ahora para que te hagas a la idea y que
+
+00:03:06.680 --> 00:03:16.870
+veas de un vistazo cómo es un archivo Y este archivo HTML, leído por el navegador, sería algo así, ¿vale? Este es el este es el aspecto que tiene
+
+00:03:16.880 --> 00:03:27.949
+cuando abre ese HTML el navegador. Como el navegador ya sabe que es un párrafo, que es un titular, pues como veis se ve diferente, incluso la negrita, esa palabra en negrita también la hemos indicado antes con otra
+
+00:03:27.959 --> 00:03:39.270
+con otra tag, con otro tag, entonces el navegador sabe interpretarlo. Claro, ahora seguramente estás pensando, "Esta página sí, está muy bien, pero pero es muy fea, ¿no? No no tiene nada
+
+00:03:39.280 --> 00:03:48.990
+así especial." Y es que claro, ¿qué hacemos para que sea bonita la página? Para hacer bonita esta página, pues tenemos otro lenguaje, un lenguaje de estilos en este caso, que se llama
+
+00:03:50.400 --> 00:04:00.510
+y se hacen para y se usa, perdón, para eso, para darle estilos y para diseñar esa página, para diseñar no, perdón, para aplicar el diseño a esa página, ¿vale? Por ejemplo, aquí vemos un
+
+00:04:00.520 --> 00:04:13.110
+ejemplo de CSS, donde vemos que a la etiqueta H1 le estamos cambiando la fuente, poniéndole una fuente sin serifa, eh para los que no lo sepáis, serifa es cuando las fuentes tienen terminaciones así muy
+
+00:04:13.120 --> 00:04:23.909
+mm como picos y cosas así en los bordes y sin serifa es son las letras que son totalmente rectas, ¿vale? Eh le estamos dando también un tamaño y le estamos poniendo de color rojo, como vemos ahí al H1 lo estamos
+
+00:04:23.919 --> 00:04:35.430
+poniendo de color rojo. Y a la P, que era la etiqueta de párrafo, si os acordáis de antes, le estamos también poniendo un tamaño, cambiándole la fuente y poniendo también otro color, que ese color es un gris oscuro, ¿vale? Es casi negro.
+
+00:04:35.440 --> 00:04:46.870
+Y ahora vamos a ver el ejemplo de antes, este es el ejemplo de antes, pero con el CSS que os he enseñado aplicado, así es como se vería la página. El HTML es exactamente el mismo, lo mismo que teníamos antes, pero al cambiar el CSS
+
+00:04:46.880 --> 00:04:57.270
+lo que hace es verse así, ¿vale? El navegador sabe que tiene que interpretarlo de esta manera. Aunque sí que hay un pequeñito cambio en el HTML, que es como vemos aquí, ¿vale? Hemos añadido
+
+00:04:57.280 --> 00:05:07.950
+esta línea que vemos aquí, ¿vale? Que es donde le estamos indicando que a este HTML vamos a aplicarle este CSS que hemos creado, pero como te digo, no te preocupes que esto después lo
+
+00:05:07.960 --> 00:05:18.350
+veremos cuando creemos la página web, ¿vale? Esto es para que tengas una primera introducción y sepas un poco cómo están hechas. Pero hay una cosa más, para hacer páginas webs, ya hemos visto que tenemos
+
+00:05:18.360 --> 00:05:28.670
+el lenguaje HTML, el lenguaje CSS para darle estilo al HTML, que es el contenido, y hay una cosa más que también se utiliza para hacer páginas Y es JavaScript,
+
+00:05:28.680 --> 00:05:42.630
+¿vale? También tenemos JavaScript, que es el lenguaje de programación que se utiliza para la interacción con el usuario, por ejemplo, cuando un usuario pulsa un botón y pasa algo, sale un mensaje, sale mm te lleva a otro sitio,
+
+00:05:42.640 --> 00:05:53.830
+al para este tipo de cosas que son interacción con el usuario, se utiliza JavaScript, ya son cosas que requieren un poco de lógica, ¿vale? Pero realmente no es necesario al 100% para hacer una página web. Esto ya es para hacer
+
+00:05:53.840 --> 00:06:04.990
+páginas web más avanzadas. Pero para empezar no es necesario y de hecho yo también creo que no es recomendable aprender JavaScript porque ya es mucha cosa y te vas a saturar. O sea, vamos a aprender primero a hacer páginas web y
+
+00:06:05.000 --> 00:06:15.110
+después ya más adelante, entonces ya es cuando podrás aprender y meterle mano al lenguaje JavaScript. Entonces, en resumen, como resumen tenemos HTML que es para la información de la web, ¿vale?
+
+00:06:15.120 --> 00:06:26.390
+Donde vamos a escribir todo lo que se va a ver en la web, todo lo que es la información, ¿sí? Después tenemos CSS para los estilos, ¿vale? Para darle estilos a web, para que se vea bonita, para darle tamaños, para mover las cosas
+
+00:06:26.400 --> 00:06:36.430
+de sitio, para este tipo de cosas se utiliza el CSS. Y por último tenemos JavaScript para la interacción y con esto ya sabes más o menos cómo están hechas las páginas web. Con estas tres
+
+00:06:36.440 --> 00:06:44.640
+cosas ya tienes las bases de cómo está hecha. Así que nada, pasa a la siguiente clase, que nos vemos por allí.

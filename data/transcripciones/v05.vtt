@@ -1,29 +1,72 @@
 WEBVTT
 
 NOTE
-TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
-Se sustituirá por la transcripción real del vídeo (#11).
+Transcripción de «El modelo de caja» (https://www.youtube.com/watch?v=-ivUAB-aG2U).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
 
-00:00:00.000 --> 00:00:15.000
-En este vídeo vamos a entender el modelo de caja, que es la base de cómo se colocan y miden todos los elementos en una página.
+00:00:01.490 --> 00:00:13.110
+en esta nueva sección quiero hablaros sobre uno de los temas que son más importantes en css ese tema es el box model ya hemos visto en otras ocasiones
 
-00:00:15.000 --> 00:00:38.000
-Para el navegador, cada elemento es una caja con cuatro capas. De dentro hacia fuera: el contenido, el padding, el borde y el margen.
+00:00:13.120 --> 00:00:23.859
+que la web al final se compone de cajas da igual como veáis una web que al final todo son cajas tenemos un header tenemos
 
-00:00:38.000 --> 00:01:02.000
-El padding es el relleno: el espacio interior entre el contenido y el borde. Si el elemento tiene color de fondo, el fondo también pinta el padding.
+00:00:23.869 --> 00:00:33.870
+un logo tenemos un menú con diferentes elementos después podemos tener tarjetas y esas tarjetas a su vez otro contenido
 
-00:01:02.000 --> 00:01:25.000
-El borde rodea al padding. Se define con border, por ejemplo border: 2px solid black, que es grosor, estilo y color.
+00:00:33.880 --> 00:00:46.690
+pero al final todo se reduce a un conjunto de cajas que normalmente son cuadradas o rectangulares pero al fin al cabo son cajas y esas cajas tienen
 
-00:01:25.000 --> 00:01:50.000
-El margen es el espacio exterior, fuera del borde. Separa la caja de las cajas vecinas y siempre es transparente. Un truco para recordarlo: padding dentro, margin fuera.
+00:00:46.700 --> 00:00:58.330
+ciertas propiedades que tenéis que entender porque es el principio más básico que necesitáis para empezar a construir un sitio web así que vamos a
 
-00:01:50.000 --> 00:02:20.000
-Ojo con el ancho. Por defecto, width solo mide el contenido. Si pongo width: 100px, padding de 10px y borde de 5px, la caja ocupa en total 100 más 20 más 10, es decir, 130px de ancho.
+00:00:58.340 --> 00:01:10.390
+ver de qué se compone una caja en css vamos a dibujar un elemento cuadrado pero no penséis que esto solo puede ser
 
-00:02:20.000 --> 00:02:48.000
-Esto se puede cambiar con box-sizing: border-box. Con border-box, el width incluye el padding y el borde, así que la caja mide exactamente 100px. Es lo que casi todo el mundo usa hoy.
+00:01:10.400 --> 00:01:21.490
+un cuadrado este elemento que tenemos aquí podría ser cualquier cosa podría ser un header podría ser un footer podría ser un logo una imagen o incluso
 
-00:02:48.000 --> 00:03:10.000
-Por último, los márgenes verticales de dos bloques seguidos se fusionan: si uno tiene margin-bottom de 20px y el siguiente margin-top de 30px, la separación es de 30px, no de 50.
+00:01:21.500 --> 00:01:33.070
+un texto vamos a utilizar este texto para explicaros cómo funciona el modelo de caja sé que de primeras ver un texto con una caja puede ser algo que confunde
+
+00:01:33.080 --> 00:01:45.580
+si estáis empezando así que para que lo veáis más claro vamos a dibujarlo un borde a este texto para que veáis la forma de la caja en este punto ya
+
+00:01:45.590 --> 00:01:57.790
+tenemos dos propiedades que tiene la caja una sería la palabra que en realidad es el contenido y la otra es el borde ya tenemos dos propiedades
+
+00:01:57.800 --> 00:02:08.710
+si nosotros quisiéramos que el borde se separara del contenido tenemos una propiedad que se denomina padding y esa propiedad lo que controla
+
+00:02:08.720 --> 00:02:20.010
+es la distancia que tenemos desde el borde de la caja hasta el contenido y como en un sitio web no solo tenemos una caja sino que tenemos varias cajas
+
+00:02:20.020 --> 00:02:33.040
+tenemos una propiedad para poder separar unas cajas de otras y esa propiedad es el margin y nos va a permitir controlar la separación entre una caja y las que
+
+00:02:33.050 --> 00:02:44.170
+le rodean y por último hay otras dos propiedades que hemos tenido presentes desde el principio y que es posible que no os hayáis fijado en ellas esas
+
+00:02:44.180 --> 00:02:54.660
+propiedades son el ancho y el alto de nuestra caja todas estas propiedades las vamos a analizar en los siguientes vídeos porque hay pequeñas diferencias
+
+00:02:54.670 --> 00:03:07.000
+entre los elementos de bloque y los elementos de línea no todos se comportan igual con las mismas propiedades así que tratar de memorizar este dibujo
+
+00:03:07.010 --> 00:03:18.530
+porque os va a ayudar muchísimo a la construcción de sitios web y a manejar las diferentes propiedades en función del tipo de elemento que sea y dicho
+
+00:03:18.540 --> 00:03:30.050
+esto no me alargo más así que muchísimas gracias por ver este vídeo y nos vemos en el siguiente un saludo y hasta luego espero que te esté gustando esta nueva
+
+00:03:30.060 --> 00:03:42.319
+edición del curso de css y si crees que este contenido puede ayudar a alguien te animo a que lo compartas en todas tus redes sociales además si tienes alguna duda o algo que me quieras comentar te
+
+00:03:42.329 --> 00:03:53.569
+dejo en la descripción un link para que te unas a la comunidad de discos donde ya somos casi 5.000 personas que estamos dispuestos a echar un cable en cualquier cosa que necesites y si quieres estar al
+
+00:03:53.579 --> 00:04:03.649
+día de todo el contenido y no perderte nada te animo a que te suscribas haciendo clic aquí y le des a la campanita para que youtube te avise de todas las notificaciones muchísimas
+
+00:04:03.659 --> 00:04:10.340
+gracias por ver este vídeo y nos vemos en el siguiente un saludo y hasta luego

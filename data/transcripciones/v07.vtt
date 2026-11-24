@@ -1,0 +1,186 @@
+WEBVTT
+
+NOTE
+Transcripción de «Flexbox» (https://www.youtube.com/watch?v=-nVJwYKx6H8).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
+
+00:00:00.000 --> 00:00:10.220
+en este vídeo vamos a aprender css flex box en tiempo récord fred box es una nueva manera de maquetar en css elementos de forma flexible bien
+
+00:00:10.230 --> 00:00:21.349
+para ello como veis yo me tengo por aquí un archivo html en index.html tengo también una hoja de estilos vinculadas de este punto css que en la que el cual todavía no tengo nada y por aquí en este
+
+00:00:21.359 --> 00:00:31.910
+lado tengo lo que es el navegador para ir viendo lo que vamos haciendo bien pues lo primero que necesita para utilizar flex posts es un flex pop container vale un flex container
+
+00:00:31.920 --> 00:00:42.260
+entonces vamos a crear aquí uno este va a ser mi container vamos a llamarle flex container por ejemplo se puede llamar como tú quieras y dentro de este play container lo que tenemos que tener son
+
+00:00:42.270 --> 00:00:53.479
+los flex items que son pues los hijos no que en este caso vamos a tener pues unos cuantos bien yo me he creado aquí mi fresh container con cuatro hijos bien ahora vámonos a los estilos y vamos a darle un poco de estilo a esto aquí
+
+00:00:53.489 --> 00:01:03.680
+podéis ver lo que va saliendo ya tenemos aquí nuestros cuatro números lo primero que vamos a hacer es a nuestro fresh container darle lo que es el display flex vale que es de eso se trata para
+
+00:01:03.690 --> 00:01:14.240
+utilizar flex tenemos que utilizar el display flex veis estoy aquí nos ha cambiado voy a dar un poco de estilo a todo un poco para que lo veamos dejo vamos a ponerle un background color por ejemplo de agua
+
+00:01:14.250 --> 00:01:24.980
+vamos a darle también un pad y le 10 píxeles el color a cuando me gusta voy a poner otro y voy a también a ponerle un poquito de estilo a lo que son los los items bien ya le añadido aquí unos
+
+00:01:24.990 --> 00:01:36.169
+cuantos estilos para que podamos ver las cajas mejor vale le ha añadido al fresh container pues el background un poco de padín y un borde para para que lo veamos ahí bien y lo mismo he hecho con él con los dips con los hijos con los ítems
+
+00:01:36.179 --> 00:01:46.760
+después también un background color de down with después también un margen entre ellos para que no estén pegados y le he puesto también pues una line center para ver el número un poquito más grande lo que es el tamaño de fuente
+
+00:01:46.770 --> 00:01:58.219
+para que podamos ver lo que es el número en grande y también un borde para que veamos bien el ítem vale los la jaws en flex box trabajan en una sola dimensión vale lo que viene a ser en osea en filas
+
+00:01:58.229 --> 00:02:08.990
+o en columnas ahora mismo vemos que tenemos una fila esto es porque por defecto tenemos la propiedad de flex direction que le tenemos puesto dado a row vale con la propiedad road
+
+00:02:09.000 --> 00:02:20.629
+lo que hacemos es ponerlo esto en forma de fila pero ésta podemos cambiar la columna y vemos aquí cara se nos pone en forma de columna también tenemos la de columna reverse que esto lo que hace es darle la vuelta
+
+00:02:20.639 --> 00:02:31.699
+como veis ahora el 4 lo tenemos aquí el 3 el 2 y el 1 y también podemos darle lo que es el roe revés que hace lo mismo el arroz pero del revés no ahora me la línea al otro lado y empieza por aquí
+
+00:02:31.709 --> 00:02:43.580
+pues 1 2 3 y 4 bien voy a quitar esto del roe direction voy a dejarlo como estaba para que sea en raw y ahora voy a añadir unos cuantos ítems más a ver qué pasa voy a duplicar me esto bien como
+
+00:02:43.590 --> 00:02:54.170
+estáis viendo ahora ha añadido unos cuantos item más aquí dentro de añadido hasta 12 y aquí pues todos se mantienen en una misma fila pero qué pasa si yo quiero por ejemplo que no se mantenga en
+
+00:02:54.180 --> 00:03:04.759
+una misma fila y cuando no quepan en esa fila salten a una segunda fila pues para eso tenemos aquí la propiedad de flex wrap que esto lo que hace es que podemos ponerle no wrap que es lo que está por
+
+00:03:04.769 --> 00:03:16.039
+defecto de esa manera es esta de aquí que nos saltará una fila o podemos ponerle wrap y esto lo que hará es que cuando no quepan pues saltarán y se pondrán en diferentes filas también tenemos la propiedad wrap
+
+00:03:16.540 --> 00:03:27.089
+que lo que hace es pues al revés le empieza a contar desde abajo y lo que hace es subir para arriba vale osa lo mismo que ahora pero de al revés después también para estas dos propiedades que hemos visto la de
+
+00:03:27.099 --> 00:03:38.039
+frescura y la de flexión tenemos una propiedad que se llama flex flow que lo que hace es unir estas dos propiedades y yo podría ponerle aquí por ejemplo row y decirle wrap de este modo me está me
+
+00:03:38.049 --> 00:03:49.319
+está utilizando las dos propiedades la de flex direction y la de frescura en una sola vale o podría decir por ejemplo aquí collum y aquí lo estamos viendo me está haciendo el efecto de columna vale es una forma pues más corta de escribir
+
+00:03:49.329 --> 00:04:00.179
+esas dos propiedades que más cosas tenemos por aquí en flex tenemos también una manera de alinear los objetos no los ítems que es el justify content de esta manera yo le puedo dar por ejemplo
+
+00:04:00.189 --> 00:04:11.220
+centre ahora tengo un montón de ítems y por eso no se ve voy a borrar me voy a quedar también con los que tenía con los cuatro iniciales vale que lo vamos a ver mejor y de esta manera estáis viendo voy a quitar incluso otro más para que
+
+00:04:11.230 --> 00:04:21.539
+tengamos sólo tres y de esta manera veis que realmente se alinean a lo que es el centro con esta propiedad de justified content centre tenemos varias opciones aquí podemos decirle flex start y se
+
+00:04:21.549 --> 00:04:32.430
+alineará lo que es a la izquierda o podemos decirle también en la línea a la derecha y después tenemos otras dos que son space around que esmerar línea de esta manera y también tenemos lo que
+
+00:04:32.440 --> 00:04:43.740
+es el space between vale de esta otra que como veis pues cambiando esto se ajusta a los laterales y la otra no por otro lado también imaginaros que esto tuviera un hey vamos a darle un hate de
+
+00:04:43.750 --> 00:04:55.380
+unos 400 píxeles y por defecto me hace esto lo que hace se ajusta a todo pero tenemos una propiedad para el flex container que es la de alain items que podamos darle por ejemplo centre y lo
+
+00:04:55.390 --> 00:05:05.760
+que hará es se centrará esto verticalmente pero como podemos ver tenemos varias opciones por ejemplo el flex start vale que es una línea lo que es arriba o el flex en que se alineará
+
+00:05:05.770 --> 00:05:17.610
+abajo verticalmente tenemos también el estrés que es el que se me pone por defecto vale intenta ocupar todo el alto que tiene y tenemos también el vasselin que lo que hace es alinearlo a lo que
+
+00:05:17.620 --> 00:05:28.980
+son en la base de cada uno de los elementos ahora mismo aquí no se nota porque todos los elementos tienen el mismo tamaño vamos a cambiarle por ejemplo el tamaño de fuente a uno de ellos al uno le vamos a cambiar aquí
+
+00:05:29.620 --> 00:05:39.750
+el style el font size veis aquí ya hemos cambiado el fondo side al 1 y le hemos puesto 80 y los demás sang se han movido para bajo porque porque se están alineando a lo que es la base de este
+
+00:05:39.760 --> 00:05:51.150
+elemento vale esta base de aquí está si os fijáis si ponemos una línea recta que vaya del 1 hasta el 3 la base es la misma para todos vamos a hacer lo mismo en los otros dándole otros tamaños diferentes aquí estáis viendo ahora
+
+00:05:51.160 --> 00:06:01.230
+aunque se me haya salido un poco el 3 de la caja pero todos están alineados perfectamente en su base si nos damos cuenta su base coincide exactamente en todos bueno pues esto es otra manera que
+
+00:06:01.240 --> 00:06:11.370
+tenemos de alinear verticalmente dos ítems ya quitar ya esto de aquí bien me he vuelto a añadir aquí más elementos para el siguiente ejemplo vamos a quitar este al ain item de antes vamos a poner
+
+00:06:11.380 --> 00:06:21.930
+el flex wrap a wrap y ahora vamos a ver que tenemos diferentes maneras de alinear estas diferentes filas que tenemos esto se hace con alain content por ejemplo le podemos hablar aquí space
+
+00:06:21.940 --> 00:06:32.370
+between y be y veis lo que nos hace ya no soy ya no ocupa todo ya lo que hace es que deja espacio entre una fila y otra vamos a cambiar por ejemplo a space around y esto lo que va a hacer no se
+
+00:06:32.380 --> 00:06:43.230
+nota mucho pero ahora sí que hay más espacio por aquí antes no estaba pero ahora sí que deja más espacio vamos a quitarle el 11 y el 12 que creo que se va a ver mejor con sólo 10 elementos con
+
+00:06:43.240 --> 00:06:54.390
+dos filas vale aquí tenemos el space around vamos a ponerlo otra vez el space between como veis ahora sí que se nota mejor esto sube para arriba vale y deja más espacio entre ellos tenemos también
+
+00:06:54.400 --> 00:07:05.730
+lo que es el stretch aquí de nuevo el stretch esta manera pues intenta ocupar todo el alto que puede tenemos también el center vale que lo que no va a hacer es centrar todo el contenido todas las
+
+00:07:05.740 --> 00:07:17.399
+filas que se generen de forma de forma central no verticalmente y por último también tenemos el flex estar como siempre que lo va a hacer es alinearlo arriba y el end vale que lo que alinea
+
+00:07:17.409 --> 00:07:28.709
+es abajo todas las filas bien voy a quitar esto de aquí y ahora vámonos a las propiedades que tienen los elementos hijos porque los elementos hijos también tienen propiedades vámonos al index e.html vamos a hacerlo aquí vamos a
+
+00:07:28.719 --> 00:07:39.269
+poner por ejemplo sólo cuatro elementos para que lo veamos mejor aquí tenemos estos cuatro elementos voy a darle colores a cada uno bien aquí tenemos los cuatro elementos de como veis aquí le ha dado un color de bagram a cada uno
+
+00:07:39.279 --> 00:07:50.879
+porque creo que se ve mejor en este y otra de las propiedades que tenemos para esto es la propiedad order vale con el order podemos decirle en qué orden queremos los elementos yo le puedo dar
+
+00:07:50.889 --> 00:08:02.700
+aquí orden uno al elemento número uno vamos a darle order 2 al elemento número 2 bien y ya le tengo aquí el orden o al 1 el puesto el 1 al 2 el 2 al 3 el 3 y el 4 al 4 pero qué pasa si cambiamos el
+
+00:08:02.710 --> 00:08:15.269
+orden si por ejemplo al 2 yo le pongo el 4 y al 4 le pongo el 2 pues como veis aquí se están moviendo los colores ahora el 1 está aquí el 2 está en la posición perdón el 4 está en la posición 2 y el 2
+
+00:08:15.279 --> 00:08:25.379
+está en la posición 4 es una manera que yo puedo ir cambiando si este por ejemplo de la posición 1 hasta le doy la posición 3 podemos ir cambiando visualmente lo que es el orden de cada
+
+00:08:25.389 --> 00:08:36.269
+ítem vale esto es una propiedad que se le aplica directamente a los hijos del flex container otra propiedad que tenemos también para los hijos del flex container es el flex brow como veis le
+
+00:08:36.279 --> 00:08:47.340
+he dado flex grow de 1 a todos y todos esos elementos ocupan el mismo sitio esto es para saber cuánto derecho a espacio tienen por ejemplo si yo al 4 le digo que tiene un flex crowe de 2
+
+00:08:47.350 --> 00:08:58.320
+lo que hará es me ocupará más que el resto os habéis fijado y si tiene por ejemplo un frescura de tres pues ocupará un poquito más todavía vale aquí podemos exagerar lo y decirle por ejemplo 10 a
+
+00:08:58.330 --> 00:09:09.990
+ver qué es lo que hace pues seguirá ocupando más vale es un poco el derecho que tiene a ocupar espacio para entonces tú puedes aquí definir pues más o menos cuánto espacio quieres que ocupe cada uno veis aquí pues el 2 tiene un 4 de
+
+00:09:10.000 --> 00:09:21.120
+derecho el 4 tiene un 10 y en fin se van ajustando en función del valor mientras más alto pues más espacio tendrá derecho a ocupar ese es el elemento hijo después
+
+00:09:21.130 --> 00:09:32.700
+otra propiedad parecida a esta pero al revés es el flex zinc ésta lo que hace es todo lo contrario como veis sólo le ha dado esta la propiedad al primer elemento y este elemento nos ha hecho más chico saber si yo voy añadiendo aquí
+
+00:09:32.710 --> 00:09:43.320
+nuevos elementos voy a copiar me por ejemplo otros dos elementos más veréis que el resto de elementos se van haciendo pequeños porque es el espacio que les queda pero este elemento no porque le he dado un zinc de cero esto
+
+00:09:43.330 --> 00:09:54.210
+quiere decir que menos de eso ya no puede hacerse más pequeño ya no se pueden más vale es esta propiedad para eso sirve para determinar hasta cuánto se pueden uno de los elementos también tenemos
+
+00:09:54.220 --> 00:10:04.890
+flex basics esto lo que hace es darle una medida de mínima digamos por ejemplo yo le voy a dar aquí 200 píxeles vales como el wifi pero en flex y esto no
+
+00:10:04.900 --> 00:10:15.150
+quiere decir que vaya a medir esto siempre 200 píxeles pero que como mínimo pues va a medir esto vale y se va a ir ajustando en función de eso también le puedo dar porcentajes o lo que yo quiera vale que no es sólo cualquier tipo de
+
+00:10:15.160 --> 00:10:27.180
+medida de longitud sirve en el flex bass basic y para terminar también deciros que tenemos la propiedad flex a secas que también sirve para un poco las propiedades anteriores para las dos las
+
+00:10:27.190 --> 00:10:37.260
+tres propiedades anteriores las del basics vale las podemos poner así podemos darle al juego justo en este orden que la he dicho y obtenemos el
+
+00:10:37.270 --> 00:10:48.720
+mismo resultado es una forma más corta de poner las tres propiedades anteriores así que nada con esto espero que te quede claro o sea hayas aprendido más o menos cómo funciona flex es una manera
+
+00:10:48.730 --> 00:11:00.179
+la verdad es que para hacerla ya out de forma responsive se utiliza mucho y es una forma muy moderna en css de utilizarlo y nada y si no estás suscrito suscríbete al canal y nos veremos en el próximo

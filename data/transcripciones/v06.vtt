@@ -1,26 +1,144 @@
 WEBVTT
 
 NOTE
-TRANSCRIPCIÓN DE PRUEBA escrita por el equipo para desarrollar el tutor (#1).
-Se sustituirá por la transcripción real del vídeo (#11).
+Transcripción de «Unidades de medida: em y rem» (https://www.youtube.com/watch?v=4DgjXh-h2xI).
+Subtítulos manuales de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
 
-00:00:00.000 --> 00:00:14.000
-Vamos a ver cómo se escriben los colores, cómo se elige la tipografía y qué unidades de medida tenemos en CSS.
+00:00:00.600 --> 00:00:14.280
+en este vídeo quiero explicaros cómo funciona rem cómo funciona en y despejar de una vez por todas todas las dudas que tenéis sobre cuándo utilizar cuando utilizaremos y por qué es bueno utilizar
 
-00:00:14.000 --> 00:00:40.000
-Los colores se pueden escribir por nombre, como red; en hexadecimal, como #ff0000; o con rgb, como rgb(255, 0, 0). Con rgba o con una barra en rgb podemos añadir transparencia.
+00:00:14.280 --> 00:00:28.960
+uno en lugar de otro y todas esas cosas que me habéis preguntado cientos de veces aquí os he puesto una pequeña definición de cómo funciona en mi red y rem corresponde a la medida de la m
 
-00:00:40.000 --> 00:01:05.000
-Para el texto usamos font-family, que es la lista de fuentes por orden de preferencia, font-size para el tamaño y font-weight para el grosor. Terminad siempre la lista con una familia genérica, como sans-serif.
+00:00:28.960 --> 00:00:43.330
+de la raíz del documento y entre paréntesis os he puesto html porque esa es la raíz del documento sin embargo emm corresponde a la medida de la m del contexto donde nos encontremos lo de utilizar
 
-00:01:05.000 --> 00:01:30.000
-Sobre las unidades: px son píxeles, una unidad absoluta. Sirve para bordes finos o detalles que no deben cambiar de tamaño.
+00:00:43.330 --> 00:00:58.510
+la medida de la m como referencia es porque en imprenta la m es el carácter más ancho que existe por lo tanto al ser el más ancho es el que se usa como referencia para calcular el resto del
 
-00:01:30.000 --> 00:02:00.000
-Las unidades relativas se adaptan. rem es relativo al tamaño de letra de la raíz de la página, normalmente 16px, así que 2rem son 32px. em es relativo al tamaño de letra del propio elemento, y se acumula si anidas elementos.
+00:00:58.510 --> 00:01:14.430
+tamaño de letras el estándar del tamaño de fuente por defecto de la raíz es de 16 píxeles todos los navegadores actualmente tienen 16 píxeles por defecto esto no es casualidad y también os he
 
-00:02:00.000 --> 00:02:25.000
-El porcentaje es relativo al elemento padre. Y vw y vh son relativos al tamaño de la pantalla: 100vw es todo el ancho de la ventana.
+00:01:14.430 --> 00:01:28.410
+puesto que no es recomendable modificarlo el hecho de que sean 16 píxeles es por un tema que se que se va de este curso pero para que tengáis una pequeña referencia es porque en web 16 píxeles
 
-00:02:25.000 --> 00:02:50.000
-Mi recomendación: usad rem para tamaños de letra y espacios, porque respeta el tamaño de letra que el usuario haya elegido en su navegador. Eso es clave para la accesibilidad.
+00:01:28.410 --> 00:01:42.330
+equivalen aproximadamente a los 12 puntos de tamaño que se utilizan en imprenta por temas de experiencia de usuario está demostrado que es el tamaño al que el ojo está más acostumbrado
+
+00:01:42.330 --> 00:01:58.150
+entonces modificar el tamaño de la fuente por defecto no es recomendable porque si lo hacéis vuestras webs se van a ver raras una vez explicado eso vamos a ver cómo funciona rem que yo creo que
+
+00:01:58.150 --> 00:02:16.180
+es el más sencillo de entender vamos a abrir un momentito el inspector de código y si venimos al título y miramos la parte de computer vais a ver que de font size tiene 32 píxeles eso es porque
+
+00:02:16.180 --> 00:02:35.050
+por defecto los h1 tienen un tamaño de 2 m eso significa que como el tamaño base es 16 píxeles 2 x 16 son 32 y aquí por defecto nos lo da en eem entonces vamos a ver qué pasa si ponemos 2
+
+00:02:35.050 --> 00:02:47.670
+rem vamos a minimizar esto y al punto title vamos a darle un font size de dos reis guardamos y como
+
+00:02:47.670 --> 00:03:10.760
+veis no pasa absolutamente nada y eso es porque dos reis está haciendo referencia al tamaño raíz que es 16 píxeles por lo tanto os lo voy a poner aquí como ejemplo 16 píxeles es igual a un rey por
+
+00:03:10.760 --> 00:03:28.820
+lo tanto dos rem es igual a 32 3 es igual a 48 y así podéis ir sumando al principio es un poco confuso porque estamos acostumbrados a evaluar en funciones de 10 vamos de 10 20 30 y eso para
+
+00:03:28.820 --> 00:03:42.140
+nosotros es mucho más claro en desarrollo web lo normal es ir de cuatro en cuatro ya vamos a ver cómo aplicar padding y toda esa historia para que sea todo mucho más consistente pero tampoco me
+
+00:03:42.140 --> 00:03:52.380
+quiero me quiero adelantar a eso entonces con rem va a dar igual lo que pongamos ya sea 234 porque
+
+00:03:52.380 --> 00:04:08.440
+siempre va a ser esa cantidad por 16 con él no pasa exactamente igual con él esto corresponde al contexto donde nos encontremos es decir nosotros en el body si no especificamos nada
+
+00:04:08.440 --> 00:04:25.210
+vamos a tener 16 píxeles por defecto pero si yo aquí en font-size le pongo por ejemplo 10 píxeles de tamaño de fuente como veis el título no ha cambiado porque son 2 rem pero si pusiéramos 2
+
+00:04:25.210 --> 00:04:42.790
+m y ahora miramos nuestro inspector de código aquí en computer como veis son 20 píxeles y eso es porque m es relativo al contexto title está dentro de body por lo tanto su contexto es el body
+
+00:04:42.790 --> 00:04:53.230
+2 m implica que va a ser el font size del body por 2 si pusiéramos 3 m pues estos serían 30 píxeles
+
+00:04:55.680 --> 00:05:08.040
+aquí font-size 330 píxeles sin embargo si ponemos 3 rem esto van a ser 16 x 3 miramos title y como
+
+00:05:08.040 --> 00:05:25.920
+veis son 48 entonces cuál es la recomendación para tamaños de fuente utilizada siempre reims siempre sin excepción porque porque en esos casos no vais a tener problemas del contexto
+
+00:05:25.920 --> 00:05:39.720
+en el que os encontréis siempre van a ser 16 por lo que establezca jce sin embargo con él vamos a tener muchísimos problemas si los utilizamos como fuente porque no va a ser
+
+00:05:39.720 --> 00:05:53.430
+lo mismo estar dentro del body que estar dentro de una lista o dentro de un spam o ese tipo de cosas entonces los rem siempre para tamaños de fuente en qué casos es conveniente
+
+00:05:53.430 --> 00:06:08.490
+utilizar m en lugar de rem vamos a hacer un pequeño ejemplo vamos a hacer un mini botón vale esto no quiero que vaya a ningún sitio y aquí vamos a poner soy un botón por ejemplo
+
+00:06:12.010 --> 00:06:22.180
+y vamos a darle estilos a este botón bueno le voy a dar una clase para poder darle estilos correctamente class link por ejemplo
+
+00:06:24.910 --> 00:06:42.460
+y esto lo voy a comentar para que no nos confunda y nos estorbe y aquí vamos a crear nuestro botón punto link vamos a darle un background color light coral un color gris por ejemplo
+
+00:06:45.140 --> 00:06:58.300
+y vamos a darle también un patín de 16 píxeles 32 píxeles y un borde rey dios por ejemplo vamos a
+
+00:06:58.300 --> 00:07:15.680
+darle 8 píxeles y guardamos y aquí tenemos el botón con unos píxeles de padding y de borde radios que son independientes del tamaño de fuente siempre van a ser los mismos si nosotros aquí
+
+00:07:15.680 --> 00:07:32.320
+como font-size ponemos tres red por ejemplo voy a quitar un poco de zoom para que se vea si quitamos esto si os dais cuenta ahora mismo el texto es muy grande y apenas tiene sitio si esto lo hacemos aún
+
+00:07:32.320 --> 00:07:48.830
+más grande pues el botón tiene menos sitio tenemos mucho menos padding a los lados o sea realmente tenemos el mismo padding pero ya no se siente igual si yo quito esto como veis digamos que
+
+00:07:48.830 --> 00:08:03.680
+el botón tiene el texto tiene más espacio para respirar queda queda mucho más elegante aquí con el zoom igual os lo perdáis pero así se ve con espacio sin embargo cuando cambiamos el font size
+
+00:08:03.680 --> 00:08:20.690
+aquí el texto es demasiado grande para el espacio que le estamos dejando eso es porque estamos usando una medida absoluta si nosotros aquí esto lo modificamos por 16 en 16 no perdón por un rey
+
+00:08:21.840 --> 00:08:33.750
+y por dos reis que sería exactamente lo mismo 16 y 32 y en el caso de 8 estos serían punto 5 rem vale
+
+00:08:33.750 --> 00:08:48.000
+sería la mitad de un rey y guardamos si os dais cuenta tenemos exactamente el mismo problema aquí en el fons hay tenemos cuatro y esto sigue siendo exactamente igual entonces para estos casos es
+
+00:08:48.000 --> 00:08:59.370
+muy recomendable utilizar m porque de esa forma el 1 en el 2 m y el 0.5 en lo que va a hacer es
+
+00:08:59.370 --> 00:09:09.830
+ser coherente con el tamaño de fuente que tengamos si yo ahora quito zoom como veis esto ha crecido y
+
+00:09:09.830 --> 00:09:27.180
+todo es proporcional si en lugar de cuatro rey yo le doy dos esto sigue siendo proporcional entonces este es el ejemplo de cuando utiliza rem y cuando utilizar en si la medida que establezcas
+
+00:09:27.180 --> 00:09:42.450
+tiene que crecer proporcionalmente al tamaño del texto como puede ser en este ejemplo utilizad siempre en y si la medida tiene que ser siempre la misma y relativa al tamaño de fuente de la
+
+00:09:42.450 --> 00:09:57.720
+raíz tenéis que utilizar rem al principio cuesta un poco digerirlo y sé que cuesta un poco elegir pero si en algún momento tenéis dudas probad con rem cambias el tamaño de fuente y si lo veis raro
+
+00:09:57.720 --> 00:10:14.370
+entonces probad con él y así poco a poco vais a ir viendo en qué casos visualmente os parece muchísimo mejor utilizar una u otra yo os doy esta pequeña pista con este ejemplo pero al final las
+
+00:10:14.370 --> 00:10:26.310
+decisiones las tomamos nosotros día a día y con esto visto en el siguiente vídeo vamos a hablar sobre el porcentaje que también es algo que sé por experiencia que causa muchos dolores de cabeza
+
+00:10:26.310 --> 00:10:40.260
+porque normalmente la gente usa porcentaje pero no tiene ni idea sobre qué se está aplicando ese porcentaje y eso es algo que vais a entender en cuanto os lo explique así que muchísimas gracias
+
+00:10:40.260 --> 00:10:53.030
+por ver este vídeo y nos vemos en el siguiente un saludo y hasta luego espero que te esté gustando esta nueva edición del curso de css y si crees que este contenido puede ayudar a alguien te animo
+
+00:10:53.030 --> 00:11:04.460
+a que lo compartas en todas tus redes sociales además si tienes alguna duda o algo que quieras comentar te dejo en la descripción un link para que te unas a la comunidad de discos donde ya
+
+00:11:04.460 --> 00:11:15.200
+somos casi 5.000 personas que estamos dispuestos a echar un cable en cualquier cosa que necesites y si quieres estar al día de todo el contenido y no perderte nada te animo a que te suscribas
+
+00:11:15.200 --> 00:11:26.120
+haciendo click aquí y le des a la campanita para que youtube te avise de todas las notificaciones muchísimas gracias por ver este vídeo y nos vemos en el siguiente un saludo y hasta luego

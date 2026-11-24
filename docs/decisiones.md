@@ -18,7 +18,13 @@
 **Alternativas:** las APIs de los fabricantes chinos (DeepSeek, Alibaba), los modelos comerciales de EE. UU. (OpenAI, Anthropic, Google), Mistral o los planes gratuitos.
 **Por qué:** hay alumnos menores y se aplica el RGPD. Las APIs chinas implican una transferencia de datos fuera de la UE sin garantías (en Italia ya se bloqueó DeepSeek), y los planes gratuitos usan los datos para entrenar. Con un modelo abierto alojado en la UE se consigue el precio bajo de esos modelos sin que los datos salgan de Europa. La capa propia permite cambiar de proveedor si cambian los precios o la calidad.
 
-## 4. Decisión de producto que más condiciona la solución
+## 4. Vídeos y transcripciones del prototipo
+
+**Decisión:** 12 vídeos de YouTube de dos canales en español (Kiko Palomares para HTML, maquetación y JavaScript; Dorian Desings para CSS) con sus **subtítulos de YouTube**, descargados con yt-dlp y limpiados con un script propio. El **revisor de transcripciones** (un agente de IA que corrige el vocabulario técnico) queda diseñado y documentado para producción, pero **no se ejecuta en el prototipo**.
+**Alternativas:** todos los vídeos de un solo canal; transcribir con Whisper en local; ejecutar ya el revisor (unos 3 céntimos) o corregir las transcripciones a mano.
+**Por qué:** con un solo canal, el módulo de CSS no explicaba bien la especificidad, que es el ejemplo del Radar; con Dorian Desings, sus tres vídeos encajan con los tres conceptos del módulo. Los 12 vídeos ya tenían subtítulos en español, así que Whisper (horas en un portátil sin GPU) no aportaba nada. El tutor recibe el módulo entero y corrige por contexto la mayoría de los fallos de los subtítulos, así que en el prototipo no compensa ni el gasto ni el tiempo del revisor. En producción sí hace falta, porque con 400 vídeos se buscan fragmentos (RAG) y una búsqueda no encuentra «div» si la transcripción dice «dip». Corregirlas a mano no se puede repetir con 400 vídeos.
+
+## 5. Decisión de producto que más condiciona la solución
 
 **Decisión:** la IA trabaja **dentro de cada módulo y anclada a su contenido**: un tutor por módulo, limitado a su temario, y ejercicios generados a partir de los ejemplos del profesor. No hay un asistente general.
 **Alternativas:** un chatbot general para todo el curso, o ejercicios escritos a mano sin IA.

@@ -1,0 +1,87 @@
+WEBVTT
+
+NOTE
+Transcripción de «Etiquetas semánticas» (https://www.youtube.com/watch?v=FeXpLU515AI).
+Subtítulos automáticos de YouTube en español, descargados con yt-dlp y limpiados con
+scripts/transcripciones/descargar.py (issue #11).
+
+00:00:00.000 --> 00:00:10.640
+en este vídeo vamos a repasar los elementos semánticos de html que significa semántico significa significado es decir vamos a repasar los elementos que tienen un significado en
+
+00:00:10.650 --> 00:00:16.740
+html explorador programa ahora mi nombre es kiko palomares y vamos a comenzar
+
+00:00:20.860 --> 00:00:32.640
+qué significan los elementos semánticos pues básicamente elementos enigmáticos significan elementos con significados que son los elementos semánticos un elemento semántico describe claramente lo que significa tanto para el navegador
+
+00:00:32.650 --> 00:00:43.080
+como para el desarrollador ejemplos de elementos no semánticos pues serían el tipo y luego el spam éstos en estos pues no tienen un significado en si tú puedes poner ahí dentro muchas cosas que se dan
+
+00:00:43.090 --> 00:00:54.720
+cosas que algunas veces sean unas cosas y otras cosas y otras veces sean cosas totalmente diferentes no tienen un significado en sí ni para ti como desarrollador ni para el navegador tampoco ejemplos de elementos semánticos
+
+00:00:54.730 --> 00:01:06.120
+pues tenemos el foro en el table el artículo todos estos sí que tienen un significado dentro del foro que hay un dentro del table que hay pues una tabla y dentro del artículo que hay pues un artículo sabe estos sí que tienen un
+
+00:01:06.130 --> 00:01:16.469
+significado en sí elementos semánticos en html muchas web contienen código como pues divide haití y le ponen a otro de ied y le ponen header o le ponen footer
+
+00:01:16.479 --> 00:01:27.390
+de haití y todo dentro de dips vale para indicar la navegación el encabezado y el pie de página no el foot en html tenemos etiquetas para indicar todas estas cosas y muchas más ahí tenemos pues todas
+
+00:01:27.400 --> 00:01:39.540
+tenemos tenemos al ticket tenemos asa y tenemos detalles figure figure caption footer header main mark section sumar y time tenemos todas estas para indicar las diferentes partes de una web sección
+
+00:01:39.550 --> 00:01:50.270
+elemento sección define una sección del documento y normalmente lleva un h uno dentro ahí podemos ver un ejemplo de una sección el elemento artículo éste define el contenido de un artículo
+
+00:01:50.280 --> 00:02:01.440
+independiente por sí mismo es decir el artículo por sí solo ha de tener sentido y debería decirse leer y entenderlo sin tener que leer el resto de la web vale por sí solo tiene que significar algo y
+
+00:02:01.450 --> 00:02:11.699
+tiene que puro pues poder leer sin consultar nada más de la web y que tenga sentido vale ejemplos de esto pues pueden ser post de un foro o artículos de un blog una noticia stock son
+
+00:02:11.709 --> 00:02:22.890
+artículos vale esto deberían ir dentro de esta etiqueta y ahí abajo podemos ver un ejemplo en html artículo dentro de sección o al revés aquí hay mucha confusión a mí cuando cuando me
+
+00:02:22.900 --> 00:02:33.090
+enseñaron recuerdo que en la universidad el segundo año de universidad si no recuerdo mal que estaba estaban empezando a hacer de moda esto del html5 estas nuevas etiquetas
+
+00:02:33.100 --> 00:02:43.140
+el profesor nos explicó estas etiquetas de section y de al ciclo y recuerdo que como no la explicaron fuentes tiene que hacer una sección y dentro tienes que hacer artículos y hasta eso fue lo que
+
+00:02:43.150 --> 00:02:55.080
+nos explicaron y durante años pues creía eso no pero no es del todo así o sea no es así en un artículo específica contenido completo por sí mismo lo que hemos dicho antes y la sección define una sección del documento pero en
+
+00:02:55.090 --> 00:03:06.480
+internet encontrarás páginas con sección dentro del artículo y artículos de sección dentro o sea porque tenemos un ponen ua pongo aquí un ejemplo no en un periódico tú puedes tener un artículo de
+
+00:03:06.490 --> 00:03:16.710
+deporte que estará dentro de una sección de deportes pero es posible que dentro de cada artículo haya diferentes secciones astruc tú entró de un propio artículo que tenga sentido por sí solo puedes tener también diferentes
+
+00:03:16.720 --> 00:03:27.660
+secciones y a su vez dentro de las diferentes secciones puedes tener también diferentes artículos claves o sea no es esto de meter los artículos dentro de las secciones no necesariamente sí que es verdad que en
+
+00:03:27.670 --> 00:03:39.600
+muchos casos pues puede ser así pero hay que tener en cuenta que dentro de los artículos también puede haber secciones el header esta específica el encabezado del documento o de una sección y debería contener un contenido introductorio
+
+00:03:39.610 --> 00:03:50.550
+y que también puede contener muchos elementos dentro de este ahí pues por abajo podemos a ver un ejemplo en html el footer el futur define el pie de página de un documento o de una sección
+
+00:03:50.560 --> 00:04:02.280
+y se suele usar para la información de contacto o copyright y enlaces a términos de uso etcétera bueno es lo típico para el pie de página de una web o de un artículo o de lo que sea el nap este define un grupo de enlaces de
+
+00:04:02.290 --> 00:04:13.380
+navegación y ojos sólo para enlaces de navegación no vale cualquier enlace solo para enlaces de navegación es decir para hacer menús y similares a site éste define contenido a un lado como una
+
+00:04:13.390 --> 00:04:23.490
+barra lateral el contenido suele estar relacionado con el contenido principal y bueno y abajo pues podemos volver a ver un ejemplo y por último tenemos el word y el feed caption que lo que hace es es
+
+00:04:23.500 --> 00:04:34.560
+poner una imagen con título vale puedes agrupar una imagen con su propio título dentro del figure el título lo pones con el fir caption y es bueno lo tenemos ahí abajo del ejemplo de html espero que te
+
+00:04:34.570 --> 00:04:44.520
+haya gustado mucho el vídeo por aquí quería dejar el curso completo de html para que te formes y sepas todo lo que tienes que saber de html y por supuesto espero que estés suscritos ya a este
+
+00:04:45.490 --> 00:04:48.089
+por programadora nos vemos en el próximo
