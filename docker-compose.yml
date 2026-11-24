@@ -1,5 +1,5 @@
 # Local PostgreSQL for development only. Production uses Neon (EU); its URL lives only in Vercel.
-# Start: npm run db:up · Stop: npm run db:down · Check the draft schema: npm run db:validar
+# Start: npm run db:up · Stop: npm run db:down · Create the tables: npm run db:migrate
 # Wipe all local data: docker compose down -v
 # Connection string for .env.local:
 #   DATABASE_URL=postgres://hackado:hackado@localhost:5433/hackado
