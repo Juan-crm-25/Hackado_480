@@ -165,7 +165,8 @@ Estado: ✅ existe · 🔁 existe, se migrará a la BBDD y a esta estructura · 
 | `GET /api/cursos/:slug` | publico | catalogo (ficha: módulos, imágenes, precio) | ⬜ |
 | `POST /api/cursos` | profesor | catalogo (quien lo crea queda como profesor del curso) | ⬜ |
 | `PATCH /api/cursos/:id` | profesor del curso | catalogo | ⬜ |
-| `POST /api/cursos/:id/imagenes` | profesor del curso | catalogo (URL firmada de R2: solo JPEG, PNG o WebP, máx. 2 MB, nombre del fichero lo decide el servidor) | ⬜ |
+| `POST /api/cursos/:id/imagenes` | profesor del curso | catalogo (subida a R2 en dos pasos, ver abajo) | ⬜ |
+| `POST /api/cursos/:id/imagenes/confirmar` | profesor del curso | catalogo (comprueba lo subido y guarda la URL) | ⬜ |
 | `GET /api/catalogo` | publico | catalogo | 🔁 |
 | `GET /api/modulos/:id` | acceso al curso | catalogo | 🔁 |
 | `GET /api/clases/:id` | acceso al curso | catalogo (vídeo y documentos) | ⬜ |
@@ -196,16 +197,31 @@ No es un endpoint. Cuando se crea un comentario:
 1. El servicio guarda el comentario (`pendiente`) y **responde al alumno sin esperar a la IA**.
 2. Con **`after()`** de Next.js (`import { after } from "next/server"`) programa la validación. En Vercel, `after()` mantiene viva la función hasta que termina (usa `waitUntil`), así que no se corta al enviar la respuesta. Se limita con `export const maxDuration = 30` en el `route.ts`.
 3. El agente validador (`lib/agentes`, con el texto filtrado) devuelve `buena` o `no_util`. Se guarda con `validado_por = 'ia'` **solo si sigue `pendiente`**, para no pisar una decisión del profesor.
-4. **Si la IA falla**, el comentario se queda `pendiente` y el error se registra con `console.error` (aparece en los logs de Vercel). **Reintento sin cron:** al abrir un tema, sus comentarios `pendiente` de hace más de 10 minutos se vuelven a validar con `after()`.
+4. **Si la IA falla**, el comentario se queda `pendiente` y el error se registra con `console.error` (aparece en los logs de Vercel). **Reintento sin cron, con freno:** al abrir un tema, se vuelven a validar con `after()` sus comentarios `pendiente` de hace más de 10 minutos, pero:
+   - **Como mucho una vez cada 10 minutos por tema**, aunque lo abran muchas personas: se guarda la marca `foro:reintento:<temaId>` en la caché compartida (sección 5) con 10 minutos de vida. Si ya existe, no se reintenta. Así, si la IA está caída, las visitas no multiplican las llamadas.
+   - **Como mucho 5 comentarios por reintento**, los más antiguos primero.
+   - El `route.ts` del tema también lleva `export const maxDuration = 30`, porque ejecuta `after()`.
 
 ### Webhook de Stripe
 
 Stripe puede enviar el mismo aviso varias veces, así que el webhook tiene que ser **idempotente**:
 
 1. Leer el cuerpo **en bruto** (`await request.text()`) y comprobar la firma con `STRIPE_WEBHOOK_SECRET`. Si no es válida: **400**.
-2. Atender solo el evento `checkout.session.completed`. Los demás: **200** sin hacer nada.
-3. **En una sola transacción:** `UPDATE pedido SET estado = 'pagado' … WHERE stripe_session_id = ? AND estado = 'pendiente'`. Si no cambia ninguna fila, el aviso ya se procesó: **200** sin hacer nada. Si cambia, crear la matrícula (`origen = 'compra'`) con `ON CONFLICT (curso_id, email) DO NOTHING` (si ya estaba invitado, ya tiene acceso).
-4. Responder **200** también en los repetidos. Solo un error real (la BBDD no responde) devuelve **500**, para que Stripe lo reintente. Como todo va en una transacción, nunca queda un pedido pagado sin matrícula.
+2. Atender solo `checkout.session.completed` y `checkout.session.async_payment_succeeded` (pagos diferidos). Los demás: **200** sin hacer nada.
+3. **Comprobar que el pago está hecho y cuadra**, porque `completed` puede llegar antes de cobrar con métodos de pago diferidos:
+   - `session.payment_status === "paid"`. Si no, **200** sin dar acceso: ya llegará `async_payment_succeeded`.
+   - `session.amount_total` y `session.currency` iguales a `pedido.importe_centimos` y `pedido.moneda`. Si no cuadran, `console.error` y **200** sin dar acceso (no se reintenta, porque reintentarlo no lo arreglaría).
+4. **En una sola transacción:** `UPDATE pedido SET estado = 'pagado' … WHERE stripe_session_id = ? AND estado = 'pendiente'`. Si no cambia ninguna fila, el aviso ya se procesó: **200** sin hacer nada. Si cambia, crear la matrícula (`origen = 'compra'`) con `ON CONFLICT (curso_id, email) DO NOTHING`. Si ya estaba invitado, ya tiene acceso: su matrícula se queda como estaba (`origen = 'invitacion'`) y el pedido pagado queda registrado en `pedido`, sin enlazar a la matrícula.
+5. Responder **200** también en los repetidos. Solo un error real (la BBDD no responde) devuelve **500**, para que Stripe lo reintente. Como todo va en una transacción, nunca queda un pedido pagado sin matrícula.
+
+### Subida de imágenes a R2
+
+El navegador sube la imagen **directamente a R2**, sin pasar por nuestro servidor, en dos pasos:
+
+1. `POST /api/cursos/:id/imagenes` con el tipo y el tamaño del fichero. El servidor rechaza todo lo que no sea JPEG, PNG o WebP de 2 MB como máximo, decide la clave del fichero (`cursos/<cursoId>/<uuid>.<ext>`) y devuelve una **URL firmada de subida (`PUT`) que caduca en 5 minutos**. El tipo y el tamaño van **dentro de la firma** (`ContentType` y `ContentLength`), así que R2 rechaza una subida que no coincida.
+2. Tras subirla, `POST /api/cursos/:id/imagenes/confirmar` con la clave, el título y el uso. El servidor comprueba que la clave empieza por `cursos/<cursoId>/` (nadie confirma ficheros de otro curso) y en R2 (`HEAD`) que el fichero existe y que su tipo y tamaño son los permitidos, y **solo entonces** crea la fila en `curso_imagen` con la URL pública. Si no cuadra, borra el fichero y responde **400**.
+
+Así una URL firmada no sirve para subir cualquier cosa, y en la BBDD nunca hay una imagen que no exista o no cumpla las reglas.
 
 ---
 
@@ -236,7 +252,9 @@ src/server/compartido/cache/
 - **Uso en el tutor:** antes de llamar a la IA, se busca la clave; si está (**HIT**), se responde sin IA y sin gastar consulta del límite diario; si no (**MISS**), se llama a la IA y se guarda la respuesta 7 días. La respuesta lleva la cabecera **`X-Cache: HIT | MISS`**, que se enseña en la demo junto al tiempo de respuesta.
 - **Clave:** `tutor:<moduloId>:<hash>`, donde el hash se calcula sobre la pregunta **ya filtrada** (sin datos personales) y normalizada (minúsculas, sin espacios repetidos ni signos finales). Solo se usa caché en preguntas sin historial de conversación, porque con historial la respuesta depende del contexto.
 - **Privacidad:** en la caché solo hay texto del curso y preguntas filtradas, nunca datos del alumno.
-- **Si Redis falla**, se trata como un MISS: la app sigue funcionando, solo que sin caché.
+- **Si Redis falla o va lento, la app sigue funcionando, solo que sin caché:**
+  - `obtener()` tiene un **tiempo máximo de 300 ms**. Si se pasa o da error, cuenta como MISS.
+  - `guardar()` **nunca rompe la respuesta**: se ejecuta con `after()` y, si falla, solo se registra con `console.error`. Una respuesta buena de la IA nunca se convierte en un error por culpa de la caché.
 
 **Desplegarlo en Vercel:** *Storage → Marketplace → Upstash Redis → Create*, región de la UE y plan gratuito. Vercel añade solas las variables `UPSTASH_REDIS_REST_URL` y `UPSTASH_REDIS_REST_TOKEN`, y `getCache()` las detecta. No hay servidor que mantener.
 
