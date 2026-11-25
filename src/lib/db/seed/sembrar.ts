@@ -3,7 +3,7 @@
  * Lo usa scripts/seed.ts (npm run db:seed) y los tests de integración.
  * Cada usuario tiene una cuenta de email y contraseña (CONTRASENA_DEMO) para el login simulado; no crea sesiones.
  */
-import { count, sql } from "drizzle-orm";
+import { and, count, eq, sql } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 import catalogoJson from "../../../../data/catalog.json";
 import m1Html from "../../../../data/ejemplos-profesor/m1-html.json";
@@ -15,8 +15,27 @@ import { cifrarContrasena } from "../../contrasena";
 import type { Catalogo, PlantillaEjercicios } from "../../types";
 import { CURSO_DEMO_SLUG } from "../../usuario-demo";
 import type { Db } from "../client";
-import { categoria, clase, concepto, cuenta, curso, matricula, modulo, plantillaEjercicio, progreso, usuario } from "../schema";
-import { CONTRASENA_DEMO, construirCatalogos, construirMatriculas, construirPlantillas, construirUsuarios } from "./datos";
+import {
+  categoria,
+  clase,
+  concepto,
+  cuenta,
+  curso,
+  cursoImagen,
+  matricula,
+  modulo,
+  plantillaEjercicio,
+  progreso,
+  usuario,
+} from "../schema";
+import {
+  BANNERS_CURSO,
+  CONTRASENA_DEMO,
+  construirCatalogos,
+  construirMatriculas,
+  construirPlantillas,
+  construirUsuarios,
+} from "./datos";
 
 /** Ejemplos del profesor de cada módulo del curso de la demo (#12): origen de `plantilla_ejercicio`. */
 const PLANTILLAS_DEMO = [m1Html, m2Css, m3Responsive, m4Javascript] as PlantillaEjercicios[];
@@ -25,7 +44,17 @@ const PLANTILLAS_DEMO = [m1Html, m2Css, m3Responsive, m4Javascript] as Plantilla
 const nuevo = (columna: string) => sql.raw(`excluded.${columna}`);
 
 export type RecuentoSeed = Record<
-  "categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "cuenta" | "matricula" | "progreso" | "plantilla_ejercicio",
+  | "categoria"
+  | "curso"
+  | "modulo"
+  | "concepto"
+  | "clase"
+  | "usuario"
+  | "cuenta"
+  | "matricula"
+  | "progreso"
+  | "plantilla_ejercicio"
+  | "curso_imagen",
   number
 >;
 
@@ -64,6 +93,19 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
         })
         .returning({ id: curso.id });
       cursoIds.set(catalogo.curso.slug, cur.id);
+
+      // Banner del curso para las tarjetas: solo la URL. Sin clave natural en la tabla, se busca antes de insertar.
+      const banner = BANNERS_CURSO[catalogo.curso.slug];
+      if (banner) {
+        const [existe] = await tx
+          .select({ id: cursoImagen.id })
+          .from(cursoImagen)
+          .where(and(eq(cursoImagen.cursoId, cur.id), eq(cursoImagen.uso, "banner"), eq(cursoImagen.url, banner)))
+          .limit(1);
+        if (!existe) {
+          await tx.insert(cursoImagen).values({ cursoId: cur.id, url: banner, titulo: "Banner de la tarjeta del curso", uso: "banner" });
+        }
+      }
 
       for (const m of catalogo.modulos) {
         const [mod] = await tx
@@ -189,5 +231,6 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
     matricula: await contar(matricula),
     progreso: await contar(progreso),
     plantilla_ejercicio: await contar(plantillaEjercicio),
+    curso_imagen: await contar(cursoImagen),
   };
 }

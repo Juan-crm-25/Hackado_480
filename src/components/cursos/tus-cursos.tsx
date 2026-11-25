@@ -1,4 +1,5 @@
 import { ChevronRight, Route } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -11,6 +12,7 @@ export type CursoConProgreso = {
   modulosCompletados: number;
   porcentaje: number;
   personalizada: boolean;
+  bannerUrl: string | null;
 };
 
 /**
@@ -27,10 +29,21 @@ export function ListaTusCursos({ cursos }: { cursos: CursoConProgreso[] }) {
               href={`/cursos/${c.slug}`}
               className="flex flex-1 flex-col gap-3 rounded-lg p-5 outline-none transition-colors duration-150 hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
             >
+              {c.bannerUrl && (
+                // El banner ya lleva el título del curso.
+                <Image
+                  src={c.bannerUrl}
+                  alt={c.titulo}
+                  width={1376}
+                  height={768}
+                  sizes="(min-width: 768px) 45vw, 100vw"
+                  className="aspect-video w-full rounded-md object-cover"
+                />
+              )}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <p className="text-xs font-semibold text-muted-foreground">{c.categoria}</p>
-                  <h3 className="text-lg leading-tight font-bold">{c.titulo}</h3>
+                  {!c.bannerUrl && <h3 className="text-lg leading-tight font-bold">{c.titulo}</h3>}
                 </div>
                 <ChevronRight className="mt-1 size-5 shrink-0 text-muted-foreground" aria-hidden />
               </div>

@@ -65,6 +65,9 @@ describe.skipIf(!hayBd)("repositorio del catálogo (con BBDD real)", () => {
     expect(porSlug["costura-para-principiantes"]).toMatchObject({ numAlumnos: 2, precioCentimos: 0 });
     expect(porSlug["oposiciones-auxiliar-administrativo"]).toMatchObject({ numAlumnos: 3 });
     expect(cursos.every((c) => c.descripcion.length > 0)).toBe(true);
+    // Banner de cada curso (curso_imagen, uso «banner»), para las tarjetas.
+    expect(porSlug["python-desde-cero"].bannerUrl).toBe("/banners/python-desde-cero.webp");
+    expect(cursos.every((c) => c.bannerUrl?.startsWith("/banners/"))).toBe(true);
   });
 
   it("lee un curso publicado por su slug, con sus módulos en orden", async () => {

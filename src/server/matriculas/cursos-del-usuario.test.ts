@@ -33,6 +33,7 @@ describe.skipIf(!hayBd)("cursos del usuario con su progreso (con BBDD real)", ()
     // Del progreso de demostración: HTML dominado y CSS en curso, de 4 módulos.
     expect(web).toMatchObject({ totalModulos: 4, modulosCompletados: 1, porcentaje: 25, rolEnCurso: "alumno", personalizada: false });
     expect(web!.categoria).toBe("Programación");
+    expect(web!.bannerUrl).toBe("/banners/desarrollo-web.webp");
   });
 
   it("un curso sin progreso está al 0 %", async () => {

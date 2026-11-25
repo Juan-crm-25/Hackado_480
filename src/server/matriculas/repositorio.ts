@@ -3,6 +3,7 @@ import { and, asc, count, eq, inArray, sql } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import { categoria, curso, matricula, modulo, progreso } from "@/lib/db/schema";
 import { ESTADOS_COMPLETADOS } from "@/lib/progreso";
+import { bannerDelCurso } from "../catalogo/repositorio";
 
 export type FilaCursoDelUsuario = {
   slug: string;
@@ -13,6 +14,8 @@ export type FilaCursoDelUsuario = {
   modulosCompletados: number;
   /** ¿Ha personalizado ya su ruta en este curso? */
   personalizada: boolean;
+  /** URL del banner del curso, o null. */
+  bannerUrl: string | null;
 };
 
 /**
@@ -28,6 +31,7 @@ export async function leerCursosDelUsuario(usuarioId: string, db: Db): Promise<F
       categoria: categoria.nombre,
       rolEnCurso: matricula.rolEnCurso,
       personalizada: sql<boolean>`coalesce(array_length(${matricula.ordenModulos}, 1), 0) > 0`,
+      bannerUrl: bannerDelCurso,
     })
     .from(matricula)
     .innerJoin(curso, eq(curso.id, matricula.cursoId))
