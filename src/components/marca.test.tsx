@@ -42,8 +42,8 @@ describe("Marca (palabras que rotan)", () => {
 });
 
 describe("ritmo de la rotación", () => {
-  it("cambia de palabra cada 10 segundos", () => {
-    expect(INTERVALO_MS).toBe(10_000);
+  it("cambia de palabra cada 6 segundos", () => {
+    expect(INTERVALO_MS).toBe(6_000);
   });
 });
 

@@ -14,7 +14,7 @@ export const PALABRAS_MARCA = [
 ] as const;
 
 /** Cada cuánto cambia la palabra (en móvil y en web). */
-export const INTERVALO_MS = 10_000;
+export const INTERVALO_MS = 6_000;
 
 export function siguientePalabra(actual: number, total: number): number {
   return (actual + 1) % total;
