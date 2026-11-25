@@ -112,9 +112,13 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 |---|---|---|
 | Login | Funcional con la BBDD: email y contraseña cifrada (scrypt), sesión en la tabla `sesion` con cookie httpOnly, registro siempre como alumno y logout. La web es pública; «Tus cursos», módulos, tutor, perfil y pago piden sesión. | #42 |
 | Checkout | Funcional con la BBDD: el precio sale del curso, crea el `pedido` y, al pagar con cualquier tarjeta (o PayPal, Bizum, cartera), lo marca como pagado y crea la matrícula. «Tus cursos» muestra cada curso con su porcentaje completado. | #42 |
+| Ruta personalizada | Cursos no lineales: antes de empezar, el alumno valora cada módulo («Me interesa mucho», «Me interesa», «Ya lo sé») en un carrusel con barra de progreso. Unas reglas sencillas, sin IA, reordenan los módulos para ese alumno y el tutor explica la recomendación. Se guarda en su matrícula y el panel muestra los módulos en ese orden. | — |
+| Mejoras de UI/UX | Banner de cada curso en las tarjetas (en vez del título). La tarjeta de un módulo con el test superado se distingue. La marca rota entre «480_Academy», «learnby_dō» y «hackan_dō». Se corrige la doble barra de scroll en la web. | — |
 
 ### Decisiones tomadas
 
 | Decisión | Por qué |
 |---|---|
 | Para el MVP, login y pago propios y simulados, **sin Better Auth ni Stripe** | No son lo principal de la demo. La firma de `obtenerSesion()` y la función que marca el pedido como pagado se mantienen para conectar Better Auth y el webhook de Stripe más adelante |
+| Ruta personalizada con **reglas y plantillas**, sin IA | Funciona en cualquier curso sin preparar nada, es instantánea, gratis y se puede probar con tests. La IA leyendo texto libre queda como mejora |
+| «Ya lo sé» **solo reordena**; un módulo solo queda dominado al **aprobar su test** | Unas respuestas no demuestran que el alumno lo sepa. Así el porcentaje completado solo sube con tests aprobados |
