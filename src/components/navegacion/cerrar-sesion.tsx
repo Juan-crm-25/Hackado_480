@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 /**
- * «Cerrar sesión». Aún no hay login (paso 2): de momento solo vuelve a la home.
- * No simula ninguna sesión.
+ * «Cerrar sesión»: borra la sesión en el servidor (POST /api/auth/logout) y vuelve a la home.
+ * Aunque la petición falle, se vuelve a la home: la cookie caduca sola y las páginas privadas validan la sesión.
  */
 export function BotonCerrarSesion({
   className,
@@ -22,10 +22,11 @@ export function BotonCerrarSesion({
       type="button"
       data-destino="cerrar-sesion"
       className={className}
-      onClick={() => {
-        // TODO(login): cerrar la sesión con Better Auth
+      onClick={async () => {
         onCerrar?.();
+        await fetch("/api/auth/logout", { method: "POST" }).catch(() => undefined);
         router.push("/");
+        router.refresh();
       }}
     >
       {children}

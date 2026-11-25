@@ -1,12 +1,13 @@
 import { Marca } from "@/components/marca";
 import Link from "next/link";
-import { AvatarUsuario } from "./avatar-usuario";
+import type { ReactNode } from "react";
 
 /**
  * Barra superior. En móvil y tableta: marca a la izquierda y avatar a la derecha.
  * En web la marca está en la barra lateral, así que solo queda el avatar a la derecha.
+ * `usuario` es la zona del usuario (avatar o «Entrar»), que depende de la sesión.
  */
-export function BarraSuperior({ nombreUsuario }: { nombreUsuario: string }) {
+export function BarraSuperior({ usuario }: { usuario: ReactNode }) {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-2 border-b bg-background px-4 lg:justify-end lg:px-8">
       <Link
@@ -15,7 +16,7 @@ export function BarraSuperior({ nombreUsuario }: { nombreUsuario: string }) {
       >
         <Marca />
       </Link>
-      <AvatarUsuario nombre={nombreUsuario} />
+      {usuario}
     </header>
   );
 }
