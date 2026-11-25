@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { Marca, PALABRAS_MARCA, siguientePalabra } from "./marca";
+import { INTERVALO_MS, Marca, PALABRAS_MARCA, siguientePalabra } from "./marca";
 
 const sinEtiquetas = (html: string) => html.replace(/<[^>]+>/g, "");
 
@@ -38,6 +38,12 @@ describe("Marca (palabras que rotan)", () => {
 
   it("solo el texto visible y el de lectores de pantalla, sin nada más", () => {
     expect(sinEtiquetas(html)).toBe("480 Academy480Academylearnbydōhackandō");
+  });
+});
+
+describe("ritmo de la rotación", () => {
+  it("cambia de palabra cada 10 segundos", () => {
+    expect(INTERVALO_MS).toBe(10_000);
   });
 });
 

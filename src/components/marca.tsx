@@ -13,8 +13,8 @@ export const PALABRAS_MARCA = [
   { antes: "hackan", despues: "dō", guion: "bg-brand-coral" },
 ] as const;
 
-/** Cada cuánto cambia la palabra. */
-const INTERVALO_MS = 2500;
+/** Cada cuánto cambia la palabra (en móvil y en web). */
+export const INTERVALO_MS = 10_000;
 
 export function siguientePalabra(actual: number, total: number): number {
   return (actual + 1) % total;
