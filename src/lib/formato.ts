@@ -14,3 +14,16 @@ export function enlaceYoutube(youtubeId: string, segundo: number): string | null
 
 /** Alumno con el que se usa la app mientras no hay login (fuera del alcance del prototipo). */
 export const ALUMNO_DEMO_ID = "a1";
+
+const EUROS = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2 });
+const UN_DECIMAL = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+/** Precio de un curso: 0 → "Gratis"; 4900 → "49,00 €". */
+export function formatoPrecio(centimos: number): string {
+  return centimos === 0 ? "Gratis" : EUROS.format(centimos / 100);
+}
+
+/** 4.6 → "4,6" (una cifra decimal, coma española). */
+export function formatoDecimal(numero: number): string {
+  return UN_DECIMAL.format(numero);
+}

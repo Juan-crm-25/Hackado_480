@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import catalogo from "../../../../data/catalog.json";
 import { alumnosDemo } from "../../datos-prueba";
 import type { Catalogo } from "../../types";
-import { comprobarDestino, construirCatalogo, construirUsuarios, seudonimoDe } from "./datos";
+import { comprobarDestino, construirCatalogo, construirCatalogos, construirMatriculas, construirUsuarios, seudonimoDe } from "./datos";
 
 describe("usuarios del seed", () => {
   const usuarios = construirUsuarios(alumnosDemo);
@@ -68,6 +68,69 @@ describe("catálogo del seed", () => {
       orden: 1,
     });
     expect(css.clases.map((c) => c.orden)).toEqual([1, 2, 3]);
+  });
+});
+
+describe("catálogo completo del seed", () => {
+  const catalogos = construirCatalogos(catalogo as Catalogo);
+
+  it("son 6 cursos publicados: el de catalog.json el primero y 5 más de otras categorías", () => {
+    expect(catalogos).toHaveLength(6);
+    expect(catalogos[0]).toEqual(construirCatalogo(catalogo as Catalogo));
+    expect(catalogos.every((c) => c.curso.publicado)).toBe(true);
+    const slugs = catalogos.map((c) => c.curso.slug);
+    expect(new Set(slugs).size).toBe(6);
+    expect(new Set(catalogos.map((c) => c.categoria.slug))).toEqual(
+      new Set(["programacion", "ia", "cocina", "costura", "oposiciones"]),
+    );
+  });
+
+  it("los cursos nuevos tienen descripción, precio válido y 2–3 módulos descritos, sin clases inventadas", () => {
+    for (const { curso, modulos } of catalogos.slice(1)) {
+      expect(curso.descripcion.length).toBeGreaterThan(0);
+      expect(Number.isInteger(curso.precioCentimos) && curso.precioCentimos >= 0).toBe(true);
+      expect(modulos.length).toBeGreaterThanOrEqual(2);
+      expect(modulos.length).toBeLessThanOrEqual(3);
+      expect(modulos.every((m) => m.descripcion.length > 0 && m.clases.length === 0)).toBe(true);
+      expect(modulos.map((m) => m.ordenSugerido)).toEqual(modulos.map((_, i) => i + 1));
+    }
+    const gratis = catalogos.slice(1).filter((c) => c.curso.precioCentimos === 0);
+    expect(gratis.length).toBeGreaterThanOrEqual(1);
+    expect(gratis.length).toBeLessThanOrEqual(2);
+  });
+
+  it("una misma categoría tiene siempre el mismo nombre", () => {
+    const programacion = catalogos.filter((c) => c.categoria.slug === "programacion").map((c) => c.categoria.nombre);
+    expect(new Set(programacion)).toEqual(new Set(["Programación"]));
+  });
+});
+
+describe("matrículas del seed", () => {
+  const usuarios = construirUsuarios(alumnosDemo);
+  const catalogos = construirCatalogos(catalogo as Catalogo);
+  const matriculas = construirMatriculas(catalogos, usuarios);
+  const alumnosDe = (slug: string) =>
+    matriculas.filter((m) => m.cursoSlug === slug && m.rolEnCurso === "alumno").map((m) => m.email);
+
+  it("el curso de la demo tiene a los 10 alumnos y a la profesora; el admin no se matricula", () => {
+    expect(alumnosDe("desarrollo-web")).toHaveLength(10);
+    expect(matriculas.filter((m) => m.rolEnCurso === "profesor")).toEqual([
+      { cursoSlug: "desarrollo-web", email: "profesora@demo.test", rolEnCurso: "profesor" },
+    ]);
+    expect(matriculas.some((m) => m.email === "admin@demo.test")).toBe(false);
+  });
+
+  it("los otros cursos tienen alumnos de la demo, en número distinto en cada uno", () => {
+    const alumnos = new Set(usuarios.filter((u) => u.rol === "alumno").map((u) => u.email));
+    const cuentas = catalogos.map((c) => alumnosDe(c.curso.slug).length);
+    expect(new Set(cuentas).size).toBe(cuentas.length);
+    expect(matriculas.every((m) => m.rolEnCurso === "profesor" || alumnos.has(m.email))).toBe(true);
+    expect(cuentas.every((n) => n > 0)).toBe(true);
+  });
+
+  it("no repite matrícula (curso, email)", () => {
+    const claves = matriculas.map((m) => `${m.cursoSlug}|${m.email}`);
+    expect(new Set(claves).size).toBe(claves.length);
   });
 });
 

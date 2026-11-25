@@ -9,7 +9,7 @@ import { alumnosDemo } from "../../datos-prueba";
 import type { Catalogo } from "../../types";
 import type { Db } from "../client";
 import { categoria, clase, concepto, curso, matricula, modulo, usuario } from "../schema";
-import { construirCatalogo, construirUsuarios } from "./datos";
+import { construirCatalogos, construirMatriculas, construirUsuarios } from "./datos";
 
 /** En ON CONFLICT DO UPDATE: el valor que se intentaba insertar. */
 const nuevo = (columna: string) => sql.raw(`excluded.${columna}`);
@@ -17,58 +17,68 @@ const nuevo = (columna: string) => sql.raw(`excluded.${columna}`);
 export type RecuentoSeed = Record<"categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "matricula", number>;
 
 export async function sembrar(db: Db): Promise<RecuentoSeed> {
-  const catalogo = construirCatalogo(catalogoJson as Catalogo);
+  const catalogos = construirCatalogos(catalogoJson as Catalogo);
   const usuarios = construirUsuarios(alumnosDemo);
 
   await db.transaction(async (tx) => {
-    const [cat] = await tx
-      .insert(categoria)
-      .values(catalogo.categoria)
-      .onConflictDoUpdate({ target: categoria.slug, set: { nombre: nuevo("nombre") } })
-      .returning({ id: categoria.id });
+    const cursoIds = new Map<string, string>();
 
-    const [cur] = await tx
-      .insert(curso)
-      .values({ ...catalogo.curso, categoriaId: cat.id })
-      .onConflictDoUpdate({
-        target: curso.slug,
-        set: {
-          categoriaId: nuevo("categoria_id"),
-          titulo: nuevo("titulo"),
-          descripcion: nuevo("descripcion"),
-          precioCentimos: nuevo("precio_centimos"),
-          publicado: nuevo("publicado"),
-        },
-      })
-      .returning({ id: curso.id });
+    for (const catalogo of catalogos) {
+      const [cat] = await tx
+        .insert(categoria)
+        .values(catalogo.categoria)
+        .onConflictDoUpdate({ target: categoria.slug, set: { nombre: nuevo("nombre") } })
+        .returning({ id: categoria.id });
 
-    for (const m of catalogo.modulos) {
-      const [mod] = await tx
-        .insert(modulo)
-        .values({ cursoId: cur.id, slug: m.slug, titulo: m.titulo, descripcion: m.descripcion, ordenSugerido: m.ordenSugerido })
+      const [cur] = await tx
+        .insert(curso)
+        .values({ ...catalogo.curso, categoriaId: cat.id })
         .onConflictDoUpdate({
-          target: [modulo.cursoId, modulo.slug],
-          set: { titulo: nuevo("titulo"), descripcion: nuevo("descripcion"), ordenSugerido: nuevo("orden_sugerido") },
-        })
-        .returning({ id: modulo.id });
-
-      await tx
-        .insert(concepto)
-        .values(m.conceptos.map((c) => ({ ...c, moduloId: mod.id })))
-        .onConflictDoUpdate({ target: [concepto.moduloId, concepto.slug], set: { nombre: nuevo("nombre") } });
-
-      await tx
-        .insert(clase)
-        .values(m.clases.map((c) => ({ ...c, moduloId: mod.id })))
-        .onConflictDoUpdate({
-          target: [clase.moduloId, clase.slug],
+          target: curso.slug,
           set: {
+            categoriaId: nuevo("categoria_id"),
             titulo: nuevo("titulo"),
-            videoUrl: nuevo("video_url"),
-            duracionSegundos: nuevo("duracion_segundos"),
-            orden: nuevo("orden"),
+            descripcion: nuevo("descripcion"),
+            precioCentimos: nuevo("precio_centimos"),
+            publicado: nuevo("publicado"),
           },
-        });
+        })
+        .returning({ id: curso.id });
+      cursoIds.set(catalogo.curso.slug, cur.id);
+
+      for (const m of catalogo.modulos) {
+        const [mod] = await tx
+          .insert(modulo)
+          .values({ cursoId: cur.id, slug: m.slug, titulo: m.titulo, descripcion: m.descripcion, ordenSugerido: m.ordenSugerido })
+          .onConflictDoUpdate({
+            target: [modulo.cursoId, modulo.slug],
+            set: { titulo: nuevo("titulo"), descripcion: nuevo("descripcion"), ordenSugerido: nuevo("orden_sugerido") },
+          })
+          .returning({ id: modulo.id });
+
+        // Los cursos extra no tienen conceptos ni clases: un INSERT sin filas no es válido.
+        if (m.conceptos.length > 0) {
+          await tx
+            .insert(concepto)
+            .values(m.conceptos.map((c) => ({ ...c, moduloId: mod.id })))
+            .onConflictDoUpdate({ target: [concepto.moduloId, concepto.slug], set: { nombre: nuevo("nombre") } });
+        }
+
+        if (m.clases.length > 0) {
+          await tx
+            .insert(clase)
+            .values(m.clases.map((c) => ({ ...c, moduloId: mod.id })))
+            .onConflictDoUpdate({
+              target: [clase.moduloId, clase.slug],
+              set: {
+                titulo: nuevo("titulo"),
+                videoUrl: nuevo("video_url"),
+                duracionSegundos: nuevo("duracion_segundos"),
+                orden: nuevo("orden"),
+              },
+            });
+        }
+      }
     }
 
     const filas = await tx
@@ -85,19 +95,17 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
           seudonimo: nuevo("seudonimo"),
         },
       })
-      .returning({ id: usuario.id, email: usuario.email, rol: usuario.rol });
+      .returning({ id: usuario.id, email: usuario.email });
+    const usuarioIds = new Map(filas.map((u) => [u.email, u.id]));
 
-    // Alumnos y profesor, por invitación y ya enlazados (sus emails están verificados).
-    // El admin no necesita matrícula: pasa las comprobaciones de acceso en todos los cursos.
-    const matriculas = filas
-      .filter((u) => u.rol !== "admin")
-      .map((u) => ({
-        cursoId: cur.id,
-        email: u.email,
-        usuarioId: u.id,
-        rolEnCurso: u.rol === "profesor" ? ("profesor" as const) : ("alumno" as const),
-        origen: "invitacion" as const,
-      }));
+    // Por invitación y ya enlazadas (los emails están verificados). Ver construirMatriculas().
+    const matriculas = construirMatriculas(catalogos, usuarios).map((m) => ({
+      cursoId: cursoIds.get(m.cursoSlug)!,
+      email: m.email,
+      usuarioId: usuarioIds.get(m.email)!,
+      rolEnCurso: m.rolEnCurso,
+      origen: "invitacion" as const,
+    }));
     // Si ya existía (p. ej., de una compra), solo se enlaza y se fija el rol: el origen y el pedido no se tocan.
     await tx
       .insert(matricula)
