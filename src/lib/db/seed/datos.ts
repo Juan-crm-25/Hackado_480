@@ -3,7 +3,7 @@
  * y los usuarios de prueba. `sembrar()` (./sembrar.ts) los inserta.
  */
 import { createHash } from "node:crypto";
-import type { Alumno, Catalogo } from "../../types";
+import type { Alumno, Catalogo, EjercicioBase, PlantillaEjercicios, TipoEjercicio } from "../../types";
 
 type Rol = "alumno" | "profesor" | "admin";
 
@@ -232,6 +232,39 @@ export function construirMatriculas(catalogos: CatalogoSeed[], usuarios: Usuario
       .map((a): MatriculaSeed => ({ cursoSlug: curso.slug, email: a.email, rolEnCurso: "alumno" })),
   );
   return [...deLaDemo, ...extra];
+}
+
+/** Fila de `plantilla_ejercicio`, con el módulo por su clave natural (curso y slug) en vez de por id. */
+export interface PlantillaSeed {
+  cursoSlug: string;
+  moduloSlug: string;
+  tipos: TipoEjercicio[];
+  ejemplos: EjercicioBase[];
+  indicaciones: string | null;
+}
+
+/**
+ * Las plantillas de ejercicios del profesor (data/ejemplos-profesor/<modulo>.json, #12) de un curso:
+ * una por módulo, que es lo que admite la tabla. Falla si un fichero es de un módulo que no está en el curso
+ * o si dos son del mismo módulo, para no sembrar una plantilla huérfana ni pisar una con otra.
+ */
+export function construirPlantillas(catalogo: CatalogoSeed, plantillas: PlantillaEjercicios[]): PlantillaSeed[] {
+  const modulos = new Set(catalogo.modulos.map((m) => m.slug));
+  const vistos = new Set<string>();
+  return plantillas.map((p) => {
+    if (!modulos.has(p.moduloId)) {
+      throw new Error(`La plantilla de ejercicios es del módulo "${p.moduloId}", que no está en el curso "${catalogo.curso.slug}".`);
+    }
+    if (vistos.has(p.moduloId)) throw new Error(`Hay dos plantillas de ejercicios del módulo "${p.moduloId}": solo cabe una.`);
+    vistos.add(p.moduloId);
+    return {
+      cursoSlug: catalogo.curso.slug,
+      moduloSlug: p.moduloId,
+      tipos: p.tipos,
+      ejemplos: p.ejemplos,
+      indicaciones: p.indicaciones ?? null,
+    };
+  });
 }
 
 const HOSTS_LOCALES = new Set(["localhost", "127.0.0.1"]);

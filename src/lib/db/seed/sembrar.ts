@@ -6,25 +6,35 @@
 import { count, sql } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 import catalogoJson from "../../../../data/catalog.json";
+import m1Html from "../../../../data/ejemplos-profesor/m1-html.json";
+import m2Css from "../../../../data/ejemplos-profesor/m2-css.json";
+import m3Responsive from "../../../../data/ejemplos-profesor/m3-responsive.json";
+import m4Javascript from "../../../../data/ejemplos-profesor/m4-javascript.json";
 import { alumnosDemo, progresoDemo } from "../../datos-prueba";
 import { cifrarContrasena } from "../../contrasena";
-import type { Catalogo } from "../../types";
+import type { Catalogo, PlantillaEjercicios } from "../../types";
 import { CURSO_DEMO_SLUG } from "../../usuario-demo";
 import type { Db } from "../client";
-import { categoria, clase, concepto, cuenta, curso, matricula, modulo, progreso, usuario } from "../schema";
-import { CONTRASENA_DEMO, construirCatalogos, construirMatriculas, construirUsuarios } from "./datos";
+import { categoria, clase, concepto, cuenta, curso, matricula, modulo, plantillaEjercicio, progreso, usuario } from "../schema";
+import { CONTRASENA_DEMO, construirCatalogos, construirMatriculas, construirPlantillas, construirUsuarios } from "./datos";
+
+/** Ejemplos del profesor de cada módulo del curso de la demo (#12): origen de `plantilla_ejercicio`. */
+const PLANTILLAS_DEMO = [m1Html, m2Css, m3Responsive, m4Javascript] as PlantillaEjercicios[];
 
 /** En ON CONFLICT DO UPDATE: el valor que se intentaba insertar. */
 const nuevo = (columna: string) => sql.raw(`excluded.${columna}`);
 
 export type RecuentoSeed = Record<
-  "categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "cuenta" | "matricula" | "progreso",
+  "categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "cuenta" | "matricula" | "progreso" | "plantilla_ejercicio",
   number
 >;
 
 export async function sembrar(db: Db): Promise<RecuentoSeed> {
   const catalogos = construirCatalogos(catalogoJson as Catalogo);
   const usuarios = construirUsuarios(alumnosDemo);
+  // El curso de la demo es el primero (construirCatalogos). Se construyen antes de abrir la transacción:
+  // si un fichero de ejemplos está mal, el seed falla sin haber escrito nada.
+  const plantillas = construirPlantillas(catalogos[0], PLANTILLAS_DEMO);
   // Se cifra una vez (fuera de la transacción): todas las cuentas del seed comparten contraseña.
   const passwordHash = await cifrarContrasena(CONTRASENA_DEMO);
 
@@ -89,6 +99,25 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
             });
         }
       }
+    }
+
+    // Plantillas de ejercicios del profesor: una por módulo. Si ya existe, se deja como dice el fichero,
+    // porque sin panel de administración el fichero es donde el profesor configura su módulo.
+    if (plantillas.length > 0) {
+      await tx
+        .insert(plantillaEjercicio)
+        .values(
+          plantillas.map((p) => ({
+            moduloId: moduloIds.get(`${p.cursoSlug}/${p.moduloSlug}`)!,
+            tipos: p.tipos,
+            ejemplos: p.ejemplos,
+            indicaciones: p.indicaciones,
+          })),
+        )
+        .onConflictDoUpdate({
+          target: plantillaEjercicio.moduloId,
+          set: { tipos: nuevo("tipos"), ejemplos: nuevo("ejemplos"), indicaciones: nuevo("indicaciones") },
+        });
     }
 
     const filas = await tx
@@ -159,5 +188,6 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
     cuenta: await contar(cuenta),
     matricula: await contar(matricula),
     progreso: await contar(progreso),
+    plantilla_ejercicio: await contar(plantillaEjercicio),
   };
 }

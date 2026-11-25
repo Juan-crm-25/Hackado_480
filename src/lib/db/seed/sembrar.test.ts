@@ -2,7 +2,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { eq } from "drizzle-orm";
 import { bdPruebasDisponible, crearBdPrueba, type BdPrueba } from "../test-utils";
 import { comprobarContrasena } from "../../contrasena";
-import { clase, cuenta, matricula, modulo, usuario } from "../schema";
+import m2Css from "../../../../data/ejemplos-profesor/m2-css.json";
+import { clase, cuenta, matricula, modulo, plantillaEjercicio, usuario } from "../schema";
 import { CONTRASENA_DEMO } from "./datos";
 import { sembrar } from "./sembrar";
 
@@ -29,6 +30,7 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
       cuenta: 12,
       matricula: 34,
       progreso: 2,
+      plantilla_ejercicio: 4,
     });
 
     const lucia = await bd.db.query.usuario.findFirst({ where: eq(usuario.email, "lucia@demo.test") });
@@ -55,5 +57,28 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
     expect(await bd.db.select().from(usuario).orderBy(usuario.email)).toEqual(antes);
     // La contraseña de una cuenta que ya existe no se vuelve a cifrar (ni se pisa si alguien la cambió).
     expect(await bd.db.select().from(cuenta).orderBy(cuenta.id)).toEqual(cuentasAntes);
+  });
+
+  it("guarda la plantilla de ejercicios de cada módulo de la demo, enlazada a su módulo", async () => {
+    const filas = await bd.db
+      .select({ modulo: modulo.slug, tipos: plantillaEjercicio.tipos, ejemplos: plantillaEjercicio.ejemplos, indicaciones: plantillaEjercicio.indicaciones })
+      .from(plantillaEjercicio)
+      .innerJoin(modulo, eq(plantillaEjercicio.moduloId, modulo.id))
+      .orderBy(modulo.slug);
+    expect(filas.map((f) => f.modulo)).toEqual(["m1-html", "m2-css", "m3-responsive", "m4-javascript"]);
+    expect(filas[1]).toEqual({ modulo: "m2-css", tipos: m2Css.tipos, ejemplos: m2Css.ejemplos, indicaciones: m2Css.indicaciones });
+  });
+
+  it("si la plantilla ya existe, la deja como dice el fichero (el fichero es donde la configura el profesor)", async () => {
+    const [css] = await bd.db.select().from(modulo).where(eq(modulo.slug, "m2-css"));
+    await bd.db
+      .update(plantillaEjercicio)
+      .set({ tipos: ["test"], ejemplos: [], indicaciones: "versión antigua" })
+      .where(eq(plantillaEjercicio.moduloId, css.id));
+
+    const recuento = await sembrar(bd.db);
+    expect(recuento.plantilla_ejercicio).toBe(4);
+    const [plantilla] = await bd.db.select().from(plantillaEjercicio).where(eq(plantillaEjercicio.moduloId, css.id));
+    expect(plantilla).toMatchObject({ tipos: m2Css.tipos, ejemplos: m2Css.ejemplos, indicaciones: m2Css.indicaciones });
   });
 });

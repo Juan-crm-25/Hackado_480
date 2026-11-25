@@ -1,8 +1,20 @@
 import { describe, expect, it } from "vitest";
 import catalogo from "../../../../data/catalog.json";
+import m1Html from "../../../../data/ejemplos-profesor/m1-html.json";
+import m2Css from "../../../../data/ejemplos-profesor/m2-css.json";
+import m3Responsive from "../../../../data/ejemplos-profesor/m3-responsive.json";
+import m4Javascript from "../../../../data/ejemplos-profesor/m4-javascript.json";
 import { alumnosDemo } from "../../datos-prueba";
-import type { Catalogo } from "../../types";
-import { comprobarDestino, construirCatalogo, construirCatalogos, construirMatriculas, construirUsuarios, seudonimoDe } from "./datos";
+import type { Catalogo, PlantillaEjercicios } from "../../types";
+import {
+  comprobarDestino,
+  construirCatalogo,
+  construirCatalogos,
+  construirMatriculas,
+  construirPlantillas,
+  construirUsuarios,
+  seudonimoDe,
+} from "./datos";
 
 describe("usuarios del seed", () => {
   const usuarios = construirUsuarios(alumnosDemo);
@@ -131,6 +143,42 @@ describe("matrículas del seed", () => {
   it("no repite matrícula (curso, email)", () => {
     const claves = matriculas.map((m) => `${m.cursoSlug}|${m.email}`);
     expect(new Set(claves).size).toBe(claves.length);
+  });
+});
+
+describe("plantillas de ejercicios del seed", () => {
+  const cursoDemo = construirCatalogo(catalogo as Catalogo);
+  const ficheros = [m1Html, m2Css, m3Responsive, m4Javascript] as PlantillaEjercicios[];
+  const plantillas = construirPlantillas(cursoDemo, ficheros);
+
+  it("da una plantilla por cada módulo del curso de la demo, en su curso", () => {
+    expect(plantillas.map((p) => p.moduloSlug)).toEqual(["m1-html", "m2-css", "m3-responsive", "m4-javascript"]);
+    expect(plantillas.every((p) => p.cursoSlug === "desarrollo-web")).toBe(true);
+  });
+
+  it("copia tal cual los tipos, los ejemplos y las indicaciones del fichero", () => {
+    const css = plantillas.find((p) => p.moduloSlug === "m2-css")!;
+    expect(css).toEqual({
+      cursoSlug: "desarrollo-web",
+      moduloSlug: "m2-css",
+      tipos: m2Css.tipos,
+      ejemplos: m2Css.ejemplos,
+      indicaciones: m2Css.indicaciones,
+    });
+  });
+
+  it("sin indicaciones en el fichero, guarda null (la columna admite vacío)", () => {
+    const sinIndicaciones: PlantillaEjercicios = { ...(m2Css as PlantillaEjercicios), indicaciones: undefined };
+    expect(construirPlantillas(cursoDemo, [sinIndicaciones])[0].indicaciones).toBeNull();
+  });
+
+  it("falla con un mensaje claro si un fichero es de un módulo que no está en el curso", () => {
+    const desconocido = { ...(m2Css as PlantillaEjercicios), moduloId: "m9-inventado" };
+    expect(() => construirPlantillas(cursoDemo, [desconocido])).toThrow(/m9-inventado/);
+  });
+
+  it("falla si dos ficheros son del mismo módulo (solo cabe una plantilla por módulo)", () => {
+    expect(() => construirPlantillas(cursoDemo, [m2Css, m2Css] as PlantillaEjercicios[])).toThrow(/m2-css/);
   });
 });
 
