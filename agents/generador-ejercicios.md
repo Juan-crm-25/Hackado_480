@@ -22,20 +22,28 @@ El de `AI_MODEL_GENERADOR` (hoy `gemma-4-26b-a4b-it` en Scaleway, UE, sin razona
 
 ## Salida
 
+Los ejercicios, agrupados por concepto:
+
 ```json
 {
-  "ejercicios": [
+  "conceptos": [
     {
-      "tipo": "test",
       "conceptoId": "css-especificidad",
-      "enunciado": "...",
-      "opciones": ["...", "...", "..."],
-      "solucion": 1,
-      "fuente": { "videoId": "v04", "segundo": 135 }
+      "ejercicios": [
+        {
+          "tipo": "test",
+          "enunciado": "...",
+          "opciones": ["...", "...", "..."],
+          "solucion": 1,
+          "fuente": { "videoId": "v04", "segundo": 135 }
+        }
+      ]
     }
   ]
 }
 ```
+
+El concepto va una vez por grupo, no en cada ejercicio: cuando se pedía en cada uno, el modelo lo olvidaba en los que no eran de test.
 
 Según el tipo:
 
@@ -75,7 +83,7 @@ Variables: `{{modulo}}`, `{{conceptos}}`, `{{tipos}}`, `{{ejemplos}}`, `{{indica
 ```prompt
 Eres un profesor que prepara los ejercicios de verificación del módulo «{{modulo}}». Sirven para comprobar que el alumno ha entendido los vídeos del módulo, y los resuelve desde el móvil.
 
-Conceptos del módulo (usa su identificador en "conceptoId"):
+Conceptos del módulo (su identificador va en "conceptoId"):
 {{conceptos}}
 
 Tipos de ejercicio que quiere el profesor: {{tipos}}. No uses ningún otro.
@@ -88,7 +96,7 @@ Indicaciones del profesor:
 
 Genera {{total}} ejercicios: 3 por cada concepto, repartidos entre los tipos permitidos. Cada ejercicio comprueba UNA idea concreta que se explica en el TEMARIO de abajo. Usa SOLO la información del temario: no preguntes nada que no se explique en él.
 
-Reglas de cada tipo:
+Agrupa los ejercicios por concepto: un grupo por cada concepto de la lista, con su "conceptoId" y sus 3 ejercicios. TODOS los ejercicios llevan "tipo", "enunciado" y "fuente", sea cual sea su tipo. Además, cada tipo lleva sus propios campos:
 - "test": "opciones" con 3 o 4 respuestas distintas y una sola correcta; "solucion" es el número de la correcta, empezando en 0. Las incorrectas deben ser errores creíbles.
 - "respuesta_corta": "solucion" es la respuesta exacta y corta, en texto. Pide algo que tenga una única respuesta.
 - "abierta": "rubrica" dice qué tiene que explicar el alumno y cuándo la respuesta es completa, parcial o incorrecta.
@@ -97,7 +105,7 @@ Reglas de cada tipo:
 En cada ejercicio, indica en "fuente" el vídeo y el segundo donde se explica lo que pregunta, usando las marcas [vídeo @segundo] del temario. Es el momento al que se enviará al alumno si falla. No inventes fuentes.
 
 Responde SOLO con un objeto JSON, sin texto antes ni después:
-{"ejercicios": [{"tipo": "test", "conceptoId": "...", "enunciado": "...", "opciones": ["...", "...", "..."], "solucion": 0, "fuente": {"videoId": "v04", "segundo": 94}}, {"tipo": "abierta", "conceptoId": "...", "enunciado": "...", "rubrica": "...", "fuente": {"videoId": "v05", "segundo": 38}}]}
+{"conceptos": [{"conceptoId": "...", "ejercicios": [{"tipo": "test", "enunciado": "...", "opciones": ["...", "...", "..."], "solucion": 0, "fuente": {"videoId": "v04", "segundo": 94}}, {"tipo": "respuesta_corta", "enunciado": "...", "solucion": "...", "fuente": {"videoId": "v04", "segundo": 150}}, {"tipo": "abierta", "enunciado": "...", "rubrica": "...", "fuente": {"videoId": "v05", "segundo": 38}}]}]}
 
 TEMARIO
 {{temario}}

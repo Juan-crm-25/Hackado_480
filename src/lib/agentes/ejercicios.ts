@@ -45,7 +45,7 @@ export async function generarEjercicios(
     modulo: modulo.titulo,
     conceptos: modulo.conceptos.map((c) => `- ${c.id}: ${c.nombre}`).join("\n"),
     tipos: plantilla.tipos.join(", "),
-    ejemplos: JSON.stringify(plantilla.ejemplos, null, 2),
+    ejemplos: JSON.stringify(plantilla.ejemplos.map(enOrden), null, 2),
     indicaciones: plantilla.indicaciones?.trim() || "Ninguna.",
     total: String(modulo.conceptos.length * EJERCICIOS_POR_CONCEPTO),
     temario,
@@ -66,12 +66,23 @@ export async function generarEjercicios(
   return validarEjercicios(r.texto, modulo, plantilla);
 }
 
+/**
+ * Un ejemplo del profesor con sus claves siempre en el mismo orden. La BBDD (jsonb) reordena las claves de los
+ * objetos, y el modelo copia la forma de los ejemplos: con "solucion" antes que "enunciado" se olvidaba de "conceptoId".
+ */
+function enOrden(ejemplo: PlantillaEjercicios["ejemplos"][number]) {
+  const { tipo, enunciado, opciones, solucion, rubrica } = ejemplo;
+  return { tipo, enunciado, opciones, solucion, rubrica }; // JSON.stringify omite las que no existen
+}
+
 const texto = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 /** Para detectar enunciados repetidos: minúsculas y sin espacios de más. */
 const normalizar = (v: string) => v.toLowerCase().replace(/\s+/g, " ").trim();
 
 /**
- * Valida y limpia lo que devuelve el modelo: `{ "ejercicios": [...] }`. Descarta cada ejercicio que no cumple
+ * Valida y limpia lo que devuelve el modelo: los ejercicios agrupados por concepto,
+ * `{ "conceptos": [{ "conceptoId", "ejercicios": [...] }] }`. El concepto de cada ejercicio es el de su grupo: si se
+ * pedía en cada ejercicio, el modelo lo olvidaba en los que no eran de test. Descarta cada ejercicio que no cumple
  * las reglas de su tipo o que cita un concepto o un vídeo que no es del módulo, quita repetidos y se queda con
  * EJERCICIOS_POR_CONCEPTO por concepto. Lanza un error si quedan menos de MINIMO_EJERCICIOS o si algún concepto
  * se queda sin ejercicios: en ese caso no se guarda nada.
@@ -79,7 +90,12 @@ const normalizar = (v: string) => v.toLowerCase().replace(/\s+/g, " ").trim();
 export function validarEjercicios(respuesta: string, modulo: Modulo, plantilla: PlantillaEjercicios): EjercicioGenerado[] {
   const datos = parsearObjetoJson(respuesta);
   if (!datos) throw new Error("El modelo no devolvió JSON válido.");
-  const lista = Array.isArray(datos.ejercicios) ? (datos.ejercicios as Record<string, unknown>[]) : [];
+  const grupos = Array.isArray(datos.conceptos) ? (datos.conceptos as Record<string, unknown>[]) : [];
+  const lista = grupos.flatMap((g) =>
+    Array.isArray(g?.ejercicios)
+      ? (g.ejercicios as Record<string, unknown>[]).map((e) => ({ ...e, conceptoId: g.conceptoId }))
+      : [],
+  );
 
   const ejercicios: EjercicioGenerado[] = [];
   const vistos = new Set<string>();

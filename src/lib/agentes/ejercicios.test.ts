@@ -52,7 +52,15 @@ const abierta = (n: number) => ({
 
 /** 9 ejercicios válidos: 3 por concepto. */
 const nueve = () => [test(1), test(2), test(3), corta(1), corta(2), corta(3), abierta(1), abierta(2), abierta(3)];
-const json = (ejercicios: unknown[]) => JSON.stringify({ ejercicios });
+/**
+ * Respuesta del modelo: los ejercicios agrupados por concepto. Cada ejercicio va SIN "conceptoId" (lo lleva su grupo),
+ * que es como lo devuelve el modelo: si se lo pedíamos en cada ejercicio, lo olvidaba en los que no eran de test.
+ */
+const json = (ejercicios: Record<string, unknown>[]) => {
+  const grupos = new Map<unknown, unknown[]>();
+  for (const { conceptoId, ...resto } of ejercicios) grupos.set(conceptoId, [...(grupos.get(conceptoId) ?? []), resto]);
+  return JSON.stringify({ conceptos: [...grupos].map(([conceptoId, lista]) => ({ conceptoId, ejercicios: lista })) });
+};
 
 describe("instrucciones del generador de ejercicios", () => {
   it("se leen de agents/generador-ejercicios.md y tienen todas las variables", () => {
@@ -154,9 +162,22 @@ describe("validarEjercicios", () => {
     expect(() => validarEjercicios(json(sinCaja), modulo, plantilla)).toThrow(/Modelo de caja/);
   });
 
-  it("falla si la respuesta no es JSON o no trae la lista de ejercicios", () => {
+  it("falla si la respuesta no es JSON o no trae la lista de conceptos con sus ejercicios", () => {
     expect(() => validarEjercicios("no es json", modulo, plantilla)).toThrow(/JSON/);
     expect(() => validarEjercicios(JSON.stringify({ otra: [] }), modulo, plantilla)).toThrow(/insuficientes/);
+    expect(() => validarEjercicios(JSON.stringify({ conceptos: [{ conceptoId: "css-caja" }] }), modulo, plantilla)).toThrow(
+      /insuficientes/,
+    );
+  });
+
+  it("el concepto de cada ejercicio es el de su grupo, aunque el ejercicio diga otro", () => {
+    const conConceptoDentro = JSON.parse(json(nueve()));
+    conConceptoDentro.conceptos[0].ejercicios = conConceptoDentro.conceptos[0].ejercicios.map((e: object) => ({
+      ...e,
+      conceptoId: "css-unidades",
+    }));
+    const r = validarEjercicios(JSON.stringify(conConceptoDentro), modulo, plantilla);
+    expect(r.slice(0, 3).map((e) => e.conceptoId)).toEqual(["css-especificidad", "css-especificidad", "css-especificidad"]);
   });
 });
 
@@ -184,6 +205,18 @@ describe("generarEjercicios", () => {
     expect(sistema).toContain("¿Cuántos px mide 3rem?");
     expect(sistema).toContain("Nivel principiante.");
     expect(sistema).toContain("Genera 9 ejercicios");
+  });
+
+  it("da los ejemplos al modelo con las claves siempre en el mismo orden, aunque la BBDD (jsonb) las reordene", async () => {
+    // jsonb guarda las claves en otro orden, y el modelo copia la forma de los ejemplos: sin esto, olvidaba "conceptoId".
+    const desordenada: PlantillaEjercicios = {
+      ...plantilla,
+      ejemplos: [{ solucion: "48px", tipo: "respuesta_corta", enunciado: "¿Cuántos px mide 3rem?" } as PlantillaEjercicios["ejemplos"][0]],
+    };
+    const completar = iaQueResponde(json(nueve()));
+    await generarEjercicios(modulo, desordenada, { completar, temario });
+    const sistema = completar.mock.calls[0][0].mensajes[0].contenido as string;
+    expect(sistema).toMatch(/"tipo": "respuesta_corta",\s*"enunciado": "¿Cuántos px mide 3rem\?",\s*"solucion": "48px"/);
   });
 
   it("sin indicaciones del profesor, lo dice en vez de dejar el hueco vacío", async () => {
