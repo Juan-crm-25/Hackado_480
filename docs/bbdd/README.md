@@ -150,7 +150,8 @@ SEED_PERMITIR_REMOTO=1 npm run db:seed     # otra BBDD (p. ej., Neon), solo a pr
 
 - **Qué crea:** la categoría `programacion`; el curso de `data/catalog.json` (gratis y publicado) con sus 4 módulos, sus conceptos y una clase por vídeo (`video_url` de YouTube); **10 alumnos** (los dos primeros son los de `src/lib/datos-prueba.ts`: Lucía `lucia@demo.test` y Pablo `pablo@demo.test`), **1 profesor** (`profesora@demo.test`) y **1 admin** (`admin@demo.test`), todos con el email verificado; y la matrícula por invitación de los alumnos y del profesor (este, como `profesor` del curso). El admin no necesita matrícula.
 - **Crea una cuenta** de email y contraseña (`cuenta`, proveedor `credential`) por usuario para el login simulado, con la contraseña `demo1234` (`CONTRASENA_DEMO`). Si la cuenta ya existe no la toca.
-- **No crea** transcripciones, documentos (los importará el conversor) ni sesiones (se crean al iniciar sesión).
+- **Crea el progreso de demostración** (`progreso`) de `src/lib/datos-prueba.ts` en el curso de la demo, para que «Tus cursos» no salga al 0 %. Si ya hay progreso de ese módulo no lo toca.
+- **No crea** transcripciones, documentos (los importará el conversor), sesiones (se crean al iniciar sesión) ni pedidos (se crean al comprar).
 - **Se puede repetir:** inserta o actualiza por clave natural (`slug`, `email`, `(curso, email)`…), así que ejecutarlo dos veces deja los mismos datos.
 - **Solo la BBDD local:** se niega si el host de `DATABASE_URL` no es `localhost` o `127.0.0.1`, salvo con `SEED_PERMITIR_REMOTO=1`.
 - Código: `scripts/seed.ts` (conexión) y `src/lib/db/seed/` (datos y `sembrar()`).

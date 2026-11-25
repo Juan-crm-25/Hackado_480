@@ -28,6 +28,7 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
       usuario: 12,
       cuenta: 12,
       matricula: 34,
+      progreso: 2,
     });
 
     const lucia = await bd.db.query.usuario.findFirst({ where: eq(usuario.email, "lucia@demo.test") });
@@ -50,7 +51,7 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
     const antes = await bd.db.select().from(usuario).orderBy(usuario.email);
     const cuentasAntes = await bd.db.select().from(cuenta).orderBy(cuenta.id);
     const recuento = await sembrar(bd.db);
-    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 12, cuenta: 12, matricula: 34, clase: 12 });
+    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 12, cuenta: 12, matricula: 34, clase: 12, progreso: 2 });
     expect(await bd.db.select().from(usuario).orderBy(usuario.email)).toEqual(antes);
     // La contraseña de una cuenta que ya existe no se vuelve a cifrar (ni se pisa si alguien la cambió).
     expect(await bd.db.select().from(cuenta).orderBy(cuenta.id)).toEqual(cuentasAntes);

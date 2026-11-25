@@ -6,18 +6,19 @@
 import { count, sql } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 import catalogoJson from "../../../../data/catalog.json";
-import { alumnosDemo } from "../../datos-prueba";
+import { alumnosDemo, progresoDemo } from "../../datos-prueba";
 import { cifrarContrasena } from "../../contrasena";
 import type { Catalogo } from "../../types";
+import { CURSO_DEMO_SLUG } from "../../usuario-demo";
 import type { Db } from "../client";
-import { categoria, clase, concepto, cuenta, curso, matricula, modulo, usuario } from "../schema";
+import { categoria, clase, concepto, cuenta, curso, matricula, modulo, progreso, usuario } from "../schema";
 import { CONTRASENA_DEMO, construirCatalogos, construirMatriculas, construirUsuarios } from "./datos";
 
 /** En ON CONFLICT DO UPDATE: el valor que se intentaba insertar. */
 const nuevo = (columna: string) => sql.raw(`excluded.${columna}`);
 
 export type RecuentoSeed = Record<
-  "categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "cuenta" | "matricula",
+  "categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "cuenta" | "matricula" | "progreso",
   number
 >;
 
@@ -29,6 +30,7 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
 
   await db.transaction(async (tx) => {
     const cursoIds = new Map<string, string>();
+    const moduloIds = new Map<string, string>(); // "curso/modulo" → id
 
     for (const catalogo of catalogos) {
       const [cat] = await tx
@@ -62,6 +64,7 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
             set: { titulo: nuevo("titulo"), descripcion: nuevo("descripcion"), ordenSugerido: nuevo("orden_sugerido") },
           })
           .returning({ id: modulo.id });
+        moduloIds.set(`${catalogo.curso.slug}/${m.slug}`, mod.id);
 
         // Los cursos extra no tienen conceptos ni clases: un INSERT sin filas no es válido.
         if (m.conceptos.length > 0) {
@@ -119,6 +122,19 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
       rolEnCurso: m.rolEnCurso,
       origen: "invitacion" as const,
     }));
+    // Progreso de demostración (src/lib/datos-prueba.ts) en el curso de la demo, para que «Tus cursos» no salga al 0 %.
+    // Si ya hay progreso de ese módulo no se toca: puede ser progreso real del alumno.
+    const emailDe = new Map(alumnosDemo.map((a) => [a.id, a.email.toLowerCase()]));
+    const progresos = progresoDemo.map((p) => ({
+      usuarioId: usuarioIds.get(emailDe.get(p.alumnoId)!)!,
+      moduloId: moduloIds.get(`${CURSO_DEMO_SLUG}/${p.moduloId}`)!,
+      estado: p.estado,
+      aciertosPorConcepto: p.aciertosPorConcepto,
+    }));
+    if (progresos.length > 0) {
+      await tx.insert(progreso).values(progresos).onConflictDoNothing({ target: [progreso.usuarioId, progreso.moduloId] });
+    }
+
     // Si ya existía (p. ej., de una compra), solo se enlaza y se fija el rol: el origen y el pedido no se tocan.
     await tx
       .insert(matricula)
@@ -142,5 +158,6 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
     usuario: await contar(usuario),
     cuenta: await contar(cuenta),
     matricula: await contar(matricula),
+    progreso: await contar(progreso),
   };
 }
