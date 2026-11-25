@@ -163,6 +163,5 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 ### Pendiente
 
 - **Neon, en este orden** (quien tenga la `DATABASE_URL`, ver `docs/bbdd/README.md`): el seed para cargar las plantillas, `npm run generar:ejercicios` y revisar y aprobar el banco.
-- **#3:** la corrección de las respuestas cortas tiene que ser flexible (mayúsculas, `;` final, `< >`), porque se comparan con la solución.
 - **#15:** regenerar el material de CSS, desfasado porque se generó con las transcripciones de prueba.
-- **#3:** ejercicios de verificación con corrección.
+- **#3:** ejercicios de verificación con corrección. La de las respuestas cortas tiene que ser flexible (mayúsculas, `;` final, `< >`), porque se comparan con la solución.
