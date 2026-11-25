@@ -2,6 +2,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { AyudaBd } from "@/components/cursos/ayuda-bd";
+import { ListaTusCursos } from "@/components/cursos/tus-cursos";
 import { EstadoCargando, EstadoError, EstadoVacio } from "@/components/estado";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,7 @@ import { estadoDeModulo, etiquetaEstado, moduloParaSeguir } from "@/lib/estado-m
 import { getProgresoDemo, getUsuarioDemo } from "@/lib/usuario-demo";
 import { requerirUsuarioActual } from "@/server/auth/usuario-actual";
 import { cargarCursoPrincipal } from "@/server/catalogo/servicio";
+import { cargarCursosDelUsuario, tieneElCurso } from "@/server/matriculas/servicio";
 
 // Enlace de texto con zona táctil de 44 px (docs/estilo.md, apartado 7).
 const CLASE_ENLACE = "inline-flex min-h-11 items-center rounded-sm underline underline-offset-4";
@@ -18,7 +20,8 @@ const CLASE_ENLACE = "inline-flex min-h-11 items-center rounded-sm underline und
 const FRANJAS = ["bg-chart-1", "bg-chart-2", "bg-chart-3", "bg-chart-4", "bg-chart-5"];
 
 /**
- * Panel del alumno (/dashboard, «Tus cursos»): saludo, «Sigue donde lo dejaste» y los módulos del curso con su estado.
+ * Panel del alumno (/dashboard, «Tus cursos»): saludo, sus cursos con el porcentaje completado (de la BBDD),
+ * y debajo «Sigue donde lo dejaste» y los módulos del curso principal con su estado.
  * Sin id en la URL: el saludo sale de la sesión. El progreso aún es el del usuario de demostración.
  * El saludo y el curso se leen en cada petición, dentro de <Suspense> (Cache Components), así
  * `next build` no necesita BBDD.
@@ -31,6 +34,14 @@ export default function Dashboard() {
       <Suspense fallback={<h1 className="text-3xl leading-tight font-bold md:text-4xl">Hola</h1>}>
         <Saludo />
       </Suspense>
+      <section aria-labelledby="tus-cursos" className="flex flex-col gap-3">
+        <h2 id="tus-cursos" className="text-2xl leading-tight font-bold">
+          Tus cursos
+        </h2>
+        <Suspense fallback={<EstadoCargando texto="Cargando tus cursos…" />}>
+          <CursosDelUsuario />
+        </Suspense>
+      </section>
       <Suspense fallback={<EstadoCargando texto="Cargando el curso…" />}>
         <ContenidoCurso alumnoId={usuario.id} />
       </Suspense>
@@ -41,6 +52,32 @@ export default function Dashboard() {
 async function Saludo() {
   const { nombre } = await requerirUsuarioActual();
   return <h1 className="text-3xl leading-tight font-bold md:text-4xl">Hola, {nombre.split(" ")[0]}</h1>;
+}
+
+async function CursosDelUsuario() {
+  const usuario = await requerirUsuarioActual();
+  const resultado = await cargarCursosDelUsuario(usuario.id);
+  if (resultado.estado === "error") {
+    return (
+      <EstadoError>
+        No se han podido cargar tus cursos. <AyudaBd />
+      </EstadoError>
+    );
+  }
+  if (resultado.estado === "vacio") {
+    return (
+      <EstadoVacio
+        acciones={
+          <Link href="/" className={buttonVariants({ variant: "accent" })}>
+            Explorar cursos
+          </Link>
+        }
+      >
+        Todavía no tienes ningún curso. Elige uno y empieza hoy.
+      </EstadoVacio>
+    );
+  }
+  return <ListaTusCursos cursos={resultado.cursos} />;
 }
 
 async function ContenidoCurso({ alumnoId }: { alumnoId: string }) {
@@ -62,6 +99,9 @@ async function ContenidoCurso({ alumnoId }: { alumnoId: string }) {
   }
 
   const { curso } = resultado;
+  // El panel del curso principal solo para quien lo tiene; si no, «Tus cursos» ya invita a explorar.
+  const usuario = await requerirUsuarioActual();
+  if (!(await tieneElCurso(usuario.id, curso.id))) return null; // en CursoCatalogo, id es el slug
   const modulos = curso.modulos;
   // Progreso de demostración (el mismo que devuelve GET /api/progreso) hasta que haya login.
   const progreso = getProgresoDemo(alumnoId);
@@ -69,7 +109,7 @@ async function ContenidoCurso({ alumnoId }: { alumnoId: string }) {
 
   return (
     <>
-      <div className="-mt-4 flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
         <div>
           <Badge variant="secondary">{curso.categoria}</Badge>
         </div>
