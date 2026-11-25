@@ -14,7 +14,7 @@ export function generateStaticParams() {
  */
 export default function TutorPage({ params }: PageProps<"/modulos/[id]/tutor">) {
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-md flex-col">
+    <main className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col md:max-w-2xl">
       <Suspense fallback={<CabeceraPantalla seccion="Tutor del módulo" titulo="Cargando…" />}>
         <ContenidoTutor params={params} />
       </Suspense>

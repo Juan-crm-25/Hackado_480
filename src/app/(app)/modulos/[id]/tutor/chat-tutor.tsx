@@ -98,7 +98,7 @@ export function ChatTutor({
       </div>
 
       <form
-        className="flex items-end gap-2 border-t bg-background px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+        className="flex items-end gap-2 border-t bg-background px-4 pt-3 pb-3 lg:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
         onSubmit={(e) => {
           e.preventDefault();
           enviar(texto);

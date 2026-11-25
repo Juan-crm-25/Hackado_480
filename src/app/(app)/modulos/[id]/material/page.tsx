@@ -13,7 +13,7 @@ export function generateStaticParams() {
 /** Material común del módulo: resumen y tarjetas, igual para todos los alumnos (#2). */
 export default function MaterialPage({ params }: PageProps<"/modulos/[id]/material">) {
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col">
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col md:max-w-2xl">
       <Suspense fallback={<CabeceraPantalla seccion="Material de repaso" titulo="Cargando…" />}>
         <ContenidoMaterial params={params} />
       </Suspense>

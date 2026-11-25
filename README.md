@@ -25,7 +25,7 @@ cp .env.example .env.local   # y rellena las claves (en Windows: copy .env.examp
 npm run dev
 ```
 
-Abre http://localhost:3000. Para verlo como en el móvil, usa el modo móvil de las herramientas de desarrollo del navegador (360 px de ancho).
+Abre http://localhost:3000. La home pública (`/`, catálogo de cursos), el panel del alumno (`/dashboard`), la página de cada curso y la de cada módulo leen la BBDD: antes arranca la local y siembra los datos de la demo (`npm run db:up` y `npm run db:seed`); sin BBDD la app muestra un aviso con estos mismos pasos. Para verlo como en el móvil, usa el modo móvil de las herramientas de desarrollo del navegador (360 px de ancho).
 
 Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-ordenador>:3000`.
 
@@ -41,7 +41,7 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm run db:up` / `npm run db:down` | Arranca o para la BBDD local en Docker, en el puerto 5433 (ver [docs/bbdd](docs/bbdd/README.md#5-entornos-y-variables-de-entorno)) |
 | `npm run db:generate` | Genera la migración SQL en `drizzle/` a partir del esquema (`src/lib/db/schema/`) |
 | `npm run db:migrate` | Aplica las migraciones pendientes a la BBDD de `DATABASE_URL` |
-| `npm run db:seed` | Crea los datos de la demo (curso, 10 alumnos, profesor y admin). Se puede repetir. Solo en la BBDD local, salvo `SEED_PERMITIR_REMOTO=1` (ver [docs/bbdd](docs/bbdd/README.md#sembrar-los-datos-de-la-demo)) |
+| `npm run db:seed` | Crea los datos de la demo (6 cursos publicados, 10 alumnos, profesor y admin). Se puede repetir. Solo en la BBDD local, salvo `SEED_PERMITIR_REMOTO=1` (ver [docs/bbdd](docs/bbdd/README.md#sembrar-los-datos-de-la-demo)) |
 | `npm run db:studio` | Abre Drizzle Studio para ver y editar los datos |
 | `npm run generar:material` | Genera el resumen y las tarjetas comunes de los módulos con transcripciones (`-- m2-css` para uno solo, `-- --forzar` para regenerar). Revisa el resultado y pon `"revisado": true` |
 | `npm run generar:infografias` | Genera una infografía por concepto (mismas opciones). Revisa el resultado y pon `"revisado": true` |
@@ -97,10 +97,13 @@ drizzle/                Migraciones SQL generadas con npm run db:generate (no se
 src/
   app/
     api/                Endpoints: solo adaptadores HTTP con ruta() (ver docs/arquitectura.md)
-    page.tsx            Pantalla de inicio (provisional, ver #14)
+    (app)/              Pantallas con la navegación de la app (layout.tsx): home pública, dashboard,
+                        cursos/[slug]/, tutor, perfil, contacto y modulos/[id]/. El grupo no cambia las URL
   server/               Lógica del servidor por dominio: auth, usuarios, catalogo, matriculas,
                         pagos, aprendizaje, evaluaciones, material, tutor, foro, recompensas, radar
   components/ui/        Componentes de shadcn/ui
+  components/navegacion/ Barra lateral (web), barra inferior y menú «Más» (móvil), avatar.
+                        Los destinos salen de una sola lista: destinos.ts
   lib/
     types.ts            Tipos compartidos: EL CONTRATO. Avisa antes de cambiarlos
     db/                 BBDD: esquema de Drizzle (schema/) y cliente (client.ts)

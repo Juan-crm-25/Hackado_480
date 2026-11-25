@@ -14,6 +14,7 @@ The database is the single source of truth. Full reference: [`docs/bbdd/README.m
 
 - PostgreSQL (Neon, EU) with Drizzle. The schema lives in `src/lib/db/schema/` (one file per block) and migrations in `drizzle/`.
 - To change the schema: edit the TypeScript schema → `npm run db:generate` → review the generated SQL → `npm run db:migrate`. One migration per PR; never edit an applied migration.
+- `src/lib/demo/` holds hardcoded MVP demo content (announcements, fake reviews, featured flags); it is allowed and must not be moved to `data/` or the DB without a team decision; real reviews would need a table.
 - Do not create new data files in `data/`. The existing ones are seed sources only and will be removed once the code reads from the database.
 - Fill exactly the fields each table defines, with its types and formats. Do not add fields or store free-form JSON "just in case".
 - AI never writes to the database or chooses ids. It returns JSON; code validates it (`src/lib/agentes/`), resolves foreign keys and inserts. If validation fails, nothing is saved.
@@ -53,6 +54,6 @@ Full reference: [`docs/estilo.md`](docs/estilo.md). Read it first.
 - Touch targets are at least 44 px tall. `Button`, `Toggle`, `TabsList` and `SelectTrigger` already default to that; do not shrink them on touch screens. Use `variant="accent"` for the one highlighted action per screen.
 - Keyboard focus is always visible (blue ring in light mode, green in dark). Never remove it with `outline-none` without a `focus-visible:ring-ring` replacement.
 - Loading, empty and error states use `EstadoCargando`, `EstadoVacio` and `EstadoError` from `src/components/estado.tsx`. Never swallow a fetch error: read API responses with `leerRespuesta()` / `mensajeDeError()` from `src/lib/peticiones.ts`. Module screens use `CabeceraPantalla`.
-- Mobile-first at 360 px inside `mx-auto max-w-md px-4`. Nothing may rely on colour alone (add text or an icon).
+- Mobile-first at 360 px, then `md:` (768 px) and `lg:` (1024 px): bottom tab bar on mobile, fixed left sidebar on web, same destinations in every size (see docs/estilo.md, section 10). Check 360, 768 and 1280 px. Nothing may rely on colour alone (add text or an icon).
 - Respect reduced motion: entrance animations use `motion-safe:`.
 - UI copy is in Spanish.
