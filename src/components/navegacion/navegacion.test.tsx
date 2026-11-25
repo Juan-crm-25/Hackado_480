@@ -9,6 +9,7 @@ vi.mock("next/navigation", () => ({
 import { AccesoUsuario, AvatarUsuario, iniciales } from "./avatar-usuario";
 import { BarraInferior } from "./barra-inferior";
 import { BarraLateral } from "./barra-lateral";
+import { BarraSuperior } from "./barra-superior";
 import { destinosPrincipales, destinosSecundarios } from "./destinos";
 import { ListaSecundarios } from "./menu-mas";
 
@@ -42,8 +43,8 @@ describe("barra lateral (web)", () => {
 
   it("lleva la marca, que enlaza con la home pública", () => {
     const html = renderToStaticMarkup(<BarraLateral pathname="/" />);
-    // La marca (<Marca />) lleva el guion decorativo data-guion; su enlace va a la home pública.
-    expect(html).toMatch(/<a[^>]*href="\/"[^>]*>(?:(?!<\/a>).)*data-guion/);
+    // La marca (<Marca />) se lee «480 Academy» y sus palabras rotan (data-rotacion); su enlace va a la home pública.
+    expect(html).toMatch(/<a[^>]*href="\/"[^>]*>(?:(?!<\/a>).)*480 Academy(?:(?!<\/a>).)*data-rotacion/);
   });
 
   it("en web el perfil también está en la barra lateral", () => {
@@ -115,3 +116,22 @@ describe("acceso del usuario en la barra superior", () => {
     expect(html).not.toContain('href="/perfil"');
   });
 });
+
+describe("posición de la marca", () => {
+  const enlaceMarca = (html: string) => html.match(/<a[^>]*href="\/"[^>]*>(?=(?:(?!<\/a>).)*data-rotacion)/)?.[0] ?? "";
+
+  it("en móvil va centrada en la barra superior, con el usuario a la derecha", () => {
+    const html = renderToStaticMarkup(<BarraSuperior usuario={<span data-usuario />} />);
+    const cabecera = html.match(/<header[^>]*>/)?.[0] ?? "";
+    expect(cabecera).toContain("grid-cols-[1fr_auto_1fr]");
+    expect(enlaceMarca(html)).toContain("justify-self-center");
+    expect(html).toMatch(/<div[^>]*justify-self-end[^>]*><span data-usuario/);
+  });
+
+  it("en web va centrada en la columna de la barra lateral y algo más grande", () => {
+    const enlace = enlaceMarca(renderToStaticMarkup(<BarraLateral pathname="/" />));
+    expect(enlace).toContain("justify-center");
+    expect(enlace).toContain("text-2xl");
+  });
+});
+

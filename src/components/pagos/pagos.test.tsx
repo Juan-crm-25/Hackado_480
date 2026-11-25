@@ -82,9 +82,11 @@ describe("PagoCompletado", () => {
     expect(html).toContain("7F3C2A10");
   });
 
-  it("lleva a «Tus cursos» como acción destacada y al curso", () => {
-    expect(html).toMatch(/<a[^>]*href="\/dashboard"[^>]*bg-brand[^>]*>|<a[^>]*bg-brand[^>]*href="\/dashboard"/);
-    expect(html).toContain('href="/cursos/python-desde-cero"');
+  it("invita a personalizar la ruta (acción destacada) o ir a «Tus cursos»", () => {
+    const enlace = html.match(/<a[^>]*href="\/cursos\/python-desde-cero\/ruta"[^>]*>([^<]*)/);
+    expect(enlace?.[0]).toContain("bg-brand");
+    expect(enlace?.[1]).toContain("Personaliza tu ruta");
+    expect(html).toContain('href="/dashboard"');
   });
 
   it("un curso gratis no habla de pago", () => {

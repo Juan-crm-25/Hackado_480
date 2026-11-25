@@ -292,3 +292,17 @@ export function comprobarDestino(
     motivo: `DATABASE_URL apunta a "${host}", que no es la BBDD local. Si de verdad quieres escribir en esa BBDD, repite con ${variable}=1.`,
   };
 }
+
+/**
+ * Banner de cada curso (public/banners/<slug>.webp), para las tarjetas. Se guarda solo la URL en `curso_imagen`
+ * (uso «banner»); el fichero lo sirve Next desde public/ (cuando haya R2, la URL será la de R2).
+ */
+export const BANNERS_CURSO: Record<string, string> = {
+  "desarrollo-web": "/banners/desarrollo-web.webp",
+  "python-desde-cero": "/banners/python-desde-cero.webp",
+  "ia-generativa-dia-a-dia": "/banners/ia-generativa-dia-a-dia.webp",
+  "cocina-mediterranea-saludable": "/banners/cocina-mediterranea-saludable.webp",
+  "costura-para-principiantes": "/banners/costura-para-principiantes.webp",
+  "oposiciones-auxiliar-administrativo": "/banners/oposiciones-auxiliar-administrativo.webp",
+};
+

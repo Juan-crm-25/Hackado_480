@@ -2,7 +2,7 @@ import "server-only";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import type { ClaseCatalogo, ConceptoCatalogo, CursoCatalogo, CursoPublico, CursoResumen } from "@/lib/catalogo-bd";
 import { getDb, type Db } from "@/lib/db/client";
-import { categoria, clase, concepto, curso, matricula, modulo } from "@/lib/db/schema";
+import { categoria, clase, concepto, curso, cursoImagen, matricula, modulo } from "@/lib/db/schema";
 import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
 import { idDeYoutube } from "@/lib/youtube";
 
@@ -80,6 +80,14 @@ export async function leerCursoPrincipal(db: Db = getDb(), slug: string = CURSO_
 }
 
 /** Columnas del resumen de un curso. Los recuentos son subconsultas en la misma consulta (sin N+1). */
+/** Primer banner del curso (curso_imagen, uso «banner»), o null. Lo comparten el catálogo y «Tus cursos». */
+export const bannerDelCurso = sql<string | null>`(
+  select ${cursoImagen.url} from ${cursoImagen}
+  where ${cursoImagen.cursoId} = ${curso.id} and ${cursoImagen.uso} = 'banner'
+  order by ${cursoImagen.orden}, ${cursoImagen.creado}
+  limit 1
+)`;
+
 const columnasResumen = {
   slug: curso.slug,
   titulo: curso.titulo,
@@ -91,6 +99,7 @@ const columnasResumen = {
   numAlumnos: sql<number>`(select count(*) from ${matricula} where ${matricula.cursoId} = ${curso.id} and ${matricula.rolEnCurso} = 'alumno')`.mapWith(
     Number,
   ),
+  bannerUrl: bannerDelCurso,
 };
 
 interface FilaResumen {
@@ -102,6 +111,7 @@ interface FilaResumen {
   precioCentimos: number;
   numModulos: number;
   numAlumnos: number;
+  bannerUrl: string | null;
 }
 
 function aResumen(f: FilaResumen): CursoResumen {
@@ -113,6 +123,7 @@ function aResumen(f: FilaResumen): CursoResumen {
     precioCentimos: f.precioCentimos,
     numModulos: f.numModulos,
     numAlumnos: f.numAlumnos,
+    bannerUrl: f.bannerUrl,
   };
 }
 

@@ -11,6 +11,8 @@ const CURSOS = [
     totalModulos: 4,
     modulosCompletados: 1,
     porcentaje: 25,
+    personalizada: true,
+    bannerUrl: "/banners/desarrollo-web.webp",
   },
   {
     slug: "python-desde-cero",
@@ -20,14 +22,24 @@ const CURSOS = [
     totalModulos: 3,
     modulosCompletados: 0,
     porcentaje: 0,
+    personalizada: false,
+    bannerUrl: null,
   },
 ];
 
 describe("ListaTusCursos", () => {
   const html = renderToStaticMarkup(<ListaTusCursos cursos={CURSOS} />);
 
-  it("muestra el título de cada curso con el porcentaje escrito", () => {
-    expect(html).toContain("Introducción al desarrollo web");
+  it("el curso con banner muestra la imagen (con el título como texto alternativo) y no el título visible", () => {
+    expect(html).toMatch(/<img[^>]*alt="Introducción al desarrollo web"/);
+    expect(html).not.toMatch(/<h3[^>]*>Introducción al desarrollo web<\/h3>/);
+  });
+
+  it("el curso sin banner muestra su título", () => {
+    expect(html).toMatch(/<h3[^>]*>Python desde cero<\/h3>/);
+  });
+
+  it("muestra el porcentaje escrito de cada curso", () => {
     expect(html).toContain("25 % completado");
     expect(html).toContain("Python desde cero");
     expect(html).toContain("0 % completado");
@@ -44,5 +56,11 @@ describe("ListaTusCursos", () => {
   it("cada curso lleva a su página", () => {
     expect(html).toContain('href="/cursos/desarrollo-web"');
     expect(html).toContain('href="/cursos/python-desde-cero"');
+  });
+
+  it("solo el curso sin ruta invita a personalizarla", () => {
+    expect(html).toContain('href="/cursos/python-desde-cero/ruta"');
+    expect(html).not.toContain('href="/cursos/desarrollo-web/ruta"');
+    expect(html.split("Personaliza tu ruta").length - 1).toBe(1);
   });
 });

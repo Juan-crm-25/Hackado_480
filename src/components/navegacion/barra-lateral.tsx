@@ -39,7 +39,7 @@ export function BarraLateral({ pathname }: { pathname: string | null }) {
     <aside className="hidden w-64 shrink-0 flex-col gap-6 bg-surface-dark px-3 py-5 text-white lg:flex">
       <Link
         href="/"
-        className="inline-flex min-h-11 items-center rounded-sm px-3 text-xl font-bold outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring"
+        className="flex min-h-11 items-center justify-center rounded-sm px-3 text-2xl font-bold outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring"
       >
         <Marca />
       </Link>

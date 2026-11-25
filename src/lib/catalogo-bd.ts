@@ -46,6 +46,8 @@ export interface CursoResumen {
   numModulos: number;
   /** Matrículas con rol de alumno (la profesora no cuenta). */
   numAlumnos: number;
+  /** URL del banner del curso (curso_imagen, uso «banner»), o null si no tiene. */
+  bannerUrl: string | null;
 }
 
 /** Página pública de un curso: el resumen y sus módulos en el orden sugerido. */

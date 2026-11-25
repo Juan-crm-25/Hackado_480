@@ -14,7 +14,7 @@ export function proxy(request: NextRequest) {
   return NextResponse.redirect(login);
 }
 
-/** Páginas que piden sesión: «Tus cursos» (panel y módulos), el tutor, el perfil y el pago. La web pública no. */
+/** Páginas que piden sesión: «Tus cursos» (panel y módulos), el tutor, el perfil, el pago y la ruta personalizada de un curso. La web pública (y la ficha del curso) no. */
 export const config = {
-  matcher: ["/dashboard/:path*", "/modulos/:path*", "/tutor/:path*", "/perfil/:path*", "/pago/:path*"],
+  matcher: ["/dashboard/:path*", "/modulos/:path*", "/tutor/:path*", "/perfil/:path*", "/pago/:path*", "/cursos/:slug/ruta"],
 };

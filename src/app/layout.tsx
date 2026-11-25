@@ -5,7 +5,8 @@ import "./globals.css";
 // DM Sans sustituye a LL Circular, la tipografía de la marca (docs/estilo.md, apartado 4).
 const dmSans = DM_Sans({
   variable: "--font-sans", // shadcn/ui espera la fuente en --font-sans (ver globals.css)
-  subsets: ["latin"],
+  // latin-ext: la «ō» de «learnby_dō» y «hackan_dō» (la marca) no está en el subconjunto latin.
+  subsets: ["latin", "latin-ext"],
 });
 
 const geistMono = Geist_Mono({

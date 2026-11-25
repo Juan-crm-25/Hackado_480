@@ -34,13 +34,19 @@ const esRutaOSubruta = (pathname: string, ruta: string) => pathname === ruta || 
 
 /**
  * Destino activo según la ruta:
- * - Inicio (`/`): la home pública exacta y las páginas públicas de los cursos (`/cursos/...`).
- * - Tus cursos (`/dashboard`): el panel y las pantallas de los módulos (`/modulos/...`).
+ * - Inicio (`/`): la home pública exacta, las páginas públicas de los cursos (`/cursos/...`) y su pago (`/pago/...`).
+ * - Tus cursos (`/dashboard`): el panel, las pantallas de los módulos (`/modulos/...`) y la ruta personalizada
+ *   de un curso (`/cursos/:slug/ruta`).
  * - El resto: su ruta y sus subrutas.
  */
 export function esDestinoActivo(pathname: string | null, href: string): boolean {
   if (!pathname) return false;
-  if (href === "/") return pathname === "/" || esRutaOSubruta(pathname, "/cursos");
-  if (href === "/dashboard") return esRutaOSubruta(pathname, "/dashboard") || esRutaOSubruta(pathname, "/modulos");
+  const esRutaPersonal = /^\/cursos\/[^/]+\/ruta(\/|$)/.test(pathname);
+  if (href === "/") {
+    return pathname === "/" || (esRutaOSubruta(pathname, "/cursos") && !esRutaPersonal) || esRutaOSubruta(pathname, "/pago");
+  }
+  if (href === "/dashboard") {
+    return esRutaOSubruta(pathname, "/dashboard") || esRutaOSubruta(pathname, "/modulos") || esRutaPersonal;
+  }
   return esRutaOSubruta(pathname, href);
 }
