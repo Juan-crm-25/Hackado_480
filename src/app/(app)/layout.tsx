@@ -34,7 +34,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Suspense>
           }
         />
-        <div id="contenido" className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        {/* «relative»: los elementos absolutos del contenido (p. ej. los sr-only) se quedan dentro de este scroll y no estiran la página. */}
+        <div id="contenido" className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">
           {children}
         </div>
         <Suspense fallback={<BarraInferior pathname={null} />}>
