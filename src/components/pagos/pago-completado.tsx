@@ -46,11 +46,14 @@ export function PagoCompletado({ pago }: { pago: IntentoPago }) {
         </dl>
 
         <div className="flex w-full flex-col gap-3 sm:flex-row">
-          <Link href="/dashboard" className={buttonVariants({ variant: "accent", size: "lg", className: "flex-1" })}>
-            Ir a Tus cursos
+          <Link
+            href={`/cursos/${pago.curso.slug}/ruta`}
+            className={buttonVariants({ variant: "accent", size: "lg", className: "flex-1" })}
+          >
+            Personaliza tu ruta (1 min)
           </Link>
-          <Link href={`/cursos/${pago.curso.slug}`} className={buttonVariants({ variant: "outline", size: "lg", className: "flex-1" })}>
-            Ver el curso
+          <Link href="/dashboard" className={buttonVariants({ variant: "outline", size: "lg", className: "flex-1" })}>
+            Ir a Tus cursos
           </Link>
         </div>
       </CardContent>

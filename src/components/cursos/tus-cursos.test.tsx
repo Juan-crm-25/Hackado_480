@@ -11,6 +11,7 @@ const CURSOS = [
     totalModulos: 4,
     modulosCompletados: 1,
     porcentaje: 25,
+    personalizada: true,
   },
   {
     slug: "python-desde-cero",
@@ -20,6 +21,7 @@ const CURSOS = [
     totalModulos: 3,
     modulosCompletados: 0,
     porcentaje: 0,
+    personalizada: false,
   },
 ];
 
@@ -44,5 +46,11 @@ describe("ListaTusCursos", () => {
   it("cada curso lleva a su página", () => {
     expect(html).toContain('href="/cursos/desarrollo-web"');
     expect(html).toContain('href="/cursos/python-desde-cero"');
+  });
+
+  it("solo el curso sin ruta invita a personalizarla", () => {
+    expect(html).toContain('href="/cursos/python-desde-cero/ruta"');
+    expect(html).not.toContain('href="/cursos/desarrollo-web/ruta"');
+    expect(html.split("Personaliza tu ruta").length - 1).toBe(1);
   });
 });
