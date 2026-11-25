@@ -1,0 +1,28 @@
+{
+  "moduloId": "m2-css",
+  "tipos": ["test", "respuesta_corta", "abierta"],
+  "ejemplos": [
+    {
+      "tipo": "test",
+      "enunciado": "Tienes <h1 id=\"title\" class=\"title\">Hola</h1> y estas tres reglas: .title { background-color: yellow; }, h1.title { background-color: red; } y #title { background-color: blue; }. ¿De qué color se ve el fondo, escribas las reglas en el orden que las escribas?",
+      "opciones": [
+        "Amarillo, porque .title es la regla más sencilla",
+        "Rojo, porque h1.title junta una etiqueta y una clase",
+        "Azul, porque un id tiene más especificidad que una etiqueta y una clase juntas",
+        "El de la regla que esté escrita la última"
+      ],
+      "solucion": 2
+    },
+    {
+      "tipo": "respuesta_corta",
+      "enunciado": "Con el tamaño de fuente por defecto del navegador, ¿cuántos píxeles mide un texto con font-size: 3rem? Escribe el resultado en px.",
+      "solucion": "48px"
+    },
+    {
+      "tipo": "abierta",
+      "enunciado": "Explica con tus palabras la diferencia entre padding y margin en el modelo de caja, y pon un ejemplo de cuándo usarías cada uno.",
+      "rubrica": "1) Padding: la distancia entre el borde de la caja y su contenido (espacio de dentro). 2) Margin: la separación entre la caja y las cajas que la rodean (espacio de fuera). 3) Un ejemplo coherente de cada uno, por ejemplo padding para que el texto de un botón no toque el borde y margin para separar dos tarjetas. Respuesta completa: las dos definiciones correctas y los ejemplos. Parcial: solo una definición bien, o las dos sin ejemplo. Incorrecta: confunde padding y margin."
+    }
+  ],
+  "indicaciones": "Nivel principiante. Céntrate en los tres conceptos del módulo: especificidad y cascada (etiqueta 0-0-1, clase 0-1-0, id 1-0-0, estilos en línea 1-0-0-0; la cascada solo decide si la especificidad empata; !important se desaconseja y es mejor usar siempre clases), el modelo de caja (contenido, padding, borde, margin, ancho y alto) y las unidades em y rem (16 px por defecto en la raíz; rem es relativo a la raíz y em al contexto; rem para tamaños de fuente y em para lo que deba crecer con el texto). Los cálculos tienen que dar un resultado exacto. En respuesta corta, pide algo con una única respuesta exacta."
+}
