@@ -270,10 +270,15 @@ export function construirPlantillas(catalogo: CatalogoSeed, plantillas: Plantill
 const HOSTS_LOCALES = new Set(["localhost", "127.0.0.1"]);
 
 /**
- * El seed solo escribe en la BBDD local, salvo que se pida a propósito (SEED_PERMITIR_REMOTO=1),
- * para no llenar de datos de prueba otra BBDD por tener una DATABASE_URL equivocada.
+ * El seed (y los scripts que escriben en la BBDD, como el generador de ejercicios) solo escriben en la BBDD local,
+ * salvo que se pida a propósito con la variable `variable`=1, para no escribir en otra BBDD por tener una
+ * DATABASE_URL equivocada.
  */
-export function comprobarDestino(url: string | undefined, permitirRemoto: boolean): { permitido: boolean; motivo?: string } {
+export function comprobarDestino(
+  url: string | undefined,
+  permitirRemoto: boolean,
+  variable = "SEED_PERMITIR_REMOTO",
+): { permitido: boolean; motivo?: string } {
   if (!url) return { permitido: false, motivo: "Falta DATABASE_URL." };
   let host: string;
   try {
@@ -284,7 +289,7 @@ export function comprobarDestino(url: string | undefined, permitirRemoto: boolea
   if (HOSTS_LOCALES.has(host) || permitirRemoto) return { permitido: true };
   return {
     permitido: false,
-    motivo: `DATABASE_URL apunta a "${host}", que no es la BBDD local. Si de verdad quieres sembrar esa BBDD, repite con SEED_PERMITIR_REMOTO=1.`,
+    motivo: `DATABASE_URL apunta a "${host}", que no es la BBDD local. Si de verdad quieres escribir en esa BBDD, repite con ${variable}=1.`,
   };
 }
 

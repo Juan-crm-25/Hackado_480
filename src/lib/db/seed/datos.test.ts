@@ -197,6 +197,11 @@ describe("destino del seed", () => {
     expect(comprobarDestino(remota, true)).toEqual({ permitido: true });
   });
 
+  it("en el mensaje nombra la variable que da permiso, si es otra que la del seed", () => {
+    const remota = "postgres://u:p@ep-algo-pooler.eu-central-1.aws.neon.tech/neondb";
+    expect(comprobarDestino(remota, false, "GENERAR_PERMITIR_REMOTO").motivo).toMatch(/GENERAR_PERMITIR_REMOTO=1/);
+  });
+
   it("rechaza una URL que falta o no se entiende", () => {
     expect(comprobarDestino(undefined, true).permitido).toBe(false);
     expect(comprobarDestino("no es una url", true).permitido).toBe(false);

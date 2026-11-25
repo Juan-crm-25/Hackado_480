@@ -122,3 +122,50 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 | Para el MVP, login y pago propios y simulados, **sin Better Auth ni Stripe** | No son lo principal de la demo. La firma de `obtenerSesion()` y la función que marca el pedido como pagado se mantienen para conectar Better Auth y el webhook de Stripe más adelante |
 | Ruta personalizada con **reglas y plantillas**, sin IA | Funciona en cualquier curso sin preparar nada, es instantánea, gratis y se puede probar con tests. La IA leyendo texto libre queda como mejora |
 | «Ya lo sé» **solo reordena**; un módulo solo queda dominado al **aprobar su test** | Unas respuestas no demuestran que el alumno lo sepa. Así el porcentaje completado solo sube con tests aprobados |
+
+---
+
+## Trabajo de Sergio — Martes 24 y miércoles 25/11/2026
+
+**Quién:** Sergio Cid, con Claude Code (Claude Opus 5.5) como asistente de programación.
+**Bloque:** Contenido y ejercicios (issues #11, #12, #4, #15 y #3).
+
+### Qué hicimos
+
+| Issue | Qué se hizo | PR |
+|---|---|---|
+| #11 Contenido | **12 vídeos reales** de dos canales de YouTube (Kiko Palomares para HTML, maquetación y JS; Dorian Desings para CSS) en `catalog.json`, con sus **12 transcripciones** en `data/transcripciones/`. Sustituyen a las 3 de prueba. Script `scripts/transcripciones/descargar.py` que descarga los subtítulos con yt-dlp y los limpia. Nombres de los conceptos ajustados a lo que explican los vídeos (los `id` no cambian). Documentado en el SPEC (apartados 7, 8 y 9), en el README y en decisiones | #32 |
+| #13 BBDD (ayuda) | Funciones para pasar las transcripciones al **markdown con marcas `[mm:ss]`** de la tabla `documento` y leerlo de vuelta, para el seed y para el tutor. Test de ida y vuelta con las 12 transcripciones reales: no se pierde ni texto ni tiempos | #33 |
+| SPEC | **Alcance del MVP** con lo hablado en el grupo el 25/11: login y pago simulados, diagnóstico inicial al apuntarse (H6, imprescindible), tutor humano (H9), sin panel de administración y recorrido de la demo | #41 |
+| #12 Ejemplos del profesor | 2 o 3 ejemplos por módulo, de tipos distintos (test, respuesta corta, abierta y código), con su solución o rúbrica y sacados de los vídeos, en `data/ejemplos-profesor/`. Test que comprueba el formato | #44 |
+| #4 (preparación) | **Seed de las plantillas de ejercicios:** `npm run db:seed` carga los ejemplos del profesor en `plantilla_ejercicio`, una por módulo del curso de la demo | #45 |
+| #4 Generador de ejercicios | **`npm run generar:ejercicios`**: la IA genera 9 ejercicios por módulo (3 por concepto) a partir de la plantilla del profesor; el código los valida (tipo y formato de la plantilla, concepto y vídeo del módulo, sin repetidos) y los guarda **en borrador**. Una persona los revisa y aprueba con Drizzle Studio. Instrucciones del agente en `agents/generador-ejercicios.md`. Probado con la IA real en la BBDD local: 4 módulos, dos ejecuciones seguidas sin fallos | #48 |
+
+### Decisiones tomadas
+
+| Decisión | Alternativas | Por qué |
+|---|---|---|
+| El módulo de CSS, con los vídeos de **Dorian Desings** | Todo el curso de un solo canal | Sus tres vídeos explican la especificidad (el ejemplo del Radar), el modelo de caja y las unidades, que son los tres conceptos del módulo |
+| Transcripciones = **subtítulos de YouTube** limpiados con un script | Whisper en local | Los 12 vídeos ya tenían subtítulos en español. Tarda menos de un minuto y no cuesta nada; Whisper habría tardado horas sin tarjeta gráfica |
+| **Decisión de equipo (24/11):** el revisor de transcripciones con IA queda solo documentado (`agents/revisor-transcripciones.md`) | Ejecutarlo ya o corregirlas a mano | El tutor corrige por contexto la mayoría de fallos. En producción sí hace falta (RAG con 400 vídeos), a unos 0,003 € por vídeo |
+| **Decisión de equipo (24/11):** los ejemplos del profesor son origen del seed en `data/ejemplos-profesor/`, como `catalog.json` | Escribirlos directamente en la BBDD | No hay panel de administración: el fichero es donde el profesor configura su módulo. Se importa a la BBDD y se borra cuando todo lea de ella |
+| Si una plantilla ya existe, el seed la deja **como dice el fichero** | No tocarla | Si el profesor cambia un ejemplo en el fichero, repetir el seed lo aplica |
+| Plantillas solo del curso de la demo | Una por cada curso | Los otros 5 cursos son de escaparate, sin clases ni conceptos |
+| Ejercicios: se desarrolla en la BBDD local y el banco se genera **una vez en Neon** y se revisa allí | Generar en local y copiarlo a Neon con un script | La IA no da dos veces lo mismo, y los borradores no los ve ningún alumno hasta que se aprueban: así no hay que copiar nada ni programar otra pieza |
+| Ejercicios: **9 por módulo** (3 por concepto), y si quedan menos de 6 válidos no se guarda nada | Más o menos | El #3 enseña entre 5 y 8 por intento: queda margen para descartar alguno al revisar |
+| Ejercicios: se aprueban con **Drizzle Studio** | Un script de revisión propio | No hay que programarlo y permite también corregir y borrar. En el prototipo revisamos nosotros; en producción, el profesor lo haría desde una pantalla de la app (añadido al SPEC) |
+| La IA puede ayudar a revisar, pero **aprueba una persona** | Que apruebe la IA | Si una IA genera y otra aprueba, la revisión humana se queda en el papel |
+
+### Problemas y cómo los resolvimos
+
+- **Los subtítulos fallan en vocabulario técnico** («create Element», «dip» por `div`, la especificidad «0 10»). Lo probamos con el tutor: los fallos evidentes los corrige por contexto, pero no los que cambian el sentido. En el prototipo se acepta; para producción queda diseñado el revisor.
+- **El temario real ocupa menos de lo supuesto:** de unos 5.300 tokens (HTML) a unos 13.000 (JS), unos 8.000 de media. El SPEC suponía 12.000; se mantiene como hipótesis conservadora.
+- **El generador de ejercicios fallaba en un módulo:** el modelo olvidaba el concepto en los ejercicios que no eran de test y se descartaban. La causa: los ejemplos salen de la BBDD con las claves reordenadas (`jsonb`) y el modelo copia la forma de lo que ve. Ordenar las claves no bastó; se resolvió pidiendo los ejercicios **agrupados por concepto**.
+- **El modelo copia lo que ve en el prompt:** usaba un tipo de ejercicio no permitido porque aparecía en el formato de la respuesta, y copiaba los ejemplos del profesor. Se ajustaron las instrucciones. Aun así, en la revisión salieron soluciones equivocadas y enunciados ambiguos: la revisión humana hace falta de verdad.
+- Coste de las pruebas del generador: unos 0,09 € de IA para unas 10 ejecuciones.
+
+### Pendiente
+
+- **Neon, en este orden** (quien tenga la `DATABASE_URL`, ver `docs/bbdd/README.md`): el seed para cargar las plantillas, `npm run generar:ejercicios` y revisar y aprobar el banco.
+- **#15:** regenerar el material de CSS, desfasado porque se generó con las transcripciones de prueba.
+- **#3:** ejercicios de verificación con corrección. La de las respuestas cortas tiene que ser flexible (mayúsculas, `;` final, `< >`), porque se comparan con la solución.

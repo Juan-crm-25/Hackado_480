@@ -9,7 +9,7 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 |---|---|---|---|
 | `GET /api/catalogo` | `Curso` | ✅ Real (lee `data/catalog.json`) | #11 rellena el contenido |
 | `GET /api/modulos/:id` | `Modulo` | ✅ Real | — |
-| `GET /api/modulos/:id/ejercicios` | `EjercicioPublico[]` (sin solución ni rúbrica) | 🧪 Prueba | #4 banco, #3 selección |
+| `GET /api/modulos/:id/ejercicios` | `EjercicioPublico[]` (sin solución ni rúbrica) | 🧪 Prueba. El banco ya se genera en la tabla `ejercicio` (#4, `npm run generar:ejercicios`); falta que el endpoint lea los aprobados | #3 selección |
 | `POST /api/intentos` | `Intento` | 🧪 Test corregido por código; abiertas pendientes | #3 corrector, #13 guardar |
 | `GET /api/progreso?alumnoId=` | `Progreso[]` | 🧪 Prueba | #13 |
 | `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). Límite diario en la tabla `uso_ia`. Necesita el seed (`npm run db:seed`); si no, 404. Solo m2-css tiene transcripciones (de prueba) | #11 transcripciones reales, #13 login |
