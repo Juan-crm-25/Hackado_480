@@ -1,20 +1,24 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { CabeceraAcceso } from "@/components/auth/cabecera-acceso";
 import { FormularioRegistro } from "@/components/auth/formulario-registro";
-import { EstadoCargando } from "@/components/estado";
+import { Resaltado } from "@/components/auth/resaltado";
+import { EsqueletoFormulario } from "@/components/auth/esqueleto-formulario";
 import { RedirigirSiHaySesion } from "../ya-con-sesion";
 
 export const metadata: Metadata = { title: "Crea tu cuenta · 480 Academy" };
 
-/** Registro simulado (issue #42): toda cuenta nueva es de alumno. */
+/**
+ * Registro simulado (issue #42): toda cuenta nueva es de alumno.
+ * Solo es el contenido del cajón: el cajón y el astronauta están en el layout de (acceso).
+ */
 export default function Registro({ searchParams }: { searchParams: Promise<{ volver?: string | string[] }> }) {
   return (
     <>
-      <header className="flex flex-col gap-2">
-        <h1 className="text-3xl leading-tight font-bold">Crea tu cuenta</h1>
-        <p className="text-muted-foreground">Es gratis. Después podrás apuntarte a los cursos que quieras.</p>
-      </header>
-      <Suspense fallback={<EstadoCargando />}>
+      <CabeceraAcceso titulo="Crea tu cuenta">
+        <Resaltado>Es gratis.</Resaltado> Después podrás apuntarte a los cursos que quieras.
+      </CabeceraAcceso>
+      <Suspense fallback={<EsqueletoFormulario variante="registro" />}>
         <RedirigirSiHaySesion searchParams={searchParams} />
         <FormularioRegistro />
       </Suspense>
