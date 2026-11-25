@@ -135,7 +135,7 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 | SPEC | **Alcance del MVP** con lo hablado en el grupo el 25/11: login y pago simulados, diagnóstico inicial al apuntarse (H6, imprescindible), tutor humano (H9), sin panel de administración y recorrido de la demo | #41 |
 | #12 Ejemplos del profesor | 2 o 3 ejemplos por módulo, de tipos distintos (test, respuesta corta, abierta y código), con su solución o rúbrica y sacados de los vídeos, en `data/ejemplos-profesor/`. Test que comprueba el formato | #44 |
 | #4 (preparación) | **Seed de las plantillas de ejercicios:** `npm run db:seed` carga los ejemplos del profesor en `plantilla_ejercicio`, una por módulo del curso de la demo | #45 |
-| #4 Generador de ejercicios | **`npm run generar:ejercicios`**: la IA genera 9 ejercicios por módulo (3 por concepto) a partir de la plantilla del profesor; el código los valida (tipo y formato de la plantilla, concepto y vídeo del módulo, sin repetidos) y los guarda **en borrador**. Una persona los revisa y aprueba con Drizzle Studio. Instrucciones del agente en `agents/generador-ejercicios.md`. Probado con la IA real en la BBDD local: 4 módulos, dos ejecuciones seguidas sin fallos | PR_NUEVA |
+| #4 Generador de ejercicios | **`npm run generar:ejercicios`**: la IA genera 9 ejercicios por módulo (3 por concepto) a partir de la plantilla del profesor; el código los valida (tipo y formato de la plantilla, concepto y vídeo del módulo, sin repetidos) y los guarda **en borrador**. Una persona los revisa y aprueba con Drizzle Studio. Instrucciones del agente en `agents/generador-ejercicios.md`. Probado con la IA real en la BBDD local: 4 módulos, dos ejecuciones seguidas sin fallos | #48 |
 
 ### Decisiones tomadas
 
