@@ -42,6 +42,12 @@ const OTROS_ALUMNOS = [
   { nombre: "Hugo Romero", email: "hugo@demo.test" },
 ];
 
+/**
+ * Contraseña de TODOS los usuarios del seed (login simulado de la demo, SPEC.md). Solo datos de prueba:
+ * el seed se niega a escribir en una BBDD remota sin SEED_PERMITIR_REMOTO=1.
+ */
+export const CONTRASENA_DEMO = "demo1234";
+
 const PROFESOR = { nombre: "Ana Torres", email: "profesora@demo.test" };
 const ADMIN = { nombre: "Administración Hackado", email: "admin@demo.test" };
 

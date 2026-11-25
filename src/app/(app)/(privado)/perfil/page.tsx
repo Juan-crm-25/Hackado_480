@@ -1,16 +1,27 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { iniciales } from "@/components/navegacion/avatar-usuario";
-import { getUsuarioDemo } from "@/lib/usuario-demo";
+import { Suspense } from "react";
+import { EstadoCargando } from "@/components/estado";
+import { requerirUsuarioActual } from "@/server/auth/usuario-actual";
 
-/** Perfil del usuario. De momento solo lectura: la edición llega con el login. */
+/** Perfil del usuario de la sesión. De momento solo lectura. */
 export default function Perfil() {
-  const usuario = getUsuarioDemo();
-
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6 md:max-w-3xl lg:max-w-5xl lg:px-8">
       <h1 className="text-2xl leading-tight font-bold">Tu perfil</h1>
+      <Suspense fallback={<EstadoCargando texto="Cargando tu perfil…" />}>
+        <DatosPerfil />
+      </Suspense>
+    </main>
+  );
+}
 
+async function DatosPerfil() {
+  const usuario = await requerirUsuarioActual();
+
+  return (
+    <>
       <Card className="max-w-xl">
         <CardContent className="flex items-center gap-4">
           <Avatar className="size-16" aria-hidden>
@@ -25,9 +36,7 @@ export default function Perfil() {
         </CardContent>
       </Card>
 
-      <p className="max-w-prose text-sm text-muted-foreground">
-        Podrás editar tu perfil cuando llegue el inicio de sesión. Por ahora ves un usuario de demostración.
-      </p>
-    </main>
+      <p className="max-w-prose text-sm text-muted-foreground">Pronto podrás editar tu perfil.</p>
+    </>
   );
 }

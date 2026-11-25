@@ -1,24 +1,31 @@
 /**
  * Seed mínimo e idempotente: inserta o actualiza por clave natural, así que ejecutarlo dos veces deja los mismos datos.
- * Lo usa scripts/seed.ts (npm run db:seed) y los tests de integración. No crea cuentas ni sesiones (eso, con el login).
+ * Lo usa scripts/seed.ts (npm run db:seed) y los tests de integración.
+ * Cada usuario tiene una cuenta de email y contraseña (CONTRASENA_DEMO) para el login simulado; no crea sesiones.
  */
 import { count, sql } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 import catalogoJson from "../../../../data/catalog.json";
 import { alumnosDemo } from "../../datos-prueba";
+import { cifrarContrasena } from "../../contrasena";
 import type { Catalogo } from "../../types";
 import type { Db } from "../client";
-import { categoria, clase, concepto, curso, matricula, modulo, usuario } from "../schema";
-import { construirCatalogos, construirMatriculas, construirUsuarios } from "./datos";
+import { categoria, clase, concepto, cuenta, curso, matricula, modulo, usuario } from "../schema";
+import { CONTRASENA_DEMO, construirCatalogos, construirMatriculas, construirUsuarios } from "./datos";
 
 /** En ON CONFLICT DO UPDATE: el valor que se intentaba insertar. */
 const nuevo = (columna: string) => sql.raw(`excluded.${columna}`);
 
-export type RecuentoSeed = Record<"categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "matricula", number>;
+export type RecuentoSeed = Record<
+  "categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "cuenta" | "matricula",
+  number
+>;
 
 export async function sembrar(db: Db): Promise<RecuentoSeed> {
   const catalogos = construirCatalogos(catalogoJson as Catalogo);
   const usuarios = construirUsuarios(alumnosDemo);
+  // Se cifra una vez (fuera de la transacción): todas las cuentas del seed comparten contraseña.
+  const passwordHash = await cifrarContrasena(CONTRASENA_DEMO);
 
   await db.transaction(async (tx) => {
     const cursoIds = new Map<string, string>();
@@ -98,6 +105,12 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
       .returning({ id: usuario.id, email: usuario.email });
     const usuarioIds = new Map(filas.map((u) => [u.email, u.id]));
 
+    // Cuenta de email y contraseña para el login simulado. Si ya existe no se toca (no se pisa la contraseña).
+    await tx
+      .insert(cuenta)
+      .values(filas.map((u) => ({ usuarioId: u.id, proveedor: "credential", idCuentaProveedor: u.id, passwordHash })))
+      .onConflictDoNothing({ target: [cuenta.proveedor, cuenta.idCuentaProveedor] });
+
     // Por invitación y ya enlazadas (los emails están verificados). Ver construirMatriculas().
     const matriculas = construirMatriculas(catalogos, usuarios).map((m) => ({
       cursoId: cursoIds.get(m.cursoSlug)!,
@@ -127,6 +140,7 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
     concepto: await contar(concepto),
     clase: await contar(clase),
     usuario: await contar(usuario),
+    cuenta: await contar(cuenta),
     matricula: await contar(matricula),
   };
 }

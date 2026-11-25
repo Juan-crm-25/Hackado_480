@@ -76,7 +76,7 @@ Jerarquía del catálogo: **Categoría → Curso → Módulo → Clase**. Cada c
 Decisiones de diseño:
 
 - **Visitante** no es una fila: es quien no ha iniciado sesión. Los roles son `alumno`, `profesor` y `admin`.
-- **Iniciar sesión** con email y contraseña o con Google es una fila de `cuenta` por método. La contraseña se guarda **solo como hash** (`cuenta.password_hash`) y la calcula Better Auth, nunca nuestro código.
+- **Iniciar sesión** con email y contraseña o con Google es una fila de `cuenta` por método. La contraseña se guarda **solo como hash** (`cuenta.password_hash`). Mientras el login sea simulado la calcula `src/lib/contrasena.ts` (scrypt); con Better Auth la calculará Better Auth.
 - **El acceso a un curso se da a un email** (`matricula`), aunque esa persona aún no se haya registrado. Al entrar por primera vez se enlaza con su usuario. **Los emails se guardan siempre en minúsculas** (la BBDD lo exige), para que `Ana@x.es` y `ana@x.es` sean la misma persona: el código los pasa a minúsculas antes de guardar o buscar.
 - **La matrícula por compra solo la crea el webhook de Stripe**, nunca el navegador. La BBDD exige que una matrícula por compra tenga su pedido y que una invitación no lo tenga.
 - **`matricula.orden_modulos`** es una lista de ids: PostgreSQL no puede comprobar claves ajenas dentro de una lista, así que el código comprueba que todos los módulos son de ese curso.
@@ -149,7 +149,8 @@ SEED_PERMITIR_REMOTO=1 npm run db:seed     # otra BBDD (p. ej., Neon), solo a pr
 ```
 
 - **Qué crea:** la categoría `programacion`; el curso de `data/catalog.json` (gratis y publicado) con sus 4 módulos, sus conceptos y una clase por vídeo (`video_url` de YouTube); **10 alumnos** (los dos primeros son los de `src/lib/datos-prueba.ts`: Lucía `lucia@demo.test` y Pablo `pablo@demo.test`), **1 profesor** (`profesora@demo.test`) y **1 admin** (`admin@demo.test`), todos con el email verificado; y la matrícula por invitación de los alumnos y del profesor (este, como `profesor` del curso). El admin no necesita matrícula.
-- **No crea** transcripciones ni documentos (los importará el conversor), ni cuentas ni sesiones (llegan con el login).
+- **Crea una cuenta** de email y contraseña (`cuenta`, proveedor `credential`) por usuario para el login simulado, con la contraseña `demo1234` (`CONTRASENA_DEMO`). Si la cuenta ya existe no la toca.
+- **No crea** transcripciones, documentos (los importará el conversor) ni sesiones (se crean al iniciar sesión).
 - **Se puede repetir:** inserta o actualiza por clave natural (`slug`, `email`, `(curso, email)`…), así que ejecutarlo dos veces deja los mismos datos.
 - **Solo la BBDD local:** se niega si el host de `DATABASE_URL` no es `localhost` o `127.0.0.1`, salvo con `SEED_PERMITIR_REMOTO=1`.
 - Código: `scripts/seed.ts` (conexión) y `src/lib/db/seed/` (datos y `sembrar()`).

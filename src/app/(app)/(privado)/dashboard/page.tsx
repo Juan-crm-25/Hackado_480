@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { estadoDeModulo, etiquetaEstado, moduloParaSeguir } from "@/lib/estado-modulos";
 import { getProgresoDemo, getUsuarioDemo } from "@/lib/usuario-demo";
+import { requerirUsuarioActual } from "@/server/auth/usuario-actual";
 import { cargarCursoPrincipal } from "@/server/catalogo/servicio";
 
 // Enlace de texto con zona táctil de 44 px (docs/estilo.md, apartado 7).
@@ -18,22 +19,28 @@ const FRANJAS = ["bg-chart-1", "bg-chart-2", "bg-chart-3", "bg-chart-4", "bg-cha
 
 /**
  * Panel del alumno (/dashboard, «Tus cursos»): saludo, «Sigue donde lo dejaste» y los módulos del curso con su estado.
- * Sin id en la URL: el alumno sale de la sesión (de momento, el usuario de demostración).
- * El saludo va en el esqueleto estático; el curso sale de la BBDD en cada petición, dentro de <Suspense>
- * (Cache Components), así `next build` no necesita BBDD.
+ * Sin id en la URL: el saludo sale de la sesión. El progreso aún es el del usuario de demostración.
+ * El saludo y el curso se leen en cada petición, dentro de <Suspense> (Cache Components), así
+ * `next build` no necesita BBDD.
  */
 export default function Dashboard() {
   const usuario = getUsuarioDemo();
-  const nombre = usuario.nombre.split(" ")[0];
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-6 md:max-w-3xl lg:max-w-5xl lg:px-8">
-      <h1 className="text-3xl leading-tight font-bold md:text-4xl">Hola, {nombre}</h1>
+      <Suspense fallback={<h1 className="text-3xl leading-tight font-bold md:text-4xl">Hola</h1>}>
+        <Saludo />
+      </Suspense>
       <Suspense fallback={<EstadoCargando texto="Cargando el curso…" />}>
         <ContenidoCurso alumnoId={usuario.id} />
       </Suspense>
     </main>
   );
+}
+
+async function Saludo() {
+  const { nombre } = await requerirUsuarioActual();
+  return <h1 className="text-3xl leading-tight font-bold md:text-4xl">Hola, {nombre.split(" ")[0]}</h1>;
 }
 
 async function ContenidoCurso({ alumnoId }: { alumnoId: string }) {

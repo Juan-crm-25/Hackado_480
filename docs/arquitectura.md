@@ -159,6 +159,7 @@ Estado: ✅ existe · 🔁 existe, se migrará a la BBDD y a esta estructura · 
 | Método y ruta | Acceso | Módulo | Estado |
 |---|---|---|---|
 | `GET/POST /api/auth/[...all]` | publico | auth (Better Auth: registro, login, Google, logout, sesión) | ⬜ |
+| `POST /api/auth/login`, `/registro`, `/logout` | publico | auth (login simulado del MVP, ver `src/server/auth/README.md`) | ✅ |
 | `GET /api/yo` | usuario | usuarios (perfil, rol, puntos e insignias) | ⬜ |
 | `PATCH /api/yo` | usuario | usuarios | ⬜ |
 | `GET /api/usuarios` · `PATCH /api/usuarios/:id/rol` | admin | usuarios | ⬜ |
