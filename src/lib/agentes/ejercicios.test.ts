@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { Modulo, PlantillaEjercicios } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
-import { EJERCICIOS_POR_CONCEPTO, MINIMO_EJERCICIOS, validarEjercicios } from "./ejercicios";
+import { EJERCICIOS_POR_CONCEPTO, MINIMO_EJERCICIOS, generarEjercicios, validarEjercicios } from "./ejercicios";
 
 const modulo: Modulo = {
   id: "m2-css",
@@ -157,5 +157,52 @@ describe("validarEjercicios", () => {
   it("falla si la respuesta no es JSON o no trae la lista de ejercicios", () => {
     expect(() => validarEjercicios("no es json", modulo, plantilla)).toThrow(/JSON/);
     expect(() => validarEjercicios(JSON.stringify({ otra: [] }), modulo, plantilla)).toThrow(/insuficientes/);
+  });
+});
+
+describe("generarEjercicios", () => {
+  const conEjemplos: PlantillaEjercicios = {
+    ...plantilla,
+    ejemplos: [{ tipo: "respuesta_corta", enunciado: "¿Cuántos px mide 3rem?", solucion: "48px" }],
+    indicaciones: "Nivel principiante.",
+  };
+  const iaQueResponde = (texto: string) => vi.fn().mockResolvedValue({ texto, simulado: false });
+  const temario = () => "[v04 @120] La especificidad decide qué regla gana";
+
+  it("pide los ejercicios al modelo generador con la plantilla, los conceptos y el temario, y los valida", async () => {
+    const completar = iaQueResponde(json(nueve()));
+    const ejercicios = await generarEjercicios(modulo, conEjemplos, { completar, temario });
+
+    expect(ejercicios).toHaveLength(9);
+    expect(ejercicios.every((e) => e.moduloId === "m2-css")).toBe(true);
+    const op = completar.mock.calls[0][0];
+    expect(op).toMatchObject({ modelo: "generador", formatoJson: true });
+    const sistema = op.mensajes[0].contenido as string;
+    expect(sistema).toContain("[v04 @120] La especificidad decide qué regla gana");
+    expect(sistema).toContain("css-especificidad: Selectores y especificidad");
+    expect(sistema).toContain("test, respuesta_corta, abierta");
+    expect(sistema).toContain("¿Cuántos px mide 3rem?");
+    expect(sistema).toContain("Nivel principiante.");
+    expect(sistema).toContain("Genera 9 ejercicios");
+  });
+
+  it("sin indicaciones del profesor, lo dice en vez de dejar el hueco vacío", async () => {
+    const completar = iaQueResponde(json(nueve()));
+    await generarEjercicios(modulo, plantilla, { completar, temario });
+    expect(completar.mock.calls[0][0].mensajes[0].contenido).toContain("Ninguna.");
+  });
+
+  it("no llama a la IA si el módulo no tiene transcripciones", async () => {
+    const completar = vi.fn();
+    await expect(generarEjercicios(modulo, conEjemplos, { completar, temario: () => "" })).rejects.toThrow(/transcripciones/);
+    expect(completar).not.toHaveBeenCalled();
+  });
+
+  it("no genera nada en modo simulado ni si la respuesta no pasa la validación", async () => {
+    const simulado = vi.fn().mockResolvedValue({ texto: "{}", simulado: true });
+    await expect(generarEjercicios(modulo, conEjemplos, { completar: simulado, temario })).rejects.toThrow(/simulado/);
+    await expect(generarEjercicios(modulo, conEjemplos, { completar: iaQueResponde(json([test(1)])), temario })).rejects.toThrow(
+      /insuficientes/,
+    );
   });
 });

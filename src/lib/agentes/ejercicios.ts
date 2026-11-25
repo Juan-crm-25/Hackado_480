@@ -3,7 +3,11 @@
  * Se ejecuta una vez por módulo desde un script, nunca por petición de un alumno.
  * La IA solo devuelve JSON: este fichero lo valida y el código que llama lo guarda como borrador.
  */
+import { completar as completarIA } from "../ai/cliente";
+import { contenidoDelCurso } from "../ai/privacidad";
+import { temarioDelModulo } from "../transcripciones";
 import type { Ejercicio, Modulo, PlantillaEjercicios, TipoEjercicio } from "../types";
+import { leerInstrucciones, rellenar } from "./instrucciones";
 import { parsearObjetoJson, validarFuentes } from "./validacion";
 
 /** Ejercicios que se piden por concepto: 3 conceptos por módulo dan un banco de 9. */
@@ -16,6 +20,51 @@ const MAXIMO_OPCIONES = 5;
 
 /** Ejercicio ya validado, antes de guardarlo: aún sin id y sin estado (se guarda como borrador). */
 export type EjercicioGenerado = Omit<Ejercicio, "id" | "estado">;
+
+export interface DependenciasEjercicios {
+  completar: typeof completarIA;
+  temario: (modulo: Modulo) => string;
+}
+
+const dependenciasReales: DependenciasEjercicios = { completar: completarIA, temario: (m) => temarioDelModulo(m) };
+
+/**
+ * Pide a la IA el banco de ejercicios del módulo a partir de la plantilla del profesor y lo valida.
+ * No guarda nada: devuelve los ejercicios válidos para que el código que llama los guarde como borrador.
+ * A la IA solo le llega contenido del curso (temario, conceptos y plantilla), ningún dato de alumnos.
+ */
+export async function generarEjercicios(
+  modulo: Modulo,
+  plantilla: PlantillaEjercicios,
+  deps: DependenciasEjercicios = dependenciasReales,
+): Promise<EjercicioGenerado[]> {
+  const temario = deps.temario(modulo);
+  if (!temario) throw new Error(`El módulo «${modulo.titulo}» no tiene transcripciones: no hay de dónde generar ejercicios.`);
+
+  const sistema = rellenar(leerInstrucciones("generador-ejercicios"), {
+    modulo: modulo.titulo,
+    conceptos: modulo.conceptos.map((c) => `- ${c.id}: ${c.nombre}`).join("\n"),
+    tipos: plantilla.tipos.join(", "),
+    ejemplos: JSON.stringify(plantilla.ejemplos, null, 2),
+    indicaciones: plantilla.indicaciones?.trim() || "Ninguna.",
+    total: String(modulo.conceptos.length * EJERCICIOS_POR_CONCEPTO),
+    temario,
+  });
+
+  const r = await deps.completar({
+    modelo: "generador",
+    formatoJson: true,
+    maxTokens: 6000,
+    temperatura: 0.4,
+    mensajes: [
+      { rol: "sistema", contenido: contenidoDelCurso(sistema) },
+      { rol: "usuario", contenido: contenidoDelCurso("Genera los ejercicios del módulo.") },
+    ],
+  });
+  if (r.simulado) throw new Error("La IA está en modo simulado: configura AI_BASE_URL y AI_API_KEY en .env.local.");
+
+  return validarEjercicios(r.texto, modulo, plantilla);
+}
 
 const texto = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 /** Para detectar enunciados repetidos: minúsculas y sin espacios de más. */
