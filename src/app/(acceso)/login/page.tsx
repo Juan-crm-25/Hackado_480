@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { CabeceraAcceso } from "@/components/auth/cabecera-acceso";
 import { FormularioLogin } from "@/components/auth/formulario-login";
 import { Resaltado } from "@/components/auth/resaltado";
-import { EstadoCargando } from "@/components/estado";
+import { EsqueletoFormulario } from "@/components/auth/esqueleto-formulario";
 import { RedirigirSiHaySesion } from "../ya-con-sesion";
 
 export const metadata: Metadata = { title: "Inicia sesión · 480 Academy" };
@@ -18,7 +18,7 @@ export default function Login({ searchParams }: { searchParams: Promise<{ volver
       <CabeceraAcceso titulo="Inicia sesión">
         Entra para seguir tus cursos y <Resaltado>hablar con tu tutor.</Resaltado>
       </CabeceraAcceso>
-      <Suspense fallback={<EstadoCargando />}>
+      <Suspense fallback={<EsqueletoFormulario variante="login" />}>
         <RedirigirSiHaySesion searchParams={searchParams} />
         <FormularioLogin />
       </Suspense>
