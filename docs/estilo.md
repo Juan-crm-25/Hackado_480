@@ -216,9 +216,57 @@ Respeta `prefers-reduced-motion` con `motion-safe:` en las animaciones de entrad
 
 ## 10. Patrones de pantalla
 
+### Móvil primero, y también bien en web
+
+Se diseña **primero para 360 px** y se amplía con los prefijos de Tailwind; nunca al revés (nada de `max-md:`). Tres tamaños, y en cada uno cambia la disposición, no solo el ancho:
+
+| Tamaño | Prefijo | Navegación | Contenido |
+| --- | --- | --- | --- |
+| Móvil (base, 360 px) | — | Barra superior (marca a la izquierda, avatar a la derecha) + **barra inferior** de pestañas | Una columna, `px-4` |
+| Tableta (≥ 768 px) | `md:` | Igual que en móvil | Rejillas de 2 columnas donde haya listas (tarjetas de cursos) |
+| Web (≥ 1024 px) | `lg:` | **Barra lateral fija a la izquierda**; desaparece la barra inferior | Contenido hasta `max-w-5xl` con `px-8`; rejillas de 2–3 columnas |
+
+Reglas:
+
+- **Las acciones principales, al alcance del pulgar en móvil:** abajo (barra inferior o botón al pie). En web van donde se lean primero.
+- **Nunca se esconde una función en un tamaño:** si en web está en la barra lateral, en móvil está en la barra inferior o en «Más».
+- **El texto de lectura no pasa de unos 70 caracteres por línea** (`max-w-prose`), aunque la pantalla sea ancha. Las conversaciones del tutor y el material siguen en una columna de `max-w-2xl` en web.
+- **44 px táctiles en todos los tamaños:** en web también se usa con pantalla táctil.
+- Comprueba cada pantalla a **360, 768 y 1280 px** antes de abrir la PR.
+
 ### Contenedor de página
 
-Cada pantalla es un `<main className="mx-auto flex w-full max-w-md flex-col …">`: una columna centrada pensada para 360 px. El contenido lleva `px-4`. No añadas otros anchos máximos.
+El contenido de cada pantalla va en `<main className="mx-auto w-full max-w-md px-4 md:max-w-3xl lg:max-w-5xl lg:px-8">`. Las pantallas de lectura (tutor y material) se quedan en `max-w-2xl` también en web.
+
+### Navegación de la app
+
+Un único componente de navegación con los mismos destinos en todos los tamaños:
+
+| Destino | Icono | Móvil | Web |
+| --- | --- | --- | --- |
+| Inicio (`/`, home pública con el catálogo) | Casa | Barra inferior | Barra lateral |
+| Tus cursos (`/dashboard`, panel del alumno) | Birrete | Barra inferior | Barra lateral |
+| Tutor (IA) (`/tutor`) | Burbuja de chat | Barra inferior | Barra lateral |
+| Perfil (`/perfil`) | Persona / avatar | Menú «Más» y avatar arriba | Pie de la barra lateral y avatar arriba a la derecha |
+| Contáctanos (`/contacto`) | Sobre | Menú «Más» | Pie de la barra lateral |
+| Cerrar sesión | Salida | Menú «Más» | Pie de la barra lateral, último |
+
+- **Destino activo:** «Inicio» en `/` y en las páginas públicas de los cursos (`/cursos/...`); «Tus cursos» en `/dashboard` y en las pantallas de los módulos (`/modulos/...`); el resto, en su ruta y sus subrutas (`esDestinoActivo` en `destinos.ts`).
+- **La marca** («480 Academy») lleva siempre a la home pública (`/`).
+
+- **Barra lateral (web):** fondo `bg-surface-dark` con texto blanco; la marca «480 Academy» arriba a la izquierda; el destino activo con una línea a la izquierda en `border-brand` (el verde sobre fondo oscuro sí cumple el contraste) y `aria-current="page"`.
+- **Barra inferior (móvil):** fondo `bg-background` con borde superior; el destino activo en `text-foreground` + icono relleno o subrayado (no solo color); 4 destinos como máximo.
+- **Avatar:** iniciales sobre `bg-accent text-accent-foreground` (verde con texto carbón) o la foto del usuario; lleva al perfil y tiene `aria-label="Tu perfil"`.
+- **Dónde está:** `src/components/navegacion/` (los destinos, en una sola lista en `destinos.ts`) y el marco en `src/app/(app)/layout.tsx`. Solo se desplaza el contenido: las barras se quedan fijas.
+
+### Color con intención
+
+Para que la app no quede gris sin romper la regla de un solo acento:
+
+- **El verde sigue siendo el único acento de acción** (botón `accent`, destino activo): uno por pantalla.
+- **Cada módulo tiene un color de identidad**, solo decorativo: una franja superior de 6 px en su tarjeta con `bg-chart-1` … `bg-chart-5`. Nunca transmite información por sí solo: el estado del módulo va en texto.
+- **Bloque destacado oscuro** (`bg-surface-dark text-white`) para lo más importante de la pantalla, por ejemplo la presentación con «Explorar cursos» en la home pública o «Sigue donde lo dejaste» en `/dashboard`, con el botón `accent` dentro.
+- Nada de degradados ni de más de un bloque oscuro por pantalla.
 
 ### Cabecera
 
@@ -252,6 +300,10 @@ Para leer las respuestas de la API usa `leerRespuesta()` y `mensajeDeError()` de
 
 Añade componentes nuevos con `npx shadcn@latest add <nombre>` (en Windows, `npx.cmd`) y ajústalos a esta guía: altura táctil, `rounded-sm` en botones, foco con `ring-ring` (sin `/50`), `transition-colors duration-150` y `cn` importado de `@/lib/utils`.
 
+### Vídeos de YouTube
+
+Usa `VideoYoutube` (`src/components/video-youtube.tsx`): al principio solo carga la miniatura con un botón «Reproducir» de 56 px; al pulsarlo lo cambia por el reproductor de `youtube-nocookie.com`. Así no se cargan el reproductor ni las cookies de YouTube hasta que el alumno lo pide. La duración se muestra como `6:43` y se lee como «6 min 43 s» (`duracionVideo` y `duracionAccesible` de `src/lib/youtube.ts`).
+
 ### Infografías y gráficos
 
 Las infografías usan tonos del azul de los gráficos (`bg-chart-3/10` … `bg-chart-3/60`) con el texto en su color normal: así pasan AA en claro y en oscuro. No pases del 60 %.
@@ -264,7 +316,7 @@ Las infografías usan tonos del azul de los gráficos (`bg-chart-3/10` … `bg-c
 - [ ] El foco del teclado se ve en todos los elementos interactivos (prueba con Tab).
 - [ ] Carga, vacío y error con `EstadoCargando`, `EstadoVacio` y `EstadoError`. Ningún error silenciado.
 - [ ] Nada depende solo del color: hay texto o icono.
-- [ ] Se ve bien a 360 px y en modo oscuro.
+- [ ] Se ve bien a 360, 768 y 1280 px y en modo oscuro, sin funciones escondidas en ningún tamaño.
 - [ ] Las animaciones usan `motion-safe:`.
 - [ ] Textos de la interfaz en español.
 - [ ] `npm test`, `npm run lint` y `npm run build` pasan.

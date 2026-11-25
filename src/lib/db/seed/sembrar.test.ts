@@ -18,13 +18,13 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
   it("crea el curso, los usuarios y sus matrículas", async () => {
     const recuento = await sembrar(bd.db);
     expect(recuento).toEqual({
-      categoria: 1,
-      curso: 1,
-      modulo: 4,
+      categoria: 5,
+      curso: 6,
+      modulo: 18,
       concepto: 12,
       clase: 12,
       usuario: 12,
-      matricula: 11,
+      matricula: 34,
     });
 
     const lucia = await bd.db.query.usuario.findFirst({ where: eq(usuario.email, "lucia@demo.test") });
@@ -43,7 +43,7 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
   it("es idempotente: repetirlo deja los mismos datos", async () => {
     const antes = await bd.db.select().from(usuario).orderBy(usuario.email);
     const recuento = await sembrar(bd.db);
-    expect(recuento).toMatchObject({ usuario: 12, matricula: 11, clase: 12 });
+    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 12, matricula: 34, clase: 12 });
     expect(await bd.db.select().from(usuario).orderBy(usuario.email)).toEqual(antes);
   });
 });

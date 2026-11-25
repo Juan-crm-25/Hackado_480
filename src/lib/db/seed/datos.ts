@@ -94,6 +94,140 @@ export function construirCatalogo(catalogo: Catalogo): CatalogoSeed {
   };
 }
 
+/** Un curso más del catálogo de demo: sin clases (clase.video_url es obligatorio y no se inventan vídeos). */
+function cursoExtra(
+  categoria: CatalogoSeed["categoria"],
+  curso: Omit<CatalogoSeed["curso"], "publicado">,
+  modulos: { slug: string; titulo: string; descripcion: string }[],
+): CatalogoSeed {
+  return {
+    categoria,
+    curso: { ...curso, publicado: true },
+    modulos: modulos.map((m, i) => ({ ...m, ordenSugerido: i + 1, conceptos: [], clases: [] })),
+  };
+}
+
+const PROGRAMACION = { slug: "programacion", nombre: "Programación" };
+
+/** 5 cursos más, en otras categorías, para que la búsqueda y los filtros de la home tengan sentido. */
+export const CURSOS_EXTRA: CatalogoSeed[] = [
+  cursoExtra(
+    PROGRAMACION,
+    {
+      slug: "python-desde-cero",
+      titulo: "Python desde cero",
+      descripcion: "Aprende a programar con Python paso a paso: variables, decisiones, bucles y tus primeros programas útiles.",
+      precioCentimos: 4900,
+    },
+    [
+      { slug: "p1-primeros-pasos", titulo: "Primeros pasos", descripcion: "Instala Python, usa la consola y escribe tu primer programa." },
+      { slug: "p2-control", titulo: "Decisiones y bucles", descripcion: "if, for y while para que tus programas tomen decisiones y repitan tareas." },
+      { slug: "p3-funciones", titulo: "Funciones y listas", descripcion: "Organiza el código en funciones y trabaja con colecciones de datos." },
+    ],
+  ),
+  cursoExtra(
+    { slug: "ia", nombre: "IA" },
+    {
+      slug: "ia-generativa-dia-a-dia",
+      titulo: "IA generativa para el día a día",
+      descripcion: "Usa asistentes de inteligencia artificial para escribir, resumir y organizarte, con criterio y cuidando tu privacidad.",
+      precioCentimos: 2900,
+    },
+    [
+      { slug: "i1-que-es", titulo: "Qué es la IA generativa", descripcion: "Cómo funcionan los asistentes, qué hacen bien y en qué se equivocan." },
+      { slug: "i2-instrucciones", titulo: "Escribir buenas instrucciones", descripcion: "Técnicas sencillas para pedir lo que necesitas y obtener mejores respuestas." },
+      { slug: "i3-uso-responsable", titulo: "Uso responsable", descripcion: "Privacidad, sesgos y cómo comprobar lo que te dice la IA." },
+    ],
+  ),
+  cursoExtra(
+    { slug: "cocina", nombre: "Cocina" },
+    {
+      slug: "cocina-mediterranea-saludable",
+      titulo: "Cocina mediterránea saludable",
+      descripcion: "Recetas sencillas de la dieta mediterránea y cómo planificar un menú semanal equilibrado.",
+      precioCentimos: 1990,
+    },
+    [
+      { slug: "c1-despensa", titulo: "La despensa mediterránea", descripcion: "Aceite, legumbres, verduras y cereales: qué comprar y cómo conservarlo." },
+      { slug: "c2-menu-semanal", titulo: "Menú semanal", descripcion: "Planifica la semana y cocina por adelantado sin perder sabor." },
+    ],
+  ),
+  cursoExtra(
+    { slug: "costura", nombre: "Costura" },
+    {
+      slug: "costura-para-principiantes",
+      titulo: "Costura para principiantes",
+      descripcion: "Aprende a coser a mano y a máquina: arreglos básicos y tus primeras prendas sencillas.",
+      precioCentimos: 0,
+    },
+    [
+      { slug: "s1-a-mano", titulo: "Costura a mano", descripcion: "Puntadas básicas, botones y bajos." },
+      { slug: "s2-maquina", titulo: "La máquina de coser", descripcion: "Enhebrar, ajustar la tensión y coser en recto y en curva." },
+      { slug: "s3-primera-prenda", titulo: "Tu primera prenda", descripcion: "Patrón, corte y confección de una bolsa de tela." },
+    ],
+  ),
+  cursoExtra(
+    { slug: "oposiciones", nombre: "Oposiciones" },
+    {
+      slug: "oposiciones-auxiliar-administrativo",
+      titulo: "Oposiciones: Auxiliar administrativo del Estado",
+      descripcion: "Prepara el temario de Auxiliar administrativo del Estado con esquemas, repasos y una planificación de estudio.",
+      precioCentimos: 8900,
+    },
+    [
+      { slug: "o1-constitucion", titulo: "Constitución española", descripcion: "Estructura, derechos fundamentales y órganos constitucionales." },
+      { slug: "o2-administracion", titulo: "Organización de la Administración", descripcion: "Administración General del Estado, autonómica y local." },
+      { slug: "o3-ofimatica", titulo: "Ofimática", descripcion: "Procesador de textos, hoja de cálculo y correo electrónico para el examen práctico." },
+    ],
+  ),
+];
+
+/** Todos los cursos del seed: el de catalog.json (el de la demo) primero y luego CURSOS_EXTRA. */
+export function construirCatalogos(catalogo: Catalogo): CatalogoSeed[] {
+  return [construirCatalogo(catalogo), ...CURSOS_EXTRA];
+}
+
+/**
+ * Alumnos de la demo matriculados en cada curso extra (por su posición entre los 10 alumnos),
+ * con un número distinto en cada curso para que el recuento de estudiantes cambie de uno a otro.
+ */
+const ALUMNOS_EXTRA: Record<string, number[]> = {
+  "python-desde-cero": [0, 1, 2, 3, 4, 5, 6],
+  "ia-generativa-dia-a-dia": [0, 3, 7, 8, 9],
+  "cocina-mediterranea-saludable": [1, 2, 4, 6, 8, 9],
+  "costura-para-principiantes": [4, 7],
+  "oposiciones-auxiliar-administrativo": [2, 5, 9],
+};
+
+export interface MatriculaSeed {
+  cursoSlug: string;
+  email: string;
+  rolEnCurso: "alumno" | "profesor";
+}
+
+/**
+ * Matrículas por invitación. En el curso de la demo, todos los alumnos y la profesora; en los demás,
+ * los alumnos de ALUMNOS_EXTRA. El admin no necesita matrícula: pasa las comprobaciones de acceso en todos los cursos.
+ */
+export function construirMatriculas(catalogos: CatalogoSeed[], usuarios: UsuarioSeed[]): MatriculaSeed[] {
+  const alumnos = usuarios.filter((u) => u.rol === "alumno");
+  const [principal, ...resto] = catalogos;
+  const deLaDemo = usuarios
+    .filter((u) => u.rol !== "admin")
+    .map((u): MatriculaSeed => ({
+      cursoSlug: principal.curso.slug,
+      email: u.email,
+      rolEnCurso: u.rol === "profesor" ? "profesor" : "alumno",
+    }));
+  const extra = resto.flatMap(({ curso }) =>
+    (ALUMNOS_EXTRA[curso.slug] ?? [])
+      .map((i) => alumnos[i])
+      .filter((a) => a !== undefined)
+      .map((a): MatriculaSeed => ({ cursoSlug: curso.slug, email: a.email, rolEnCurso: "alumno" })),
+  );
+  return [...deLaDemo, ...extra];
+}
+
 const HOSTS_LOCALES = new Set(["localhost", "127.0.0.1"]);
 
 /**

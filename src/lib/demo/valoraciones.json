@@ -1,0 +1,40 @@
+{
+  "destacados": ["desarrollo-web", "python-desde-cero", "cocina-mediterranea-saludable"],
+  "valoraciones": {
+    "desarrollo-web": [
+      { "autor": "Irene P.", "estrellas": 5, "comentario": "Por fin entiendo cómo se monta una web de verdad. Los vídeos van al grano.", "fecha": "2026-10-12" },
+      { "autor": "Tomás G.", "estrellas": 5, "comentario": "El tutor me resolvió dudas de CSS a las tantas de la noche.", "fecha": "2026-10-20" },
+      { "autor": "Nuria V.", "estrellas": 4, "comentario": "Muy claro. El módulo de JavaScript se me hizo algo corto.", "fecha": "2026-10-28" },
+      { "autor": "Álvaro M.", "estrellas": 5, "comentario": "Ideal para empezar desde cero, sin agobios.", "fecha": "2026-11-03" },
+      { "autor": "Rocío L.", "estrellas": 4, "comentario": "Los resúmenes de cada módulo me ayudaron a repasar.", "fecha": "2026-11-15" }
+    ],
+    "python-desde-cero": [
+      { "autor": "Marcos F.", "estrellas": 5, "comentario": "Explicaciones sencillas y ejercicios útiles desde el primer día.", "fecha": "2026-09-30" },
+      { "autor": "Paula S.", "estrellas": 4, "comentario": "Buen ritmo. Me habría gustado algún proyecto más largo.", "fecha": "2026-10-18" },
+      { "autor": "Iván C.", "estrellas": 5, "comentario": "Lo recomiendo a cualquiera que nunca haya programado.", "fecha": "2026-11-09" },
+      { "autor": "Sara D.", "estrellas": 4, "comentario": "Claro y bien ordenado.", "fecha": "2026-11-20" }
+    ],
+    "ia-generativa-dia-a-dia": [
+      { "autor": "Lorena H.", "estrellas": 4, "comentario": "Me ha cambiado la forma de preparar correos e informes.", "fecha": "2026-10-05" },
+      { "autor": "Raúl B.", "estrellas": 3, "comentario": "Interesante, aunque algunos ejemplos ya los conocía.", "fecha": "2026-10-22" },
+      { "autor": "Celia O.", "estrellas": 5, "comentario": "Muy práctico y con buenos consejos sobre privacidad.", "fecha": "2026-11-11" }
+    ],
+    "cocina-mediterranea-saludable": [
+      { "autor": "Pilar A.", "estrellas": 5, "comentario": "Recetas fáciles y riquísimas. Ya no compro tantos precocinados.", "fecha": "2026-09-14" },
+      { "autor": "Andrés T.", "estrellas": 5, "comentario": "La planificación semanal me ahorra tiempo y dinero.", "fecha": "2026-10-02" },
+      { "autor": "Beatriz N.", "estrellas": 4, "comentario": "Muy bien explicado. Echo de menos más postres.", "fecha": "2026-10-25" },
+      { "autor": "Luis E.", "estrellas": 5, "comentario": "Perfecto para comer mejor sin complicarse.", "fecha": "2026-11-17" }
+    ],
+    "costura-para-principiantes": [
+      { "autor": "Amparo R.", "estrellas": 4, "comentario": "Ya sé arreglar bajos y coser botones. ¡Gracias!", "fecha": "2026-10-08" },
+      { "autor": "Jorge I.", "estrellas": 4, "comentario": "Paso a paso y sin prisas.", "fecha": "2026-10-30" },
+      { "autor": "Noelia K.", "estrellas": 5, "comentario": "Muy buena introducción a la máquina de coser.", "fecha": "2026-11-12" }
+    ],
+    "oposiciones-auxiliar-administrativo": [
+      { "autor": "Cristina J.", "estrellas": 5, "comentario": "El temario está muy bien organizado.", "fecha": "2026-09-21" },
+      { "autor": "Manuel Q.", "estrellas": 4, "comentario": "Los repasos de la Constitución son muy útiles.", "fecha": "2026-10-16" },
+      { "autor": "Eva Z.", "estrellas": 3, "comentario": "Bien, aunque necesito más tests de práctica.", "fecha": "2026-11-06" },
+      { "autor": "Óscar U.", "estrellas": 4, "comentario": "Buena base para empezar a estudiar.", "fecha": "2026-11-19" }
+    ]
+  }
+}
