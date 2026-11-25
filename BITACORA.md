@@ -135,6 +135,7 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 | SPEC | **Alcance del MVP** con lo hablado en el grupo el 25/11: login y pago simulados, diagnóstico inicial al apuntarse (H6, imprescindible), tutor humano (H9), sin panel de administración y recorrido de la demo | #41 |
 | #12 Ejemplos del profesor | 2 o 3 ejemplos por módulo, de tipos distintos (test, respuesta corta, abierta y código), con su solución o rúbrica y sacados de los vídeos, en `data/ejemplos-profesor/`. Test que comprueba el formato | #44 |
 | #4 (preparación) | **Seed de las plantillas de ejercicios:** `npm run db:seed` carga los ejemplos del profesor en `plantilla_ejercicio`, una por módulo del curso de la demo | #45 |
+| #4 Generador de ejercicios | **`npm run generar:ejercicios`**: la IA genera 9 ejercicios por módulo (3 por concepto) a partir de la plantilla del profesor; el código los valida (tipo y formato de la plantilla, concepto y vídeo del módulo, sin repetidos) y los guarda **en borrador**. Una persona los revisa y aprueba con Drizzle Studio. Instrucciones del agente en `agents/generador-ejercicios.md`. Probado con la IA real en la BBDD local: 4 módulos, dos ejecuciones seguidas sin fallos | PR_NUEVA |
 
 ### Decisiones tomadas
 
@@ -146,15 +147,22 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 | **Decisión de equipo (24/11):** los ejemplos del profesor son origen del seed en `data/ejemplos-profesor/`, como `catalog.json` | Escribirlos directamente en la BBDD | No hay panel de administración: el fichero es donde el profesor configura su módulo. Se importa a la BBDD y se borra cuando todo lea de ella |
 | Si una plantilla ya existe, el seed la deja **como dice el fichero** | No tocarla | Si el profesor cambia un ejemplo en el fichero, repetir el seed lo aplica |
 | Plantillas solo del curso de la demo | Una por cada curso | Los otros 5 cursos son de escaparate, sin clases ni conceptos |
+| Ejercicios: se desarrolla en la BBDD local y el banco se genera **una vez en Neon** y se revisa allí | Generar en local y copiarlo a Neon con un script | La IA no da dos veces lo mismo, y los borradores no los ve ningún alumno hasta que se aprueban: así no hay que copiar nada ni programar otra pieza |
+| Ejercicios: **9 por módulo** (3 por concepto), y si quedan menos de 6 válidos no se guarda nada | Más o menos | El #3 enseña entre 5 y 8 por intento: queda margen para descartar alguno al revisar |
+| Ejercicios: se aprueban con **Drizzle Studio** | Un script de revisión propio | No hay que programarlo y permite también corregir y borrar. En el prototipo revisamos nosotros; en producción, el profesor lo haría desde una pantalla de la app (añadido al SPEC) |
+| La IA puede ayudar a revisar, pero **aprueba una persona** | Que apruebe la IA | Si una IA genera y otra aprueba, la revisión humana se queda en el papel |
 
 ### Problemas y cómo los resolvimos
 
 - **Los subtítulos fallan en vocabulario técnico** («create Element», «dip» por `div`, la especificidad «0 10»). Lo probamos con el tutor: los fallos evidentes los corrige por contexto, pero no los que cambian el sentido. En el prototipo se acepta; para producción queda diseñado el revisor.
 - **El temario real ocupa menos de lo supuesto:** de unos 5.300 tokens (HTML) a unos 13.000 (JS), unos 8.000 de media. El SPEC suponía 12.000; se mantiene como hipótesis conservadora.
+- **El generador de ejercicios fallaba en un módulo:** el modelo olvidaba el concepto en los ejercicios que no eran de test y se descartaban. La causa: los ejemplos salen de la BBDD con las claves reordenadas (`jsonb`) y el modelo copia la forma de lo que ve. Ordenar las claves no bastó; se resolvió pidiendo los ejercicios **agrupados por concepto**.
+- **El modelo copia lo que ve en el prompt:** usaba un tipo de ejercicio no permitido porque aparecía en el formato de la respuesta, y copiaba los ejemplos del profesor. Se ajustaron las instrucciones. Aun así, en la revisión salieron soluciones equivocadas y enunciados ambiguos: la revisión humana hace falta de verdad.
+- Coste de las pruebas del generador: unos 0,09 € de IA para unas 10 ejecuciones.
 
 ### Pendiente
 
-- **#4:** generador de ejercicios a partir de las plantillas. Se desarrolla con la BBDD local; cuando funcione, se ejecuta una vez contra Neon y el banco se revisa allí.
-- **Neon:** ejecutar el seed (`SEED_PERMITIR_REMOTO=1 npm run db:seed`) para cargar las plantillas antes de generar los ejercicios.
+- **Neon, en este orden** (quien tenga la `DATABASE_URL`, ver `docs/bbdd/README.md`): el seed para cargar las plantillas, `npm run generar:ejercicios` y revisar y aprobar el banco.
+- **#3:** la corrección de las respuestas cortas tiene que ser flexible (mayúsculas, `;` final, `< >`), porque se comparan con la solución.
 - **#15:** regenerar el material de CSS, desfasado porque se generó con las transcripciones de prueba.
 - **#3:** ejercicios de verificación con corrección.

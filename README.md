@@ -44,6 +44,7 @@ Para probar desde tu teléfono en la misma red wifi, abre `http://<IP-de-tu-orde
 | `npm run db:seed` | Crea los datos de la demo (6 cursos publicados, 10 alumnos, profesor y admin, y las plantillas de ejercicios de `data/ejemplos-profesor/`). Se puede repetir. Solo en la BBDD local, salvo `SEED_PERMITIR_REMOTO=1` (ver [docs/bbdd](docs/bbdd/README.md#sembrar-los-datos-de-la-demo)) |
 | `npm run db:studio` | Abre Drizzle Studio para ver y editar los datos |
 | `npm run generar:material` | Genera el resumen y las tarjetas comunes de los módulos con transcripciones (`-- m2-css` para uno solo, `-- --forzar` para regenerar). Revisa el resultado y pon `"revisado": true` |
+| `npm run generar:ejercicios` | Genera con la IA el banco de ejercicios de cada módulo a partir de las plantillas del profesor y lo guarda **en borrador** en la BBDD (`-- m2-css` para uno solo, `-- --forzar` para regenerar los borradores). Revísalos con `npm run db:studio` y pasa los buenos a `aprobado` (ver [agents/generador-ejercicios.md](agents/generador-ejercicios.md)) |
 | `npm run generar:infografias` | Genera una infografía por concepto (mismas opciones). Revisa el resultado y pon `"revisado": true` |
 
 ### Volver a descargar las transcripciones

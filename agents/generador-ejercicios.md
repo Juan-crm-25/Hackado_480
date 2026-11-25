@@ -72,9 +72,31 @@ Se queda con **3 ejercicios por concepto** como mucho (9 en un módulo de 3 conc
 - **Revisión humana obligatoria:** todo se guarda como `borrador`. Una persona lo revisa y lo pasa a `aprobado`; los alumnos solo ven los aprobados. La IA puede ayudar a revisar, pero la decisión de aprobar es de una persona.
 - Si el módulo ya tiene ejercicios, no se regenera. Al forzarlo, solo se borran los borradores: los aprobados nunca.
 
+## Cómo se usa (prototipo)
+
+```bash
+npm run generar:ejercicios                  # todos los módulos que aún no tienen ejercicios
+npm run generar:ejercicios -- m2-css        # solo ese módulo
+npm run generar:ejercicios -- --forzar      # regenera: borra los borradores (nunca los aprobados)
+```
+
+1. Necesita las plantillas en la BBDD (`npm run db:seed`) y la IA configurada en `.env.local` (`AI_BASE_URL`, `AI_API_KEY` y `AI_MODEL_GENERADOR`). En modo simulado no genera nada.
+2. **Revisión:** `npm run db:studio` → tabla `ejercicio`. En el prototipo el profesor somos nosotros: se lee cada borrador, se corrige o se borra si hace falta, y se cambia `estado` a `aprobado` en los buenos. Hay que comprobar sobre todo que la solución es correcta, que el enunciado no es ambiguo y que el minuto del vídeo es el que explica lo que pregunta.
+3. Solo escribe en la BBDD local, salvo `GENERAR_PERMITIR_REMOTO=1`. Cómo generar el banco en Neon: [`docs/bbdd/README.md`](../docs/bbdd/README.md#generar-los-ejercicios).
+
+## Lo que aprendimos al probarlo
+
+- **El modelo olvidaba `conceptoId`** en los ejercicios que no eran de test, y se descartaban. Los ejemplos salen de la BBDD (`jsonb`) con las claves reordenadas y el modelo copia la forma de lo que ve. Por eso la respuesta va **agrupada por concepto** y los ejemplos se le dan con las claves siempre en el mismo orden.
+- **Copia lo que ve en el prompt:** con un ejercicio de respuesta corta en el formato de la respuesta, lo usaba aunque el módulo no lo permitiera. El formato no muestra tipos concretos.
+- **La revisión humana hace falta de verdad:** en las pruebas salieron ejercicios con la solución equivocada (un selector con la especificidad mal calculada), enunciados ambiguos y minutos que no correspondían. Las reglas del prompt los reducen, pero no los evitan.
+- Coste de las pruebas: unos 0,09 € para unas 10 ejecuciones. Generar un módulo cuesta menos de un céntimo.
+
 ## En producción
 
-El profesor no usaría herramientas de la BBDD: revisaría los borradores desde **una pantalla de la app**, solo de los cursos que enseña (`requerirProfesorDelCurso()`), con cada ejercicio legible (concepto, vídeo y minuto con enlace, solución o rúbrica) y los botones aprobar, corregir y descartar. Por debajo cambia la misma columna `estado`. El generador se lanzaría solo, en segundo plano, al guardar la plantilla o subir vídeos nuevos al módulo.
+- **Revisión desde la app:** el profesor no usaría herramientas de la BBDD. Revisaría los borradores desde **una pantalla de la app**, solo de los cursos que enseña (`requerirProfesorDelCurso()`), con cada ejercicio legible (concepto, vídeo y minuto con enlace, solución o rúbrica) y los botones aprobar, corregir y descartar. Por debajo cambia la misma columna `estado`.
+- **Pedir otros nuevos:** un botón «Generar otros» en esa pantalla, para regenerar los borradores del módulo (lo que hoy hace `--forzar`) o **solo uno**, con un ejercicio nuevo del mismo concepto. El profesor puede decir por qué no le gusta («demasiado fácil», «la solución es ambigua»): ese comentario y los ejercicios ya aprobados se añaden al prompt, para que la IA no los repita y ajuste el nivel. Si los fallos se repiten, lo mejor es mejorar la plantilla (ejemplos e indicaciones) desde la misma pantalla. Con un límite diario por profesor, como el del tutor para los alumnos.
+- **En segundo plano:** el generador se lanzaría solo al guardar la plantilla o subir vídeos nuevos al módulo, nunca mientras alguien espera una página.
+- **Temario desde la BBDD:** hoy el temario sale de `data/transcripciones/`, como en el material. Cuando la tabla `documento` tenga las transcripciones, se leerá de ahí sin cambiar el resto del generador.
 
 ## Instrucciones (prompt de sistema)
 
