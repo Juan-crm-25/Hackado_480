@@ -86,26 +86,28 @@ Eres un profesor que prepara los ejercicios de verificación del módulo «{{mod
 Conceptos del módulo (su identificador va en "conceptoId"):
 {{conceptos}}
 
-Tipos de ejercicio que quiere el profesor: {{tipos}}. No uses ningún otro.
+Tipos de ejercicio que quiere el profesor: {{tipos}}. Usa SOLO estos tipos, aunque más abajo aparezcan otros en las reglas o en el formato de la respuesta.
 
-Ejemplos del profesor. Copia su estilo, su nivel y su formato, pero no los repitas:
+Ejemplos del profesor. Copia su estilo, su nivel y su formato, pero NO los copies ni los cambies un poco: pregunta otras cosas del temario.
 {{ejemplos}}
 
 Indicaciones del profesor:
 {{indicaciones}}
 
-Genera {{total}} ejercicios: 3 por cada concepto, repartidos entre los tipos permitidos. Cada ejercicio comprueba UNA idea concreta que se explica en el TEMARIO de abajo. Usa SOLO la información del temario: no preguntes nada que no se explique en él.
+Genera {{total}} ejercicios: 3 por cada concepto, repartidos entre los tipos permitidos. Cada ejercicio comprueba UNA idea concreta que se explica en el TEMARIO de abajo, y cada uno una idea DISTINTA: no preguntes lo mismo con otro tipo de ejercicio. Usa SOLO la información del temario: no preguntes nada que no se explique en él.
 
 Agrupa los ejercicios por concepto: un grupo por cada concepto de la lista, con su "conceptoId" y sus 3 ejercicios. TODOS los ejercicios llevan "tipo", "enunciado" y "fuente", sea cual sea su tipo. Además, cada tipo lleva sus propios campos:
 - "test": "opciones" con 3 o 4 respuestas distintas y una sola correcta; "solucion" es el número de la correcta, empezando en 0. Las incorrectas deben ser errores creíbles.
-- "respuesta_corta": "solucion" es la respuesta exacta y corta, en texto. Pide algo que tenga una única respuesta.
+- "respuesta_corta": "solucion" es una sola palabra, número o valor (por ejemplo: margin, 48px, addEventListener), sin código alrededor, sin punto y coma y sin nombres de variables. El enunciado dice exactamente qué hay que escribir y tiene una única respuesta posible.
 - "abierta": "rubrica" dice qué tiene que explicar el alumno y cuándo la respuesta es completa, parcial o incorrecta.
 - "codigo": pide un código corto que quepa en el móvil. "rubrica" dice qué tiene que tener el código; "solucion" es un código de referencia.
 
-En cada ejercicio, indica en "fuente" el vídeo y el segundo donde se explica lo que pregunta, usando las marcas [vídeo @segundo] del temario. Es el momento al que se enviará al alumno si falla. No inventes fuentes.
+En cada ejercicio, indica en "fuente" el vídeo y el segundo donde se explica JUSTO lo que pregunta, usando las marcas [vídeo @segundo] del temario. Es el momento al que se enviará al alumno si falla: no pongas el principio del vídeo ni el segundo de otro ejercicio si la idea se explica en otro momento. No inventes fuentes.
+
+Antes de responder, revisa cada ejercicio: la solución tiene que ser correcta según el temario, el enunciado tiene que ser coherente con ella (si pides un formato, la solución lo cumple) y en los de test solo una opción puede ser correcta.
 
 Responde SOLO con un objeto JSON, sin texto antes ni después:
-{"conceptos": [{"conceptoId": "...", "ejercicios": [{"tipo": "test", "enunciado": "...", "opciones": ["...", "...", "..."], "solucion": 0, "fuente": {"videoId": "v04", "segundo": 94}}, {"tipo": "respuesta_corta", "enunciado": "...", "solucion": "...", "fuente": {"videoId": "v04", "segundo": 150}}, {"tipo": "abierta", "enunciado": "...", "rubrica": "...", "fuente": {"videoId": "v05", "segundo": 38}}]}]}
+{"conceptos": [{"conceptoId": "...", "ejercicios": [{"tipo": "...", "enunciado": "...", "fuente": {"videoId": "v04", "segundo": 94}, ...y los campos de su tipo...}]}]}
 
 TEMARIO
 {{temario}}
