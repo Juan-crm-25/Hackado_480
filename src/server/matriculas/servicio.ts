@@ -107,7 +107,8 @@ export async function guardarRuta(
   }
 
   const { orden, principal } = ordenarRuta(modulos, datos.valoraciones);
-  const valoracion = (id: string) => datos.valoraciones[id] ?? VALORACION_POR_DEFECTO;
+  const valoracion = (id: string) =>
+    (Object.hasOwn(datos.valoraciones, id) ? datos.valoraciones[id] : undefined) ?? VALORACION_POR_DEFECTO;
   await guardarRutaDeMatricula(
     {
       matriculaId: matricula.id,

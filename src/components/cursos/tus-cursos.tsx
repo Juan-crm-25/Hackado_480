@@ -25,7 +25,7 @@ export function ListaTusCursos({ cursos }: { cursos: CursoConProgreso[] }) {
           <Card className="flex-1 gap-0 p-0">
             <Link
               href={`/cursos/${c.slug}`}
-              className="flex flex-1 flex-col gap-3 rounded-lg p-5 outline-none transition-colors duration-150 hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring"
+              className="flex flex-1 flex-col gap-3 rounded-lg p-5 outline-none transition-colors duration-150 hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 flex-col gap-0.5">
@@ -45,7 +45,7 @@ export function ListaTusCursos({ cursos }: { cursos: CursoConProgreso[] }) {
             {!c.personalizada && (
               <Link
                 href={`/cursos/${c.slug}/ruta`}
-                className="flex min-h-11 items-center gap-2 border-t px-5 py-2 text-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring"
+                className="flex min-h-11 items-center gap-2 border-t px-5 py-2 text-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
               >
                 <Route className="size-4" aria-hidden />
                 Personaliza tu ruta

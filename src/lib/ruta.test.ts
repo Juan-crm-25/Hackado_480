@@ -33,6 +33,15 @@ describe("ordenarRuta", () => {
     expect(principal?.id).toBe("html");
   });
 
+  it("un módulo llamado como una propiedad de objeto («constructor») cuenta como «Me interesa»", () => {
+    const raros = [
+      { id: "constructor", titulo: "Constructor", ordenSugerido: 2 },
+      { id: "a", titulo: "A", ordenSugerido: 1 },
+    ];
+    const { orden } = ordenarRuta(raros, { a: "sabe" });
+    expect(ids(orden)).toEqual(["constructor", "a"]);
+  });
+
   it("sin módulos no hay principal", () => {
     expect(ordenarRuta([], {})).toEqual({ orden: [], principal: null });
   });
@@ -64,9 +73,14 @@ describe("recomendacionTutor", () => {
     ]);
   });
 
-  it("si nada destaca, empieza por el primer paso del curso", () => {
+  it("si nada destaca, empieza por el primer módulo de su ruta", () => {
     const { orden } = ordenarRuta(MODULOS, {});
-    expect(recomendacionTutor(orden, {})[0]).toBe("Empezamos por «HTML», el primer paso del curso.");
+    expect(recomendacionTutor(orden, {})[0]).toBe("Empezamos por «HTML»: es el primer módulo de tu ruta.");
+  });
+
+  it("si el primer módulo del curso ya lo sabe, no lo llama «primer paso del curso»", () => {
+    const { orden } = ordenarRuta(MODULOS, { html: "sabe" });
+    expect(recomendacionTutor(orden, { html: "sabe" })[0]).toBe("Empezamos por «CSS»: es el primer módulo de tu ruta.");
   });
 
   it("un solo módulo dominado va en singular", () => {

@@ -18,8 +18,9 @@ const PRIORIDAD: Record<Valoracion, number> = { mucho: 0, interesa: 1, sabe: 2 }
 
 type ModuloOrdenable = { id: string; ordenSugerido: number };
 
-const valoracionDe = (valoraciones: Partial<Record<string, Valoracion>>, id: string) =>
-  valoraciones[id] ?? VALORACION_POR_DEFECTO;
+/** Valoración del módulo; sin valorar, «Me interesa». Solo propiedades propias (un slug «constructor» no rompe nada). */
+const valoracionDe = (valoraciones: Partial<Record<string, Valoracion>>, id: string): Valoracion =>
+  (Object.hasOwn(valoraciones, id) ? valoraciones[id] : undefined) ?? VALORACION_POR_DEFECTO;
 
 /**
  * Ordena los módulos: primero «Me interesa mucho», después «Me interesa» y al final «Ya lo sé».
@@ -76,7 +77,7 @@ export function recomendacionTutor(
   const [primero, ...otrosMucho] = de("mucho");
   const frases = primero
     ? [`Empezamos por «${primero.titulo}» porque es lo que más te interesa.`]
-    : [`Empezamos por «${orden[0].titulo}», el primer paso del curso.`];
+    : [`Empezamos por «${orden[0].titulo}»: es el primer módulo de tu ruta.`];
 
   if (otrosMucho.length > 0) {
     const varios = otrosMucho.length > 1;

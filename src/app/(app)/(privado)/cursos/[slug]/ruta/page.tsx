@@ -65,7 +65,11 @@ async function ContenidoRuta({ params }: { params: PageProps<"/cursos/[slug]/rut
           bloquea: podrás abrir cualquier módulo cuando quieras.
         </p>
       </div>
-      <ValorarModulos slug={ruta.curso.slug} modulos={ruta.modulos} />
+      {ruta.modulos.length === 0 ? (
+        <EstadoVacio>Este curso todavía no tiene módulos: no hay nada que ordenar.</EstadoVacio>
+      ) : (
+        <ValorarModulos slug={ruta.curso.slug} modulos={ruta.modulos} />
+      )}
     </>
   );
 }
