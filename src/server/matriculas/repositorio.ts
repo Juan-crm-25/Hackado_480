@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, count, eq, inArray } from "drizzle-orm";
+import { and, asc, count, eq, inArray, sql } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import { categoria, curso, matricula, modulo, progreso } from "@/lib/db/schema";
 import { ESTADOS_COMPLETADOS } from "@/lib/progreso";
@@ -11,6 +11,8 @@ export type FilaCursoDelUsuario = {
   rolEnCurso: "alumno" | "profesor";
   totalModulos: number;
   modulosCompletados: number;
+  /** ¿Ha personalizado ya su ruta en este curso? */
+  personalizada: boolean;
 };
 
 /**
@@ -25,6 +27,7 @@ export async function leerCursosDelUsuario(usuarioId: string, db: Db): Promise<F
       titulo: curso.titulo,
       categoria: categoria.nombre,
       rolEnCurso: matricula.rolEnCurso,
+      personalizada: sql<boolean>`coalesce(array_length(${matricula.ordenModulos}, 1), 0) > 0`,
     })
     .from(matricula)
     .innerJoin(curso, eq(curso.id, matricula.cursoId))
@@ -70,4 +73,70 @@ export async function existeMatriculaDelUsuario(usuarioId: string, slug: string,
     .where(and(eq(matricula.usuarioId, usuarioId), eq(curso.slug, slug)))
     .limit(1);
   return fila !== undefined;
+}
+
+/** Curso por su slug (publicado o no: quien ya lo tiene sigue viéndolo), o null. */
+export async function leerCursoPorSlug(slug: string, db: Db) {
+  const [fila] = await db.select({ id: curso.id, slug: curso.slug, titulo: curso.titulo }).from(curso).where(eq(curso.slug, slug)).limit(1);
+  return fila ?? null;
+}
+
+/** Matrícula enlazada del usuario en el curso, con su ruta personal, o null. */
+export async function leerMatriculaDelUsuario(usuarioId: string, cursoId: string, db: Db) {
+  const [fila] = await db
+    .select({ id: matricula.id, ordenModulos: matricula.ordenModulos, moduloPrincipalId: matricula.moduloPrincipalId })
+    .from(matricula)
+    .where(and(eq(matricula.usuarioId, usuarioId), eq(matricula.cursoId, cursoId)))
+    .limit(1);
+  return fila ?? null;
+}
+
+/** Módulos del curso en el orden sugerido por el profesor. */
+export async function leerModulosDelCurso(cursoId: string, db: Db) {
+  return db
+    .select({ uuid: modulo.id, id: modulo.slug, titulo: modulo.titulo, descripcion: modulo.descripcion, ordenSugerido: modulo.ordenSugerido })
+    .from(modulo)
+    .where(eq(modulo.cursoId, cursoId))
+    .orderBy(asc(modulo.ordenSugerido), asc(modulo.slug));
+}
+
+/** Progreso del usuario en los módulos del curso, con el slug de cada módulo. */
+export async function leerProgresoDelCurso(usuarioId: string, cursoId: string, db: Db) {
+  return db
+    .select({
+      moduloId: modulo.slug,
+      estado: progreso.estado,
+      aciertosPorConcepto: progreso.aciertosPorConcepto,
+      actualizado: progreso.actualizado,
+    })
+    .from(progreso)
+    .innerJoin(modulo, eq(modulo.id, progreso.moduloId))
+    .where(and(eq(progreso.usuarioId, usuarioId), eq(modulo.cursoId, cursoId)));
+}
+
+/**
+ * Guarda la ruta personal en la matrícula y marca como dominados los módulos que ya sabe, en una transacción.
+ * Un módulo solo pasa a dominado si estaba pendiente (o sin progreso): nunca se rebaja un progreso real.
+ */
+export async function guardarRutaDeMatricula(
+  datos: { matriculaId: string; usuarioId: string; orden: string[]; principalId: string | null; dominados: string[] },
+  db: Db,
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx
+      .update(matricula)
+      .set({ ordenModulos: datos.orden, moduloPrincipalId: datos.principalId })
+      .where(eq(matricula.id, datos.matriculaId));
+
+    if (datos.dominados.length > 0) {
+      await tx
+        .insert(progreso)
+        .values(datos.dominados.map((moduloId) => ({ usuarioId: datos.usuarioId, moduloId, estado: "dominado" as const })))
+        .onConflictDoUpdate({
+          target: [progreso.usuarioId, progreso.moduloId],
+          set: { estado: "dominado", actualizado: sql`now()` },
+          setWhere: eq(progreso.estado, "pendiente"),
+        });
+    }
+  });
 }

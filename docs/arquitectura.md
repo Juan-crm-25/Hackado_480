@@ -161,6 +161,7 @@ Estado: ✅ existe · 🔁 existe, se migrará a la BBDD y a esta estructura · 
 | `GET/POST /api/auth/[...all]` | publico | auth (Better Auth: registro, login, Google, logout, sesión) | ⬜ |
 | `POST /api/auth/login`, `/registro`, `/logout` | publico | auth (login simulado del MVP, ver `src/server/auth/README.md`) | ✅ |
 | `POST /api/pagos/checkout`, `/confirmar` | usuario | pagos (pago simulado del MVP, ver `src/server/pagos/README.md`) | ✅ |
+| `GET/PUT /api/cursos/:slug/ruta` | usuario (con el curso) | matriculas (ruta personalizada: valorar módulos y reordenar) | ✅ |
 | `GET /api/yo` | usuario | usuarios (perfil, rol, puntos e insignias) | ⬜ |
 | `PATCH /api/yo` | usuario | usuarios | ⬜ |
 | `GET /api/usuarios` · `PATCH /api/usuarios/:id/rol` | admin | usuarios | ⬜ |
