@@ -31,7 +31,7 @@ class YaLoTienes extends Error {}
 
 /**
  * Pago simulado: al entrar crea la sesión de pago (POST /api/pagos/checkout, con el precio de la BBDD);
- * al pagar la confirma (POST /api/pagos/confirmar) y muestra el recibo.
+ * al pagar la confirma (POST /api/pagos/confirmar) y muestra el recibo, que pasa a ser el título de la pantalla.
  */
 export function Checkout({ curso, precioCentimos }: { curso: CursoDelPedido; precioCentimos: number }) {
   const router = useRouter();
@@ -61,39 +61,43 @@ export function Checkout({ curso, precioCentimos }: { curso: CursoDelPedido; pre
       setEstado({ fase: "completado", pago });
       router.refresh(); // «Tus cursos» y la ficha del curso ya lo muestran comprado
     } catch (e) {
-      setEstado({ fase: "listo", sesion, procesando: false, error: mensajeDeError(e) });
+      if (e instanceof YaLoTienes) setEstado({ fase: "ya-lo-tienes" });
+      else setEstado({ fase: "listo", sesion, procesando: false, error: mensajeDeError(e) });
     }
   }
 
   if (estado.fase === "completado") return <PagoCompletado pago={estado.pago} />;
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start lg:gap-10">
-      <div className="lg:order-2 lg:sticky lg:top-6">
-        <ResumenPedido curso={curso} precioCentimos={precioCentimos} />
+    <>
+      <h1 className="text-3xl leading-tight font-bold md:text-4xl">Finalizar compra</h1>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start lg:gap-10">
+        <div className="lg:order-2 lg:sticky lg:top-6">
+          <ResumenPedido curso={curso} precioCentimos={precioCentimos} />
+        </div>
+        <div className="flex flex-col gap-4 lg:order-1">
+          {estado.fase === "preparando" && <EstadoCargando texto="Preparando tu pago…" />}
+          {estado.fase === "error" && <EstadoError>{estado.mensaje}</EstadoError>}
+          {estado.fase === "ya-lo-tienes" && (
+            <div className="flex flex-col items-start gap-3 rounded-lg bg-muted p-4 text-sm">
+              <p>Ya tienes este curso: no hace falta que lo vuelvas a comprar.</p>
+              <Link href="/dashboard" className={buttonVariants({ variant: "accent" })}>
+                Ir a Tus cursos
+              </Link>
+            </div>
+          )}
+          {estado.fase === "listo" && (
+            <>
+              {estado.error && <EstadoError>{estado.error}</EstadoError>}
+              <FormularioPago
+                precioCentimos={estado.sesion.amount_total}
+                procesando={estado.procesando}
+                onPagar={(datos) => pagar(estado.sesion, datos)}
+              />
+            </>
+          )}
+        </div>
       </div>
-      <div className="flex flex-col gap-4 lg:order-1">
-        {estado.fase === "preparando" && <EstadoCargando texto="Preparando tu pago…" />}
-        {estado.fase === "error" && <EstadoError>{estado.mensaje}</EstadoError>}
-        {estado.fase === "ya-lo-tienes" && (
-          <div className="flex flex-col items-start gap-3 rounded-lg bg-muted p-4 text-sm">
-            <p>Ya tienes este curso: no hace falta que lo vuelvas a comprar.</p>
-            <Link href="/dashboard" className={buttonVariants({ variant: "accent" })}>
-              Ir a Tus cursos
-            </Link>
-          </div>
-        )}
-        {estado.fase === "listo" && (
-          <>
-            {estado.error && <EstadoError>{estado.error}</EstadoError>}
-            <FormularioPago
-              precioCentimos={estado.sesion.amount_total}
-              procesando={estado.procesando}
-              onPagar={(datos) => pagar(estado.sesion, datos)}
-            />
-          </>
-        )}
-      </div>
-    </div>
+    </>
   );
 }

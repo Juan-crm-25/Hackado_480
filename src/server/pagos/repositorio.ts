@@ -50,13 +50,13 @@ export async function crearPedido(
   return fila;
 }
 
-/** Pedido de una sesión de pago con su curso, o null. */
+/** Pedido de una sesión de pago con su curso (solo si el curso sigue publicado), o null. */
 export async function leerPedidoPorSesion(stripeSessionId: string, db: Db) {
   const [fila] = await db
     .select({ pedido, curso: { slug: curso.slug, titulo: curso.titulo } })
     .from(pedido)
     .innerJoin(curso, eq(curso.id, pedido.cursoId))
-    .where(eq(pedido.stripeSessionId, stripeSessionId))
+    .where(and(eq(pedido.stripeSessionId, stripeSessionId), eq(curso.publicado, true)))
     .limit(1);
   return fila ?? null;
 }
@@ -67,13 +67,27 @@ export async function leerPedidoPorSesion(stripeSessionId: string, db: Db) {
  * - La matrícula va al email del comprador; `ON CONFLICT (curso_id, email) DO NOTHING`.
  * - `usuarioId` enlaza la matrícula a la cuenta que paga (el pago simulado lo hace la propia cuenta con sesión).
  *   El webhook de Stripe, sin sesión, lo dejará vacío y el enlace seguirá la regla del email verificado.
+ * - Si ese email ya tiene el curso, NO marca el pedido como pagado (se deshace todo) y devuelve `ya-matriculado`:
+ *   nunca hay un pedido pagado sin su matrícula.
  * Devuelve null si no existe el pedido o no se puede pagar (por ejemplo, fallido).
  */
 export async function marcarPagadoYMatricular(
   datos: { stripeSessionId: string; paymentIntent: string; usuarioId?: string },
   db: Db,
-): Promise<{ pedido: Pedido; nuevo: boolean } | null> {
-  return db.transaction(async (tx) => {
+): Promise<{ pedido: Pedido; nuevo: boolean } | "ya-matriculado" | null> {
+  try {
+    return await transaccionPago(datos, db);
+  } catch (error) {
+    if (error instanceof YaMatriculado) return "ya-matriculado";
+    throw error;
+  }
+}
+
+/** Se lanza dentro de la transacción para deshacerla cuando el comprador ya tenía el curso. */
+class YaMatriculado extends Error {}
+
+function transaccionPago(datos: { stripeSessionId: string; paymentIntent: string; usuarioId?: string }, db: Db) {
+  return db.transaction(async (tx): Promise<{ pedido: Pedido; nuevo: boolean } | null> => {
     const [pagado] = await tx
       .update(pedido)
       .set({ estado: "pagado", pagadoEn: sql`now()`, stripePaymentIntent: datos.paymentIntent })
@@ -86,7 +100,7 @@ export async function marcarPagadoYMatricular(
     }
 
     const [comprador] = await tx.select({ email: usuario.email }).from(usuario).where(eq(usuario.id, pagado.usuarioId));
-    await tx
+    const nuevas = await tx
       .insert(matricula)
       .values({
         cursoId: pagado.cursoId,
@@ -96,7 +110,9 @@ export async function marcarPagadoYMatricular(
         origen: "compra",
         pedidoId: pagado.id,
       })
-      .onConflictDoNothing({ target: [matricula.cursoId, matricula.email] });
+      .onConflictDoNothing({ target: [matricula.cursoId, matricula.email] })
+      .returning({ id: matricula.id });
+    if (nuevas.length === 0) throw new YaMatriculado();
 
     return { pedido: pagado, nuevo: true };
   });

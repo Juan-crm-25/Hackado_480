@@ -8,8 +8,9 @@ import { NOMBRE_METODO, type IntentoPago } from "@/lib/pagos";
 
 const FECHA = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Madrid" });
 
-/** Confirmación del pago con su recibo. */
+/** Confirmación del pago (o de la inscripción gratis) con su recibo. Es el título de la pantalla tras pagar. */
 export function PagoCompletado({ pago }: { pago: IntentoPago }) {
+  const gratis = pago.amount === 0;
   const filas = [
     { etiqueta: "Curso", valor: pago.curso.titulo },
     { etiqueta: "Importe", valor: formatoPrecio(pago.amount) },
@@ -28,7 +29,7 @@ export function PagoCompletado({ pago }: { pago: IntentoPago }) {
           <CircleCheck className="size-9" />
         </span>
         <div className="flex flex-col gap-2" role="status">
-          <h2 className="text-3xl leading-tight font-bold">¡Pago completado!</h2>
+          <h1 className="text-3xl leading-tight font-bold">{gratis ? "¡Ya estás dentro!" : "¡Pago completado!"}</h1>
           <p className="text-muted-foreground">Ya tienes acceso a «{pago.curso.titulo}». Te esperamos en clase.</p>
         </div>
 

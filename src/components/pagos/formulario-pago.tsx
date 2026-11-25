@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, FlaskConical, Lock, Nfc, Smartphone, Wallet, type LucideIcon } from "lucide-react";
+import { CircleCheck, CreditCard, FlaskConical, Lock, Nfc, Smartphone, Wallet, type LucideIcon } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -73,8 +73,10 @@ export function FormularioPago({
                 <ToggleGroupItem
                   key={id}
                   value={id}
-                  className="h-auto min-h-16 flex-col gap-1.5 border border-border px-2 py-3 text-center text-sm whitespace-normal text-muted-foreground aria-pressed:border-primary aria-pressed:bg-muted aria-pressed:text-foreground"
+                  className="relative h-auto min-h-16 flex-col gap-1.5 border border-border px-2 py-3 text-center text-sm whitespace-normal text-muted-foreground aria-pressed:border-primary aria-pressed:bg-muted aria-pressed:text-foreground"
                 >
+                  {/* La marca de elegido no depende solo del color (docs/estilo.md). */}
+                  {metodo === id && <CircleCheck className="absolute top-1.5 right-1.5 size-4 text-foreground" aria-hidden />}
                   <Icono className="size-5" aria-hidden />
                   {nombre}
                 </ToggleGroupItem>

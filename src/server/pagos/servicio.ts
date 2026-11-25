@@ -62,13 +62,15 @@ export async function crearCheckout(usuario: UsuarioSesion, datos: DatosCheckout
 
 /**
  * La función que reutilizará el webhook de Stripe: marca el pedido como pagado y crea la matrícula,
- * en una transacción e idempotente. Lanza 404 si el pedido no existe o no se puede pagar.
+ * en una transacción e idempotente. Lanza 404 si el pedido no existe o no se puede pagar, y 409 (sin marcar
+ * el pedido como pagado) si el comprador ya tenía el curso.
  */
 export async function confirmarPagoYMatricular(
   datos: { stripeSessionId: string; paymentIntent: string; usuarioId?: string },
   db: Db = getDb(),
 ): Promise<{ pedido: Pedido; nuevo: boolean }> {
   const resultado = await marcarPagadoYMatricular(datos, db);
+  if (resultado === "ya-matriculado") throw conflicto("Ya tienes este curso");
   if (!resultado) throw noEncontrado("No encontramos ese pago");
   return resultado;
 }

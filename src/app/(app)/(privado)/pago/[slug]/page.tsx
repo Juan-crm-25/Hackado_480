@@ -36,7 +36,7 @@ async function ContenidoPago({ params }: { params: PageProps<"/pago/[slug]">["pa
   const { curso } = resultado;
   return (
     <>
-      <div className="flex flex-col gap-2">
+      <div>
         <Link
           href={`/cursos/${curso.slug}`}
           className="inline-flex min-h-11 w-fit items-center gap-1 rounded-sm text-sm font-medium text-muted-foreground transition-colors duration-150 ease-in-out hover:text-foreground"
@@ -44,7 +44,6 @@ async function ContenidoPago({ params }: { params: PageProps<"/pago/[slug]">["pa
           <ArrowLeft className="size-4" aria-hidden />
           Volver al curso
         </Link>
-        <h1 className="text-3xl leading-tight font-bold md:text-4xl">Finalizar compra</h1>
       </div>
       <Checkout
         curso={{ slug: curso.slug, titulo: curso.titulo, categoria: curso.categoria.nombre, numModulos: curso.numModulos }}

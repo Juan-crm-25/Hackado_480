@@ -153,6 +153,33 @@ describe.skipIf(!hayBd)("servicio de pagos simulados (con BBDD real)", () => {
       expect(p.estado).toBe("pendiente");
     });
 
+    it("si ya tiene el curso al confirmar, responde 409, el pedido sigue pendiente y no hay matrícula nueva", async () => {
+      const { usuario: tarde } = await registrar({ nombre: "Tarde", email: "tarde@demo.test", contrasena: "segura123" }, bd.db);
+      const sesion = await crearCheckout(tarde, { curso: "python-desde-cero" }, bd.db);
+      // Entre el checkout y la confirmación le llega el curso por otra vía (otro pedido ya pagado).
+      const otraSesion = await crearCheckout(tarde, { curso: "python-desde-cero" }, bd.db);
+      await bd.db.update(pedido).set({ importeCentimos: 1 }).where(eq(pedido.stripeSessionId, otraSesion.id));
+      const nueva = await crearCheckout(tarde, { curso: "python-desde-cero" }, bd.db);
+      await confirmarPago(tarde, { sesion: nueva.id, metodo: "bizum" }, bd.db);
+
+      const error = await errorDe(confirmarPago(tarde, { sesion: sesion.id, metodo: "bizum" }, bd.db));
+      expect(error.codigo).toBe("CONFLICTO");
+      expect(error.message).toBe("Ya tienes este curso");
+      const [p] = await bd.db.select().from(pedido).where(eq(pedido.stripeSessionId, sesion.id));
+      expect(p.estado).toBe("pendiente");
+      expect(await bd.db.select().from(matricula).where(eq(matricula.pedidoId, p.id))).toEqual([]);
+    });
+
+    it("si el curso se despublica entre el checkout y la confirmación, responde 404 y no matricula", async () => {
+      const sesion = await crearCheckout(otro, { curso: "ia-generativa-dia-a-dia" }, bd.db);
+      await bd.db.update(curso).set({ publicado: false }).where(eq(curso.slug, "ia-generativa-dia-a-dia"));
+      const error = await errorDe(confirmarPago(otro, { sesion: sesion.id, metodo: "bizum" }, bd.db));
+      await bd.db.update(curso).set({ publicado: true }).where(eq(curso.slug, "ia-generativa-dia-a-dia"));
+      expect(error.codigo).toBe("NO_ENCONTRADO");
+      const [p] = await bd.db.select().from(pedido).where(eq(pedido.stripeSessionId, sesion.id));
+      expect(p.estado).toBe("pendiente");
+    });
+
     it("una sesión que no existe responde 404", async () => {
       const error = await errorDe(confirmarPago(comprador, { sesion: "cs_test_noexiste", metodo: "bizum" }, bd.db));
       expect(error.codigo).toBe("NO_ENCONTRADO");

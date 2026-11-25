@@ -31,6 +31,10 @@ describe("FormularioPago", () => {
     for (const metodo of ["Tarjeta", "PayPal", "Bizum", "Apple Pay / Google Pay"]) expect(html).toContain(metodo);
   });
 
+  it("el método elegido lleva una marca de verificación, no solo color", () => {
+    expect(html.match(/lucide-circle-check/g)).toHaveLength(1);
+  });
+
   it("con tarjeta pide número, caducidad, CVC y titular con su autocompletado", () => {
     for (const ac of ["cc-number", "cc-exp", "cc-csc", "cc-name"]) expect(html).toMatch(new RegExp(`autocomplete="${ac}"`, "i"));
     expect(html).toContain("Número de la tarjeta");
@@ -71,7 +75,7 @@ describe("PagoCompletado", () => {
   const html = renderToStaticMarkup(<PagoCompletado pago={pago} />);
 
   it("confirma el pago con el recibo: curso, importe, método y número de pedido", () => {
-    expect(html).toContain("¡Pago completado!");
+    expect(html).toMatch(/<h1[^>]*>¡Pago completado!<\/h1>/);
     expect(html).toContain("Python desde cero");
     expect(html).toContain("49,00");
     expect(html).toContain("Bizum");
@@ -81,5 +85,13 @@ describe("PagoCompletado", () => {
   it("lleva a «Tus cursos» como acción destacada y al curso", () => {
     expect(html).toMatch(/<a[^>]*href="\/dashboard"[^>]*bg-brand[^>]*>|<a[^>]*bg-brand[^>]*href="\/dashboard"/);
     expect(html).toContain('href="/cursos/python-desde-cero"');
+  });
+
+  it("un curso gratis no habla de pago", () => {
+    const gratis = renderToStaticMarkup(
+      <PagoCompletado pago={{ ...pago, amount: 0, payment_method_types: ["gratis"] }} />,
+    );
+    expect(gratis).toMatch(/<h1[^>]*>¡Ya estás dentro!<\/h1>/);
+    expect(gratis).not.toContain("Pago completado");
   });
 });
