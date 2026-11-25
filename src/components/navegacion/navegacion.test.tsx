@@ -42,8 +42,8 @@ describe("barra lateral (web)", () => {
 
   it("lleva la marca, que enlaza con la home pública", () => {
     const html = renderToStaticMarkup(<BarraLateral pathname="/" />);
-    // La marca (<Marca />) lleva el guion decorativo data-guion; su enlace va a la home pública.
-    expect(html).toMatch(/<a[^>]*href="\/"[^>]*>(?:(?!<\/a>).)*data-guion/);
+    // La marca (<Marca />) se lee «480 Academy» y sus palabras rotan (data-rotacion); su enlace va a la home pública.
+    expect(html).toMatch(/<a[^>]*href="\/"[^>]*>(?:(?!<\/a>).)*480 Academy(?:(?!<\/a>).)*data-rotacion/);
   });
 
   it("en web el perfil también está en la barra lateral", () => {
