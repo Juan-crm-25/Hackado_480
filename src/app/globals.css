@@ -4,6 +4,17 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Guion de la marca «480_Academy»: cambia de color de golpe cada segundo (ver src/components/marca.tsx). */
+@theme {
+  --animate-marca: marca 3s step-end infinite;
+  @keyframes marca {
+    0% { background-color: var(--brand-cyan); }
+    33.333% { background-color: var(--brand-coral); }
+    66.666% { background-color: var(--brand); }
+    100% { background-color: var(--brand-cyan); }
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
