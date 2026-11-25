@@ -2,12 +2,12 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { AyudaBd } from "@/components/cursos/ayuda-bd";
+import { TarjetaModulo } from "@/components/cursos/tarjeta-modulo";
 import { ListaTusCursos } from "@/components/cursos/tus-cursos";
-import { Route, Sparkles } from "lucide-react";
+import { Route } from "lucide-react";
 import { EstadoCargando, EstadoError, EstadoVacio } from "@/components/estado";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { estadoDeModulo, etiquetaEstado, moduloParaSeguir } from "@/lib/estado-modulos";
 import { aplicarOrden } from "@/lib/ruta";
 import { requerirUsuarioActual } from "@/server/auth/usuario-actual";
@@ -17,8 +17,6 @@ import { cargarAvanceDelCurso, cargarCursosDelUsuario, tieneElCurso } from "@/se
 // Enlace de texto con zona táctil de 44 px (docs/estilo.md, apartado 7).
 const CLASE_ENLACE = "inline-flex min-h-11 items-center rounded-sm underline underline-offset-4";
 
-// Color de identidad de cada módulo según su orden: solo decorativo (docs/estilo.md, «Color con intención»).
-const FRANJAS = ["bg-chart-1", "bg-chart-2", "bg-chart-3", "bg-chart-4", "bg-chart-5"];
 
 /**
  * Panel del alumno (/dashboard, «Tus cursos»): saludo, sus cursos con el porcentaje completado (de la BBDD),
@@ -176,49 +174,18 @@ async function ContenidoCurso() {
           <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {modulos.map((modulo, i) => (
               <li key={modulo.id} className="flex">
-                <Card className="flex-1 pt-0">
-                  <div aria-hidden className={`h-1.5 ${FRANJAS[i % FRANJAS.length]}`} />
-                  <CardHeader className="flex-1">
-                    <p className="text-xs font-semibold text-muted-foreground">
-                      {etiquetaEstado(estadoDeModulo(modulo.id, progreso))}
-                    </p>
-                    {modulo.id === avance.principal && (
-                      <div>
-                        <Badge>
-                          <Sparkles aria-hidden />
-                          Recomendado por tu tutor
-                        </Badge>
-                      </div>
-                    )}
-                    <CardTitle>
-                      <h3>
-                        <Link href={`/modulos/${modulo.id}`} className={`${CLASE_ENLACE} no-underline hover:underline`}>
-                          {modulo.titulo}
-                        </Link>
-                      </h3>
-                    </CardTitle>
-                    <CardDescription>{modulo.descripcion}</CardDescription>
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      <Badge variant="secondary">
-                        {modulo.clases.length} {modulo.clases.length === 1 ? "vídeo" : "vídeos"}
-                      </Badge>
-                      <Badge variant="outline">
-                        {modulo.conceptos.length} {modulo.conceptos.length === 1 ? "concepto" : "conceptos"}
-                      </Badge>
-                    </div>
-                    <div className="flex flex-wrap gap-x-4 pt-1 text-sm font-medium">
-                      <Link href={`/modulos/${modulo.id}`} className={CLASE_ENLACE}>
-                        Ver vídeos
-                      </Link>
-                      <Link href={`/modulos/${modulo.id}/material`} className={CLASE_ENLACE}>
-                        Material de repaso
-                      </Link>
-                      <Link href={`/modulos/${modulo.id}/tutor`} className={CLASE_ENLACE}>
-                        Preguntar al tutor →
-                      </Link>
-                    </div>
-                  </CardHeader>
-                </Card>
+                <TarjetaModulo
+                  modulo={{
+                    id: modulo.id,
+                    titulo: modulo.titulo,
+                    descripcion: modulo.descripcion,
+                    numClases: modulo.clases.length,
+                    numConceptos: modulo.conceptos.length,
+                  }}
+                  estado={estadoDeModulo(modulo.id, progreso)}
+                  indice={i}
+                  recomendado={modulo.id === avance.principal}
+                />
               </li>
             ))}
           </ul>
