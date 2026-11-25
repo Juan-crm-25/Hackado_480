@@ -1,16 +1,26 @@
 /** A dónde ir tras entrar o registrarse cuando no hay un destino válido. */
 export const DESTINO_POR_DEFECTO = "/dashboard";
 
+const BASE = "http://destino.invalid";
+
 /**
- * Destino tras el login a partir de `?volver=`. Solo acepta rutas internas («/algo»), nunca otra web
- * (`//dominio`, `/\dominio`, `https:`…), para que el enlace de login no sirva de redirección abierta.
+ * Destino tras el login a partir de `?volver=`. Solo acepta rutas internas («/algo»), nunca otra web,
+ * para que el enlace de login no sirva de redirección abierta:
+ * - rechaza espacios, caracteres de control y barras invertidas (el parser de URL quita tabuladores y
+ *   saltos de línea, así que «/\t/malo» acabaría siendo «//malo»);
+ * - y comprueba que, resuelta como URL, sigue en el mismo origen.
  * Tampoco vuelve al propio login o registro.
  */
 export function destinoTrasLogin(volver: string | null | undefined): string {
-  if (!volver || !volver.startsWith("/") || volver.startsWith("//") || volver.startsWith("/\\")) {
+  if (!volver || !volver.startsWith("/") || /[\s\u0000-\u001F\u007F\\]/.test(volver)) return DESTINO_POR_DEFECTO;
+
+  let url: URL;
+  try {
+    url = new URL(volver, BASE);
+  } catch {
     return DESTINO_POR_DEFECTO;
   }
-  const ruta = volver.split(/[?#]/)[0];
-  if (ruta === "/login" || ruta === "/registro") return DESTINO_POR_DEFECTO;
-  return volver;
+  if (url.origin !== BASE || url.pathname.startsWith("//")) return DESTINO_POR_DEFECTO;
+  if (url.pathname === "/login" || url.pathname === "/registro") return DESTINO_POR_DEFECTO;
+  return `${url.pathname}${url.search}${url.hash}`;
 }

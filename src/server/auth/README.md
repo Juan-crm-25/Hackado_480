@@ -13,7 +13,7 @@ Patrón y reglas: [docs/arquitectura.md](../../../docs/arquitectura.md).
 
 Hasta conectar Better Auth, el login es **simulado** pero lee y escribe en la BBDD:
 
-- **Endpoints:** `POST /api/auth/login` (email + contraseña), `POST /api/auth/registro` (nombre, email, contraseña de 8+ caracteres; siempre `rol = 'alumno'`, ya verificado) y `POST /api/auth/logout`. Los tres son `publico`.
+- **Endpoints:** `POST /api/auth/login` (email + contraseña), `POST /api/auth/registro` (nombre, email, contraseña de 8+ caracteres; siempre `rol = 'alumno'` y **sin verificar**, porque una matrícula solo se enlaza a un email verificado (docs/arquitectura.md, «Matrícula por email»)) y `POST /api/auth/logout`. Los tres son `publico`.
 - **Contraseña:** hash scrypt en `cuenta.password_hash` (proveedor `credential`), con `cifrarContrasena()` / `comprobarContrasena()` de `src/lib/contrasena.ts`. Los usuarios del seed usan `CONTRASENA_DEMO` (`demo1234`).
 - **Sesión:** una fila en `sesion` (7 días) y su token en la cookie httpOnly `hackado_sesion` (`cookie.ts`). El logout borra la fila y la cookie.
 - **Páginas:** `src/proxy.ts` redirige a `/login?volver=…` si no hay cookie en `/dashboard`, `/modulos`, `/tutor` y `/perfil`; el layout `src/app/(app)/(privado)` valida la sesión con `requerirUsuarioActual()` (`usuario-actual.ts`).

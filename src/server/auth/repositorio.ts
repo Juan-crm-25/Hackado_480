@@ -52,7 +52,9 @@ export async function crearUsuarioConCredencial(
         email: datos.email,
         seudonimo: datos.seudonimo,
         rol: "alumno",
-        emailVerificado: true,
+        // Sin verificar: sin correo no hay forma de comprobar el email, y una matrícula solo se enlaza a un
+        // email verificado (docs/arquitectura.md, «Matrícula por email»). Los usuarios del seed sí lo están.
+        emailVerificado: false,
       })
       .onConflictDoNothing({ target: usuario.email })
       .returning(columnasUsuarioSesion);

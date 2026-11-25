@@ -58,7 +58,7 @@ describe.skipIf(!hayBd)("servicio de auth (con BBDD real)", () => {
       expect(error.message).toBe("Email o contraseña incorrectos");
     });
 
-    it("con un email que no existe responde el mismo 401", async () => {
+    it("con un email que no existe responde el mismo 401 (y también comprueba la contraseña, para tardar lo mismo)", async () => {
       const error = await errorDe(iniciarSesion({ email: "nadie@demo.test", contrasena: CONTRASENA_DEMO }, bd.db));
       expect(error.codigo).toBe("NO_AUTENTICADO");
       expect(error.message).toBe("Email o contraseña incorrectos");
@@ -66,12 +66,12 @@ describe.skipIf(!hayBd)("servicio de auth (con BBDD real)", () => {
   });
 
   describe("registrar", () => {
-    it("crea un alumno verificado, su cuenta con la contraseña cifrada y una sesión", async () => {
+    it("crea un alumno SIN verificar (docs/arquitectura.md), su cuenta con la contraseña cifrada y una sesión", async () => {
       const { usuario: u, token } = await registrar(
         { nombre: "Nuevo Alumno", email: "nuevo@demo.test", contrasena: "segura123" },
         bd.db,
       );
-      expect(u).toMatchObject({ nombre: "Nuevo Alumno", email: "nuevo@demo.test", rol: "alumno", emailVerificado: true });
+      expect(u).toMatchObject({ nombre: "Nuevo Alumno", email: "nuevo@demo.test", rol: "alumno", emailVerificado: false });
 
       const [fila] = await bd.db.select().from(usuario).where(eq(usuario.email, "nuevo@demo.test"));
       expect(fila.seudonimo).toMatch(/^alumno_[0-9a-f]{10}$/);

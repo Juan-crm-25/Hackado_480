@@ -17,6 +17,13 @@ describe("destinoTrasLogin", () => {
     expect(destinoTrasLogin("//malo.example")).toBe("/dashboard");
     expect(destinoTrasLogin("/\\malo.example")).toBe("/dashboard");
     expect(destinoTrasLogin("javascript:alert(1)")).toBe("/dashboard");
+    expect(destinoTrasLogin(" //malo.example")).toBe("/dashboard");
+  });
+
+  it("no se deja engañar por tabuladores o saltos de línea (el parser de URL los quita: «/\\t/malo» → «//malo»)", () => {
+    expect(destinoTrasLogin("/\t/malo.example")).toBe("/dashboard");
+    expect(destinoTrasLogin("/\n/malo.example")).toBe("/dashboard");
+    expect(destinoTrasLogin("/\r\n/malo.example")).toBe("/dashboard");
   });
 
   it("no vuelve a las pantallas de login o registro", () => {
