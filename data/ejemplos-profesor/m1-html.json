@@ -1,0 +1,29 @@
+{
+  "moduloId": "m1-html",
+  "tipos": ["test", "respuesta_corta", "codigo"],
+  "ejemplos": [
+    {
+      "tipo": "test",
+      "enunciado": "¿Qué tipo de lenguaje es HTML?",
+      "opciones": [
+        "Un lenguaje de programación, porque tiene bucles y condicionales",
+        "Un lenguaje de marcado: indica con etiquetas qué tipo de contenido es cada parte de la página",
+        "Un lenguaje de estilos, que da colores y tamaños a la página",
+        "Un lenguaje para la interacción con el usuario, como cuando pulsa un botón"
+      ],
+      "solucion": 1
+    },
+    {
+      "tipo": "respuesta_corta",
+      "enunciado": "Todo lo que el navegador muestra en la página va dentro de una etiqueta. ¿Cuál? Escribe solo su nombre.",
+      "solucion": "body"
+    },
+    {
+      "tipo": "codigo",
+      "enunciado": "Escribe el HTML de una noticia de un blog con etiquetas semánticas: un encabezado con el título, el texto en dos párrafos y un pie con el nombre del autor. La noticia tiene que tener sentido por sí sola.",
+      "solucion": "<article>\n  <header>\n    <h2>Abre la nueva biblioteca</h2>\n  </header>\n  <p>La biblioteca del barrio abre este lunes.</p>\n  <p>Tendrá una sala de estudio con wifi.</p>\n  <footer>\n    <p>Escrito por Ana</p>\n  </footer>\n</article>",
+      "rubrica": "1) La noticia va dentro de <article>, porque es un contenido independiente que se entiende sin el resto de la web. 2) El título va en un <header> con un encabezado (<h1> o <h2>). 3) El texto va en párrafos <p>. 4) El autor va en un <footer>. 5) Todas las etiquetas se cierran y están bien anidadas, como cajas dentro de cajas. Resta si usa <div> donde corresponde una etiqueta semántica o si deja alguna etiqueta sin cerrar."
+    }
+  ],
+  "indicaciones": "Nivel principiante: el alumno empieza con HTML. Pregunta solo por lo que explican los vídeos del módulo: qué es HTML y en qué se diferencia de CSS y JavaScript, la estructura de un documento (doctype, html, head, title, body, h1, p, etiquetas de apertura y de cierre) y las etiquetas semánticas (section, article, header, footer, nav, aside, figure, figcaption). No uses atributos ni etiquetas que no salgan en los vídeos. En respuesta corta, pide algo con una única respuesta exacta. En código, pide fragmentos cortos que quepan en la pantalla del móvil."
+}

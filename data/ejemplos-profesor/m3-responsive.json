@@ -1,0 +1,30 @@
+{
+  "moduloId": "m3-responsive",
+  "tipos": ["test", "codigo"],
+  "ejemplos": [
+    {
+      "tipo": "test",
+      "enunciado": "Un contenedor tiene display: flex y flex-direction: row. ¿Qué propiedad centra sus elementos en horizontal, a lo largo de la fila?",
+      "opciones": [
+        "align-items: center",
+        "justify-content: center",
+        "flex-wrap: wrap",
+        "align-content: center"
+      ],
+      "solucion": 1
+    },
+    {
+      "tipo": "codigo",
+      "enunciado": "Con CSS Grid y grid-template-areas, escribe el CSS de un contenedor .layout con tres filas: arriba una cabecera que ocupa todo el ancho; en medio, un menú, el contenido principal y una barra lateral; y abajo un pie que ocupa todo el ancho. Sus hijos tienen las clases .cabecera, .menu, .principal, .lateral y .pie.",
+      "solucion": ".layout {\n  display: grid;\n  grid-template-areas:\n    \"header header header\"\n    \"menu main aside\"\n    \"footer footer footer\";\n}\n.cabecera { grid-area: header; }\n.menu { grid-area: menu; }\n.principal { grid-area: main; }\n.lateral { grid-area: aside; }\n.pie { grid-area: footer; }",
+      "rubrica": "1) .layout tiene display: grid. 2) grid-template-areas define 3 filas de 3 columnas, cada fila entre comillas. 3) La cabecera y el pie ocupan las tres columnas repitiendo su nombre en la fila. 4) La fila del medio tiene menú, contenido principal y barra lateral. 5) Cada hijo se coloca con grid-area y el mismo nombre que en el template. Los nombres de las áreas pueden ser otros si son coherentes. Resta si las filas tienen distinto número de columnas o si algún nombre no coincide."
+    },
+    {
+      "tipo": "codigo",
+      "enunciado": "Un menú .menu tiene display: flex y muestra sus enlaces en fila. Escribe una media query para que, en pantallas de 300 px de ancho o menos, los enlaces se pongan uno debajo de otro.",
+      "solucion": "@media (max-width: 300px) {\n  .menu {\n    flex-direction: column;\n  }\n}",
+      "rubrica": "1) Usa @media (max-width: 300px). 2) Dentro solo cambia lo necesario: flex-direction: column en .menu, sin repetir el resto de estilos del menú. 3) Sintaxis correcta: paréntesis en la condición y llaves bien cerradas. Si además hace que cada enlace ocupe todo el ancho, mejor con flex-basis: 100% que con width, como se explica en el vídeo. Resta si usa min-width (el cambio se aplicaría en pantallas grandes) o si cambia flex-direction fuera de la media query."
+    }
+  ],
+  "indicaciones": "Nivel principiante. Pregunta solo por lo que sale en los vídeos: Flexbox (en el contenedor: display: flex, flex-direction, flex-wrap, flex-flow, justify-content, align-items, align-content; en los hijos: order, flex-grow, flex-shrink, flex-basis, flex), CSS Grid (display: grid, grid-template-columns, grid-template-rows, grid-column y grid-row con líneas y span, grid-area, grid-template-areas) y media queries con max-width combinadas con Flexbox. Las preguntas se tienen que poder razonar sin ejecutar el código. En código, pide fragmentos cortos que quepan en la pantalla del móvil."
+}

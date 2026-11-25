@@ -1,0 +1,29 @@
+{
+  "moduloId": "m4-javascript",
+  "tipos": ["test", "codigo", "respuesta_corta"],
+  "ejemplos": [
+    {
+      "tipo": "test",
+      "enunciado": "Declaras const COLOR_ROJO = \"#ff0000\"; y más abajo escribes COLOR_ROJO = \"#00ff00\";. ¿Qué pasa?",
+      "opciones": [
+        "El valor cambia sin problema, igual que con let",
+        "Da error: una constante no se puede modificar",
+        "Se crea otra variable con el mismo nombre",
+        "Solo cambia si el nombre está en mayúsculas"
+      ],
+      "solucion": 1
+    },
+    {
+      "tipo": "codigo",
+      "enunciado": "En el HTML hay una lista vacía <ul id=\"lista\"></ul>. Escribe el JavaScript que crea un elemento li con el texto «Primero» y lo añade al final, dentro de la lista.",
+      "solucion": "const lista = document.getElementById(\"lista\");\nconst li = document.createElement(\"li\");\nli.innerHTML = \"Primero\";\nlista.append(li);",
+      "rubrica": "1) Selecciona la lista con document.getElementById(\"lista\"). 2) Crea el elemento con document.createElement(\"li\"). 3) Le pone el texto con innerHTML (o textContent). 4) Lo añade al final y dentro de la lista con append (o appendChild). Incorrecto: prepend lo añade al principio, y before o after lo dejan fuera de la lista. Resta si escribe el li como texto con innerHTML de la lista en lugar de crearlo."
+    },
+    {
+      "tipo": "respuesta_corta",
+      "enunciado": "Tienes un botón en la variable boton y una función hola. Esta línea está mal: boton.onclick = hola(); Escríbela bien.",
+      "solucion": "boton.onclick = hola"
+    }
+  ],
+  "indicaciones": "Nivel principiante. Pregunta solo por lo que sale en los vídeos: variables con let y const, alert y console.log, concatenar con + y con comillas invertidas, condicionales if, else if y else, bucles for, funciones con parámetros, arrays y length; modificar el DOM (getElementById, createElement, className, innerHTML, append, prepend, before, after, insertAdjacentText, insertAdjacentHTML, remove, cloneNode, DocumentFragment); y eventos (onclick en el HTML o en JavaScript, addEventListener, this y el objeto event con type, target, clientX y clientY). En el código, nombres de variables y funciones en inglés o descriptivos, como recomienda el vídeo. En respuesta corta, pide algo con una única respuesta exacta."
+}
