@@ -152,11 +152,35 @@ SEED_PERMITIR_REMOTO=1 npm run db:seed     # otra BBDD (p. ej., Neon), solo a pr
 - **Crea una cuenta** de email y contraseña (`cuenta`, proveedor `credential`) por usuario para el login simulado, con la contraseña `demo1234` (`CONTRASENA_DEMO`). Si la cuenta ya existe no la toca.
 - **Crea el progreso de demostración** (`progreso`) de `src/lib/datos-prueba.ts` en el curso de la demo, para que «Tus cursos» no salga al 0 %. Si ya hay progreso de ese módulo no lo toca.
 - **Crea la plantilla de ejercicios** (`plantilla_ejercicio`) de cada módulo del curso de la demo a partir de `data/ejemplos-profesor/<módulo>.json`: los tipos de ejercicio, los ejemplos del profesor y sus indicaciones para el generador. Si la plantilla ya existe, la deja como dice el fichero, porque sin panel de administración el fichero es donde el profesor configura su módulo. Si un fichero es de un módulo que no está en el curso, el seed falla sin escribir nada.
-- **No crea** transcripciones, documentos (los importará el conversor), ejercicios (los genera la IA a partir de las plantillas, #4), sesiones (se crean al iniciar sesión) ni pedidos (se crean al comprar).
+- **No crea** transcripciones, documentos (los importará el conversor), ejercicios (los genera la IA a partir de las plantillas: ver «Generar los ejercicios»), sesiones (se crean al iniciar sesión) ni pedidos (se crean al comprar).
 - **Se puede repetir:** inserta o actualiza por clave natural (`slug`, `email`, `(curso, email)`…), así que ejecutarlo dos veces deja los mismos datos.
 - **Solo la BBDD local:** se niega si el host de `DATABASE_URL` no es `localhost` o `127.0.0.1`, salvo con `SEED_PERMITIR_REMOTO=1`.
 - Código: `scripts/seed.ts` (conexión) y `src/lib/db/seed/` (datos y `sembrar()`).
 - El **límite diario de IA** (`uso_ia`, un contador por alumno y día UTC) y el **material personal** (`material_personal`, los 20 más recientes por alumno) ya se guardan en la BBDD. `/api/tutor` y `/api/material-personal` responden 404 si falta el seed.
+
+### Generar los ejercicios
+
+El banco de ejercicios de verificación (#4) lo genera la IA a partir de las plantillas, y el código lo guarda en `ejercicio` como **borrador**. Los alumnos solo ven los **aprobados**. Instrucciones del agente y cómo se revisa: [`agents/generador-ejercicios.md`](../../agents/generador-ejercicios.md).
+
+```bash
+npm run generar:ejercicios                  # BBDD local: todos los módulos que aún no tienen ejercicios
+npm run generar:ejercicios -- --forzar      # regenera los borradores (los aprobados no se tocan)
+```
+
+- **Se genera una vez:** si un módulo ya tiene ejercicios, no se vuelve a llamar a la IA salvo con `--forzar`.
+- **Solo la BBDD local,** salvo `GENERAR_PERMITIR_REMOTO=1`, igual que el seed.
+- Necesita la IA configurada en `.env.local`, también `AI_MODEL_GENERADOR` (el nombre del modelo está en `.env.example`).
+
+**Para la demo (Neon), una vez y en este orden.** Lo hace quien tenga la `DATABASE_URL` de Neon, que solo está en Vercel. La dirección se pone **solo en la terminal y solo para esos comandos**, nunca en `.env.local`: si se queda ahí, cualquier prueba posterior iría contra producción. Al cerrar la terminal desaparece. En PowerShell:
+
+```powershell
+$env:DATABASE_URL = "<la de Neon>"
+$env:SEED_PERMITIR_REMOTO = "1"; npm run db:seed              # 1. las plantillas (y el resto del seed, que se puede repetir)
+$env:GENERAR_PERMITIR_REMOTO = "1"; npm run generar:ejercicios # 2. el banco, en borrador
+npm run db:studio                                              # 3. revisar y aprobar (Studio también usa la variable de la terminal)
+```
+
+Los scripts y Drizzle Studio usan la `DATABASE_URL` de la terminal antes que la de `.env.local`.
 
 ### Tests con BBDD
 

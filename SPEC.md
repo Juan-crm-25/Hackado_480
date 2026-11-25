@@ -300,6 +300,7 @@ El revisor es necesario en producción por dos motivos: con 400 vídeos el tutor
 ### Mejoras para producción
 
 - **«Practicar más»:** más ejercicios del banco del módulo, centrados en el concepto que el alumno falla. No tiene coste de IA salvo la corrección de las respuestas abiertas.
+- **Revisión de ejercicios desde la app:** en el prototipo los revisamos nosotros, en la BBDD. En producción, el profesor los revisa en una pantalla de la app (solo los de sus cursos), los aprueba, corrige o descarta, y puede pedir otros nuevos, de todo el módulo o de uno solo, diciendo por qué no le gustaban. Detalle en [`agents/generador-ejercicios.md`](agents/generador-ejercicios.md).
 
 ### Preparación imprescindible antes del 30/11
 
