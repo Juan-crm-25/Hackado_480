@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { CabeceraAcceso } from "@/components/auth/cabecera-acceso";
 import { FormularioLogin } from "@/components/auth/formulario-login";
+import { Resaltado } from "@/components/auth/resaltado";
 import { EstadoCargando } from "@/components/estado";
 import { RedirigirSiHaySesion } from "../ya-con-sesion";
 
 export const metadata: Metadata = { title: "Inicia sesión · 480 Academy" };
 
-/** Login simulado (issue #42). Se llega aquí desde una página que pide sesión, con `?volver=`. */
+/**
+ * Login simulado (issue #42). Se llega aquí desde una página que pide sesión, con `?volver=`.
+ * Solo es el contenido del cajón: el cajón y el astronauta están en el layout de (acceso).
+ */
 export default function Login({ searchParams }: { searchParams: Promise<{ volver?: string | string[] }> }) {
   return (
     <>
-      <header className="flex flex-col gap-2">
-        <h1 className="text-3xl leading-tight font-bold">Inicia sesión</h1>
-        <p className="text-muted-foreground">Entra para seguir tus cursos y hablar con tu tutor.</p>
-      </header>
+      <CabeceraAcceso titulo="Inicia sesión">
+        Entra para seguir tus cursos y <Resaltado>hablar con tu tutor.</Resaltado>
+      </CabeceraAcceso>
       <Suspense fallback={<EstadoCargando />}>
         <RedirigirSiHaySesion searchParams={searchParams} />
         <FormularioLogin />
