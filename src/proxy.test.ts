@@ -21,7 +21,7 @@ describe("proxy (comprobación optimista de la cookie)", () => {
     expect(res.headers.get("x-middleware-next")).toBe("1");
   });
 
-  it("solo se ejecuta en las páginas que piden sesión", () => {
-    expect(config.matcher).toEqual(["/dashboard/:path*", "/modulos/:path*", "/tutor/:path*", "/perfil/:path*"]);
+  it("solo se ejecuta en las páginas que piden sesión (también el pago)", () => {
+    expect(config.matcher).toEqual(["/dashboard/:path*", "/modulos/:path*", "/tutor/:path*", "/perfil/:path*", "/pago/:path*"]);
   });
 });
