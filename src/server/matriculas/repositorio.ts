@@ -115,28 +115,15 @@ export async function leerProgresoDelCurso(usuarioId: string, cursoId: string, d
 }
 
 /**
- * Guarda la ruta personal en la matrícula y marca como dominados los módulos que ya sabe, en una transacción.
- * Un módulo solo pasa a dominado si estaba pendiente (o sin progreso): nunca se rebaja un progreso real.
+ * Guarda la ruta personal en la matrícula. «Ya lo sé» solo cambia el orden: no toca el progreso
+ * (un módulo solo pasa a dominado al aprobar su test).
  */
 export async function guardarRutaDeMatricula(
-  datos: { matriculaId: string; usuarioId: string; orden: string[]; principalId: string | null; dominados: string[] },
+  datos: { matriculaId: string; orden: string[]; principalId: string | null },
   db: Db,
 ): Promise<void> {
-  await db.transaction(async (tx) => {
-    await tx
-      .update(matricula)
-      .set({ ordenModulos: datos.orden, moduloPrincipalId: datos.principalId })
-      .where(eq(matricula.id, datos.matriculaId));
-
-    if (datos.dominados.length > 0) {
-      await tx
-        .insert(progreso)
-        .values(datos.dominados.map((moduloId) => ({ usuarioId: datos.usuarioId, moduloId, estado: "dominado" as const })))
-        .onConflictDoUpdate({
-          target: [progreso.usuarioId, progreso.moduloId],
-          set: { estado: "dominado", actualizado: sql`now()` },
-          setWhere: eq(progreso.estado, "pendiente"),
-        });
-    }
-  });
+  await db
+    .update(matricula)
+    .set({ ordenModulos: datos.orden, moduloPrincipalId: datos.principalId })
+    .where(eq(matricula.id, datos.matriculaId));
 }

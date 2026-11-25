@@ -11,29 +11,34 @@ const MODULOS = [
   { id: "m2-css", titulo: "CSS", descripcion: "Estilos" },
 ];
 
-describe("ValorarModulos", () => {
+describe("ValorarModulos (carrusel)", () => {
   const html = renderToStaticMarkup(<ValorarModulos slug="desarrollo-web" modulos={MODULOS} />);
 
-  it("muestra cada módulo con las tres opciones", () => {
-    expect(html).toContain("HTML");
-    expect(html).toContain("CSS");
-    for (const opcion of ["Me interesa mucho", "Me interesa", "Ya lo sé"]) {
-      expect(html.split(`>${opcion}<`).length - 1).toBe(2);
-    }
+  it("muestra un módulo cada vez: el primero, con su número", () => {
+    expect(html).toContain("Módulo 1 de 2");
+    expect(html).toContain(">HTML<");
+    expect(html).not.toContain(">CSS<");
   });
 
-  it("«Me interesa» viene marcada por defecto en todos los módulos", () => {
-    const pulsados = [...html.matchAll(/<button[^>]*aria-pressed="true"[^>]*>([^<]*)</g)].map((m) => m[1]);
-    expect(pulsados).toEqual(["Me interesa", "Me interesa"]);
+  it("la barra de progreso empieza vacía y se puede leer", () => {
+    const barra = html.match(/<[^>]*role="progressbar"[^>]*>/)?.[0] ?? "";
+    expect(barra).toContain('aria-valuenow="0"');
+    expect(html).toContain("0 de 2 respondidos");
   });
 
-  it("cada grupo de opciones lleva el nombre de su módulo para el lector de pantalla", () => {
-    expect(html).toContain('aria-label="¿Cuánto te interesa HTML?"');
-    expect(html).toContain('aria-label="¿Cuánto te interesa CSS?"');
+  it("pregunta por el módulo con tres respuestas grandes que avanzan al pulsarlas", () => {
+    expect(html).toContain("¿Cuánto te interesa HTML?");
+    for (const opcion of ["Me interesa mucho", "Me interesa", "Ya lo sé"]) expect(html).toContain(`>${opcion}<`);
+    expect([...html.matchAll(/<button[^>]*data-valoracion="[a-z]+"[^>]*>/g)]).toHaveLength(3);
   });
 
-  it("tiene el botón «Ver mi ruta» como acción destacada", () => {
-    expect(html).toMatch(/<button[^>]*type="submit"[^>]*bg-brand[^>]*>[\s\S]*Ver mi ruta/);
+  it("explica qué hace cada respuesta, sin depender del color", () => {
+    expect(html).toContain("Lo pondremos de los primeros");
+    expect(html).toContain("Lo dejamos para el final");
+  });
+
+  it("en el primer módulo no se puede volver atrás", () => {
+    expect(html).toMatch(/<button[^>]*disabled=""[^>]*>[\s\S]*?Atrás/);
   });
 });
 
@@ -55,11 +60,15 @@ describe("ResultadoRuta", () => {
     expect(html).toContain("Nada queda bloqueado.");
   });
 
-  it("lista los módulos en el nuevo orden, con el recomendado y el que ya domina marcados con texto", () => {
+  it("celebra que la ruta está lista", () => {
+    expect(html).toContain("¡Tu ruta está lista!");
+  });
+
+  it("lista los módulos en el nuevo orden, con el recomendado y el que ya conoce marcados con texto", () => {
     expect(html.indexOf("CSS")).toBeLessThan(html.indexOf(">HTML<"));
     expect(html).toMatch(/<ol/);
     expect(html).toContain("Recomendado por tu tutor");
-    expect(html).toContain("Ya lo dominas");
+    expect(html).toContain("Ya lo conoces");
   });
 
   it("ofrece empezar (acción destacada) y cambiar las respuestas", () => {

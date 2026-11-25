@@ -4,11 +4,26 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { RespuestaRuta } from "@/lib/ruta";
+import { cn } from "@/lib/utils";
+import { temaDe } from "./temas";
 
 /** La ruta personalizada con la recomendación del tutor (frases de plantilla, sin IA). */
 export function ResultadoRuta({ resultado, onCambiar }: { resultado: RespuestaRuta; onCambiar: () => void }) {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
+      <div className="flex flex-col items-center gap-3 rounded-lg bg-surface-dark p-6 text-center text-white">
+        <span
+          className="inline-flex size-14 items-center justify-center rounded-full bg-brand text-surface-dark motion-safe:animate-in motion-safe:zoom-in-50 motion-safe:duration-500"
+          aria-hidden
+        >
+          <Sparkles className="size-7" />
+        </span>
+        <p className="text-2xl font-bold" role="status">
+          ¡Tu ruta está lista!
+        </p>
+        <p className="text-sm text-white/80">{resultado.curso.titulo}</p>
+      </div>
+
       <section aria-labelledby="recomendacion" className="flex items-start gap-3">
         <span
           className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-surface-dark text-brand"
@@ -38,7 +53,10 @@ export function ResultadoRuta({ resultado, onCambiar }: { resultado: RespuestaRu
               <Card className={m.id === resultado.principal ? "border-primary" : undefined}>
                 <CardContent className="flex items-start gap-4">
                   <span
-                    className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-bold tabular-nums"
+                    className={cn(
+                      "inline-flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums",
+                      temaDe(i).circulo,
+                    )}
                     aria-hidden
                   >
                     {i + 1}
@@ -56,7 +74,7 @@ export function ResultadoRuta({ resultado, onCambiar }: { resultado: RespuestaRu
                       {m.valoracion === "sabe" && (
                         <Badge variant="secondary">
                           <CircleCheck aria-hidden />
-                          Ya lo dominas
+                          Ya lo conoces
                         </Badge>
                       )}
                     </div>

@@ -105,7 +105,7 @@ async function ContenidoCurso() {
   const avance = await cargarAvanceDelCurso(usuario.id, curso.id);
   const modulos = aplicarOrden(curso.modulos, avance.orden);
   const progreso = avance.progreso;
-  // Si ya lo ha marcado todo como sabido o terminado, «Sigue donde lo dejaste» propone el principal de su ruta.
+  // Si ya ha terminado todos los módulos, «Sigue donde lo dejaste» propone el principal de su ruta para repasar.
   const seguir = moduloParaSeguir(modulos, progreso) ?? modulos.find((m) => m.id === avance.principal);
 
   return (

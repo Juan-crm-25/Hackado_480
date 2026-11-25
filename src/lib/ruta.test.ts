@@ -68,7 +68,7 @@ describe("recomendacionTutor", () => {
     expect(texto).toEqual([
       "Empezamos por «CSS» porque es lo que más te interesa.",
       "Después seguimos con «JavaScript», que también te interesa mucho.",
-      "«HTML» y «Responsive» los dejamos para el final porque ya los dominas: repásalos cuando quieras.",
+      "«HTML» y «Responsive» los dejamos para el final porque ya los conoces. Cuando quieras, haz su test para marcarlos como dominados.",
       "Nada queda bloqueado: puedes abrir cualquier módulo cuando quieras.",
     ]);
   });
@@ -86,7 +86,7 @@ describe("recomendacionTutor", () => {
   it("un solo módulo dominado va en singular", () => {
     const { orden } = ordenarRuta(MODULOS, { html: "sabe" });
     expect(recomendacionTutor(orden, { html: "sabe" })).toContain(
-      "«HTML» lo dejamos para el final porque ya lo dominas: repásalo cuando quieras.",
+      "«HTML» lo dejamos para el final porque ya lo conoces. Cuando quieras, haz su test para marcarlo como dominado.",
     );
   });
 
@@ -94,7 +94,7 @@ describe("recomendacionTutor", () => {
     const todo = Object.fromEntries(MODULOS.map((m) => [m.id, "sabe" as const]));
     const { orden } = ordenarRuta(MODULOS, todo);
     expect(recomendacionTutor(orden, todo)[0]).toBe(
-      "Parece que ya dominas todo el curso. Te propongo repasarlo en su orden original, a tu ritmo.",
+      "Parece que ya conoces todo el curso. Te propongo repasarlo en su orden original y hacer el test de cada módulo para marcarlo como dominado.",
     );
   });
 });

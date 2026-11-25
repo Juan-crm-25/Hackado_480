@@ -69,7 +69,7 @@ export function recomendacionTutor(
 
   if (sabe.length === orden.length) {
     return [
-      "Parece que ya dominas todo el curso. Te propongo repasarlo en su orden original, a tu ritmo.",
+      "Parece que ya conoces todo el curso. Te propongo repasarlo en su orden original y hacer el test de cada módulo para marcarlo como dominado.",
       "Nada queda bloqueado: puedes abrir cualquier módulo cuando quieras.",
     ];
   }
@@ -88,8 +88,8 @@ export function recomendacionTutor(
   if (sabe.length > 0) {
     const varios = sabe.length > 1;
     frases.push(
-      `${lista(sabe.map((m) => m.titulo))} ${varios ? "los" : "lo"} dejamos para el final porque ya ${varios ? "los" : "lo"} dominas: ` +
-        `repás${varios ? "alos" : "alo"} cuando quieras.`,
+      `${lista(sabe.map((m) => m.titulo))} ${varios ? "los" : "lo"} dejamos para el final porque ya ${varios ? "los" : "lo"} conoces. ` +
+        `Cuando quieras, haz su test para marcar${varios ? "los como dominados" : "lo como dominado"}.`,
     );
   }
   frases.push("Nada queda bloqueado: puedes abrir cualquier módulo cuando quieras.");

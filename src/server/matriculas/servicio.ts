@@ -91,8 +91,9 @@ export async function obtenerRuta(usuario: UsuarioSesion, slug: string, db: Db =
 }
 
 /**
- * Ordena el curso con las valoraciones del alumno (src/lib/ruta.ts), guarda la ruta en su matrícula,
- * marca como dominado lo que ya sabe y devuelve la recomendación del tutor. Las valoraciones no se guardan.
+ * Ordena el curso con las valoraciones del alumno (src/lib/ruta.ts), guarda la ruta en su matrícula y devuelve
+ * la recomendación del tutor. «Ya lo sé» solo manda el módulo al final: el dominado llega al aprobar su test.
+ * Las valoraciones no se guardan.
  */
 export async function guardarRuta(
   usuario: UsuarioSesion,
@@ -110,13 +111,7 @@ export async function guardarRuta(
   const valoracion = (id: string) =>
     (Object.hasOwn(datos.valoraciones, id) ? datos.valoraciones[id] : undefined) ?? VALORACION_POR_DEFECTO;
   await guardarRutaDeMatricula(
-    {
-      matriculaId: matricula.id,
-      usuarioId: usuario.id,
-      orden: orden.map((m) => m.uuid),
-      principalId: principal?.uuid ?? null,
-      dominados: orden.filter((m) => valoracion(m.id) === "sabe").map((m) => m.uuid),
-    },
+    { matriculaId: matricula.id, orden: orden.map((m) => m.uuid), principalId: principal?.uuid ?? null },
     db,
   );
 
