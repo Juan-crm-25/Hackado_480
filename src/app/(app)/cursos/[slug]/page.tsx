@@ -11,8 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { resumenValoraciones, valoracionesDe } from "@/lib/demo/valoraciones";
 import { formatoPrecio } from "@/lib/formato";
-import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
+import { obtenerUsuarioActual } from "@/server/auth/usuario-actual";
 import { cargarCursoPublico } from "@/server/catalogo/servicio";
+import { tieneElCurso } from "@/server/matriculas/servicio";
 
 /**
  * Página pública de un curso: información, módulos, estudiantes, precio con la acción principal y valoraciones.
@@ -53,7 +54,6 @@ async function ContenidoCurso({ params }: { params: PageProps<"/cursos/[slug]">[
 
   const { curso } = resultado;
   const valoraciones = valoracionesDe(curso.slug);
-  const esCursoDemo = curso.slug === CURSO_DEMO_SLUG;
 
   return (
     <>
@@ -86,16 +86,7 @@ async function ContenidoCurso({ params }: { params: PageProps<"/cursos/[slug]">[
           </h2>
           <p className="text-2xl font-bold">{formatoPrecio(curso.precioCentimos)}</p>
         </div>
-        {esCursoDemo ? (
-          <Link href="/dashboard" className={buttonVariants({ variant: "accent", size: "lg" })}>
-            Ir a tu curso
-          </Link>
-        ) : (
-          // TODO(pagos): cuando haya pagos con Stripe, este botón abrirá el pago; de momento lleva a contacto.
-          <Link href="/contacto" className={buttonVariants({ variant: "accent", size: "lg" })}>
-            Inscribirme
-          </Link>
-        )}
+        <AccionCurso slug={curso.slug} gratis={curso.precioCentimos === 0} />
       </section>
 
       <section aria-labelledby="modulos" className="flex flex-col gap-3">
@@ -129,5 +120,25 @@ async function ContenidoCurso({ params }: { params: PageProps<"/cursos/[slug]">[
 
       <ValoracionesCurso resumen={resumenValoraciones(valoraciones)} valoraciones={valoraciones} />
     </>
+  );
+}
+
+/**
+ * Acción principal del curso: «Ir a tu curso» si ya lo tiene; si no, al pago simulado (que pide login).
+ * Lee la sesión, pero ya está dentro del <Suspense> de la página.
+ */
+async function AccionCurso({ slug, gratis }: { slug: string; gratis: boolean }) {
+  const usuario = await obtenerUsuarioActual();
+  if (usuario && (await tieneElCurso(usuario.id, slug))) {
+    return (
+      <Link href="/dashboard" className={buttonVariants({ variant: "accent", size: "lg" })}>
+        Ir a tu curso
+      </Link>
+    );
+  }
+  return (
+    <Link href={`/pago/${slug}`} className={buttonVariants({ variant: "accent", size: "lg" })}>
+      {gratis ? "Apuntarme gratis" : "Inscribirme"}
+    </Link>
   );
 }

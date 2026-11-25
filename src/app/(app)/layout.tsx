@@ -3,7 +3,8 @@ import { BarraInferior } from "@/components/navegacion/barra-inferior";
 import { BarraLateral } from "@/components/navegacion/barra-lateral";
 import { BarraSuperior } from "@/components/navegacion/barra-superior";
 import { BarraInferiorActiva, BarraLateralActiva } from "@/components/navegacion/navegacion-activa";
-import { getUsuarioDemo } from "@/lib/usuario-demo";
+import { AccesoUsuario } from "@/components/navegacion/avatar-usuario";
+import { obtenerUsuarioActual } from "@/server/auth/usuario-actual";
 
 /**
  * Marco de la app (docs/estilo.md, apartado 10, «Navegación de la app»).
@@ -12,8 +13,6 @@ import { getUsuarioDemo } from "@/lib/usuario-demo";
  * el contenido, así el chat del tutor puede ocupar el alto que queda entre ellas.
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const usuario = getUsuarioDemo();
-
   return (
     <div className="flex h-dvh w-full">
       <a
@@ -28,7 +27,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </Suspense>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <BarraSuperior nombreUsuario={usuario.nombre} />
+        <BarraSuperior
+          usuario={
+            <Suspense fallback={<span className="size-11" aria-hidden />}>
+              <UsuarioDeLaSesion />
+            </Suspense>
+          }
+        />
         <div id="contenido" className="flex min-h-0 flex-1 flex-col overflow-y-auto">
           {children}
         </div>
@@ -38,4 +43,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   );
+}
+
+/** Lee la sesión (cookies), así que va dentro de <Suspense>: el resto del marco no espera por ella. */
+async function UsuarioDeLaSesion() {
+  const usuario = await obtenerUsuarioActual();
+  return <AccesoUsuario nombre={usuario?.nombre ?? null} />;
 }

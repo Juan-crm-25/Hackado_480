@@ -1,27 +1,36 @@
 /**
  * Seed mínimo e idempotente: inserta o actualiza por clave natural, así que ejecutarlo dos veces deja los mismos datos.
- * Lo usa scripts/seed.ts (npm run db:seed) y los tests de integración. No crea cuentas ni sesiones (eso, con el login).
+ * Lo usa scripts/seed.ts (npm run db:seed) y los tests de integración.
+ * Cada usuario tiene una cuenta de email y contraseña (CONTRASENA_DEMO) para el login simulado; no crea sesiones.
  */
 import { count, sql } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 import catalogoJson from "../../../../data/catalog.json";
-import { alumnosDemo } from "../../datos-prueba";
+import { alumnosDemo, progresoDemo } from "../../datos-prueba";
+import { cifrarContrasena } from "../../contrasena";
 import type { Catalogo } from "../../types";
+import { CURSO_DEMO_SLUG } from "../../usuario-demo";
 import type { Db } from "../client";
-import { categoria, clase, concepto, curso, matricula, modulo, usuario } from "../schema";
-import { construirCatalogos, construirMatriculas, construirUsuarios } from "./datos";
+import { categoria, clase, concepto, cuenta, curso, matricula, modulo, progreso, usuario } from "../schema";
+import { CONTRASENA_DEMO, construirCatalogos, construirMatriculas, construirUsuarios } from "./datos";
 
 /** En ON CONFLICT DO UPDATE: el valor que se intentaba insertar. */
 const nuevo = (columna: string) => sql.raw(`excluded.${columna}`);
 
-export type RecuentoSeed = Record<"categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "matricula", number>;
+export type RecuentoSeed = Record<
+  "categoria" | "curso" | "modulo" | "concepto" | "clase" | "usuario" | "cuenta" | "matricula" | "progreso",
+  number
+>;
 
 export async function sembrar(db: Db): Promise<RecuentoSeed> {
   const catalogos = construirCatalogos(catalogoJson as Catalogo);
   const usuarios = construirUsuarios(alumnosDemo);
+  // Se cifra una vez (fuera de la transacción): todas las cuentas del seed comparten contraseña.
+  const passwordHash = await cifrarContrasena(CONTRASENA_DEMO);
 
   await db.transaction(async (tx) => {
     const cursoIds = new Map<string, string>();
+    const moduloIds = new Map<string, string>(); // "curso/modulo" → id
 
     for (const catalogo of catalogos) {
       const [cat] = await tx
@@ -55,6 +64,7 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
             set: { titulo: nuevo("titulo"), descripcion: nuevo("descripcion"), ordenSugerido: nuevo("orden_sugerido") },
           })
           .returning({ id: modulo.id });
+        moduloIds.set(`${catalogo.curso.slug}/${m.slug}`, mod.id);
 
         // Los cursos extra no tienen conceptos ni clases: un INSERT sin filas no es válido.
         if (m.conceptos.length > 0) {
@@ -98,6 +108,12 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
       .returning({ id: usuario.id, email: usuario.email });
     const usuarioIds = new Map(filas.map((u) => [u.email, u.id]));
 
+    // Cuenta de email y contraseña para el login simulado. Si ya existe no se toca (no se pisa la contraseña).
+    await tx
+      .insert(cuenta)
+      .values(filas.map((u) => ({ usuarioId: u.id, proveedor: "credential", idCuentaProveedor: u.id, passwordHash })))
+      .onConflictDoNothing({ target: [cuenta.proveedor, cuenta.idCuentaProveedor] });
+
     // Por invitación y ya enlazadas (los emails están verificados). Ver construirMatriculas().
     const matriculas = construirMatriculas(catalogos, usuarios).map((m) => ({
       cursoId: cursoIds.get(m.cursoSlug)!,
@@ -106,6 +122,19 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
       rolEnCurso: m.rolEnCurso,
       origen: "invitacion" as const,
     }));
+    // Progreso de demostración (src/lib/datos-prueba.ts) en el curso de la demo, para que «Tus cursos» no salga al 0 %.
+    // Si ya hay progreso de ese módulo no se toca: puede ser progreso real del alumno.
+    const emailDe = new Map(alumnosDemo.map((a) => [a.id, a.email.toLowerCase()]));
+    const progresos = progresoDemo.map((p) => ({
+      usuarioId: usuarioIds.get(emailDe.get(p.alumnoId)!)!,
+      moduloId: moduloIds.get(`${CURSO_DEMO_SLUG}/${p.moduloId}`)!,
+      estado: p.estado,
+      aciertosPorConcepto: p.aciertosPorConcepto,
+    }));
+    if (progresos.length > 0) {
+      await tx.insert(progreso).values(progresos).onConflictDoNothing({ target: [progreso.usuarioId, progreso.moduloId] });
+    }
+
     // Si ya existía (p. ej., de una compra), solo se enlaza y se fija el rol: el origen y el pedido no se tocan.
     await tx
       .insert(matricula)
@@ -127,6 +156,8 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
     concepto: await contar(concepto),
     clase: await contar(clase),
     usuario: await contar(usuario),
+    cuenta: await contar(cuenta),
     matricula: await contar(matricula),
+    progreso: await contar(progreso),
   };
 }

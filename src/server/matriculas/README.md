@@ -6,3 +6,8 @@ Acceso a cursos por email (invitación o compra) y ruta personal del alumno (`mo
 - **Endpoints:** `GET /api/yo/cursos`, `POST /api/cursos/:id/invitaciones`
 
 Patrón y reglas: [docs/arquitectura.md](../../../docs/arquitectura.md).
+
+## Uso
+
+- `cargarCursosDelUsuario(usuarioId)` (`servicio.ts`): «Tus cursos», los cursos con matrícula enlazada al usuario, por título, con `porcentaje` de módulos `dominado`/`completado` (`porcentajeCompletado()` de `src/lib/progreso.ts`). Nunca lanza: `ok`, `vacio` o `error`.
+- `tieneElCurso(usuarioId, slug)`: para elegir entre «Inscribirme» e «Ir a tu curso». Sin BBDD, `false`.

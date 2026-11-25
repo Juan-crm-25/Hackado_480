@@ -6,7 +6,7 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/",
 }));
 
-import { AvatarUsuario, iniciales } from "./avatar-usuario";
+import { AccesoUsuario, AvatarUsuario, iniciales } from "./avatar-usuario";
 import { BarraInferior } from "./barra-inferior";
 import { BarraLateral } from "./barra-lateral";
 import { destinosPrincipales, destinosSecundarios } from "./destinos";
@@ -98,5 +98,20 @@ describe("avatar del usuario", () => {
     expect(html).toContain('aria-label="Tu perfil"');
     expect(html).toContain('href="/perfil"');
     expect(html).toContain("LM");
+  });
+});
+
+describe("acceso del usuario en la barra superior", () => {
+  it("con sesión muestra su avatar, que lleva al perfil", () => {
+    const html = renderToStaticMarkup(<AccesoUsuario nombre="Lucía Martín" />);
+    expect(html).toContain('href="/perfil"');
+    expect(html).toContain("LM");
+    expect(html).not.toContain("Entrar");
+  });
+
+  it("sin sesión muestra «Entrar», que lleva al login", () => {
+    const html = renderToStaticMarkup(<AccesoUsuario nombre={null} />);
+    expect(html).toMatch(/<a[^>]*href="\/login"[^>]*>Entrar<\/a>/);
+    expect(html).not.toContain('href="/perfil"');
   });
 });

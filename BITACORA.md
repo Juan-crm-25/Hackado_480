@@ -101,3 +101,20 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 - **#11:** vídeos reales y transcripciones. Hoy solo el módulo CSS tiene contenido, y es de prueba.
 - Resto del backlog: ejercicios (#3, #4), Radar (#5), diagnóstico (#6), BBDD (#13), pantallas y PWA (#14), presentación (#17).
 - ~~Material personal y límite diario se guardan en memoria hasta que exista la BBDD (#13).~~ Hecho: tablas `material_personal` y `uso_ia`.
+
+---
+
+## Trabajo de Héctor — Miércoles 25/11/2026
+
+### Qué hicimos
+
+| Sistema | Qué hace | Issue |
+|---|---|---|
+| Login | Funcional con la BBDD: email y contraseña cifrada (scrypt), sesión en la tabla `sesion` con cookie httpOnly, registro siempre como alumno y logout. La web es pública; «Tus cursos», módulos, tutor, perfil y pago piden sesión. | #42 |
+| Checkout | Funcional con la BBDD: el precio sale del curso, crea el `pedido` y, al pagar con cualquier tarjeta (o PayPal, Bizum, cartera), lo marca como pagado y crea la matrícula. «Tus cursos» muestra cada curso con su porcentaje completado. | #42 |
+
+### Decisiones tomadas
+
+| Decisión | Por qué |
+|---|---|
+| Para el MVP, login y pago propios y simulados, **sin Better Auth ni Stripe** | No son lo principal de la demo. La firma de `obtenerSesion()` y la función que marca el pedido como pagado se mantienen para conectar Better Auth y el webhook de Stripe más adelante |

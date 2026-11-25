@@ -45,3 +45,6 @@ next-env.d.ts
 # base de datos local
 *.db
 *.db-journal
+
+#Carpeta personal de claude
+.claude

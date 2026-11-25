@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /** Iniciales del nombre y del último apellido: «Lucía Martín» → «LM». */
@@ -24,6 +25,16 @@ export function AvatarUsuario({ nombre, className }: { nombre: string; className
       <Avatar size="lg" aria-hidden>
         <AvatarFallback className="bg-accent text-sm font-bold text-accent-foreground">{iniciales(nombre)}</AvatarFallback>
       </Avatar>
+    </Link>
+  );
+}
+
+/** Zona del usuario en la barra superior: su avatar si hay sesión, o «Entrar» si es un visitante. */
+export function AccesoUsuario({ nombre }: { nombre: string | null }) {
+  if (nombre) return <AvatarUsuario nombre={nombre} />;
+  return (
+    <Link href="/login" className={buttonVariants({ variant: "outline" })}>
+      Entrar
     </Link>
   );
 }
