@@ -1,6 +1,8 @@
 # SPEC — 480 Academy · Equipo A
 
 > Paquete de diseño de la sesión 1 (23/11/2026). Es la base de lo que construiremos el 30/11.
+>
+> **Actualizado el 25/11** con el alcance del MVP: el login y el pago se simulan, no hay panel de administración, el diagnóstico inicial reordena la ruta y el alumno puede pasar una duda a un tutor humano.
 
 ---
 
@@ -20,14 +22,16 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 
 | # | Pantalla | Qué hace |
 |---|---|---|
-| 1 | **Login** | Entra con email y contraseña o con Google. En la demo hay usuarios de prueba de cada rol (alumno, profesor y admin). |
-| 2 | **Home** | Muestra el avatar, el nombre y los cursos. Para cada módulo, una **ruta sugerida** y su estado: dominado, en curso o pendiente. |
+| 0 | **Portada pública** (`/`) | Cualquiera ve el catálogo de cursos sin entrar. |
+| 1 | **Apuntarse: login y pago** | El login salta **al pulsar «Apuntarse»** en un curso, y después el pago. Quien ya tiene sesión entra directo a su panel. **En el MVP los dos son simulados:** se entra como un usuario de demo (hay uno de cada rol: alumno, profesor y admin) y se paga con un botón de prueba. |
+| 2 | **Diagnóstico inicial** | Al apuntarse, unas pocas preguntas. Los módulos que el alumno ya domina quedan como **dominados** y su ruta sugerida se reordena. |
+| 2b | **Panel del alumno** (`/dashboard`) | Muestra el avatar, el nombre y los cursos. Para cada módulo, una **ruta sugerida** y su estado: pendiente, en curso, dominado o completado. |
 | 3 | **Curso X** | Banner, descripción y lista de módulos. El alumno los recorre en el orden que quiera (no es un itinerario lineal). |
 | 4 | **Módulo Y** | Vídeos del módulo, botón al **tutor IA del módulo** y acceso a los **ejercicios de verificación**. |
-| 5 | **Tutor del módulo** | Agente limitado al temario del módulo: responde dudas y genera resúmenes, tarjetas de estudio e infografías. |
+| 5 | **Tutor del módulo** | Agente limitado al temario del módulo: responde dudas y genera resúmenes, tarjetas de estudio e infografías. Con el botón **«Hablar con un tutor humano»** el alumno pasa la duda a su profesor, que la responde desde el Radar. |
 | 6 | **Tarea / ejercicios** | Ejercicio arriba y respuesta abajo. Tras responder, hay corrección inmediata con un enlace al minuto exacto del vídeo que hay que repasar. |
 | 7 | **Foro** | Temas por clase. Las respuestas que la IA o un profesor validan como buenas dan puntos e insignias. Las tablas están listas; las pantallas quedan para después del 30/11. |
-| T | **Radar del tutor** (vista del tutor) | Alumnos atascados, conceptos que fallan y dudas frecuentes por módulo. |
+| T | **Radar del tutor** (vista del profesor) | Alumnos atascados, conceptos que fallan, dudas frecuentes por módulo y las **dudas que los alumnos han pasado a un tutor humano**, para responderlas. |
 
 ---
 
@@ -35,10 +39,10 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 
 | Problema de 480 Academy | Qué hace nuestra solución |
 |---|---|
-| **Los alumnos se saltan los vídeos** | Cada módulo tiene **ejercicios de verificación** generados a partir del contenido de los vídeos. Para dar el módulo por completado hay que resolverlos. Si el alumno falla, la corrección le lleva al minuto concreto del vídeo donde se explica. Así el vídeo tiene un motivo para verse, aunque nada obliga a verlo entero. |
-| **Los itinerarios son iguales para todos** | Los módulos son **no lineales**. Cada módulo tiene un **diagnóstico rápido**: quien demuestra que lo domina lo marca como dominado y pasa a otro. La Home ordena una ruta sugerida según los resultados del alumno, sin bloquear nada. El tutor IA adapta el nivel de sus explicaciones. |
+| **Los alumnos se saltan los vídeos** | Cada módulo tiene **ejercicios de verificación** generados a partir del contenido de los vídeos. Para dar el módulo por **completado** hay que resolverlos, también si el diagnóstico lo marcó como dominado. Si el alumno falla, la corrección le lleva al minuto concreto del vídeo donde se explica. Así el vídeo tiene un motivo para verse, aunque nada obliga a verlo entero. |
+| **Los itinerarios son iguales para todos** | Los módulos son **no lineales**. Al apuntarse, un **diagnóstico inicial** marca como **dominados** los módulos que el alumno ya sabe y reordena su ruta sugerida, sin bloquear nada. «Dominado» solo cambia el orden: unas pocas preguntas no demuestran que sepa, así que para darlo por completado hace los ejercicios de verificación (a quien lo domina le llevan un par de minutos). El tutor IA adapta el nivel de sus explicaciones. |
 | **No sabemos si el alumno aprende** | Los resultados de los ejercicios por módulo y por concepto son la **métrica intermedia** que falta entre el play y el examen final. Cada intento se registra como evento de aprendizaje. |
-| **El acompañamiento no llega a todos** | Un **tutor IA por módulo**, disponible 24/7 y limitado a su temario, resuelve las dudas frecuentes. El **Radar del tutor** (idea original) señala a los 6 tutores humanos dónde hacen falta de verdad. |
+| **El acompañamiento no llega a todos** | Un **tutor IA por módulo**, disponible 24/7 y limitado a su temario, resuelve las dudas frecuentes. El **Radar del tutor** (idea original) señala a los 6 tutores humanos dónde hacen falta de verdad. Si la IA no basta, el alumno pasa la duda a un **tutor humano** desde el chat, y el profesor la responde desde el Radar. En la app, el tutor humano es el **profesor del curso** (no hay un rol «tutor» aparte). |
 
 ---
 
@@ -50,10 +54,11 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 | H2 | alumno | tener un resumen y tarjetas de estudio del módulo, y poder crearme los míos | repasar rápido desde el móvil, a mi manera | **Imprescindible** | **Común:** se genera una vez por módulo, lo revisa una persona antes de darlo por bueno y lo ven todos. El resumen va por apartados que caben en el móvil, las tarjetas se giran con un toque, y cada apartado o tarjeta enlaza al minuto del vídeo. **Personal:** el alumno elige concepto, nivel y enfoque. Cuenta como una consulta del límite diario y se marca como «generado por IA, no revisado». |
 | H3 | alumno | resolver los ejercicios de verificación de un módulo | comprobar que he aprendido y completar el módulo | **Imprescindible** | Se presentan entre 5 y 8 ejercicios del banco del módulo. Las respuestas abiertas se corrigen con una rúbrica. El feedback incluye un enlace al vídeo y minuto que hay que repasar. El progreso se guarda. |
 | H4 | profesor | dar ejemplos y el tipo de ejercicio de cada módulo | que la IA genere ejercicios que no se desvíen de lo que quiero evaluar | **Imprescindible** | Se configura en un fichero (sin panel de administración). Los ejercicios generados respetan el tipo y el formato de los ejemplos. El profesor puede revisarlos antes de publicarlos. |
-| H5 | tutor | ver qué alumnos están atascados y en qué conceptos | dedicar mi tiempo a quien lo necesita | **Imprescindible** | El Radar lista los alumnos con fallos repetidos o inactividad, los conceptos más fallados por módulo y un resumen de las dudas frecuentes hechas al tutor IA. |
-| H6 | alumno con experiencia | hacer un diagnóstico rápido de un módulo | no tener que ver contenido que ya domino | **Deseable** | Unas 3 preguntas. Si las acierta, el módulo queda como dominado y baja en la ruta sugerida. |
+| H5 | tutor | ver qué alumnos están atascados y en qué conceptos | dedicar mi tiempo a quien lo necesita | **Imprescindible** | El Radar lista los alumnos con fallos repetidos o inactividad, los conceptos más fallados por módulo y un resumen de las dudas frecuentes hechas al tutor IA. También muestra las dudas que los alumnos le han pasado (H9), para responderlas. |
+| H6 | alumno con experiencia | hacer un diagnóstico inicial al apuntarme a un curso | no tener que ver contenido que ya domino | **Imprescindible** | Unas pocas preguntas al apuntarse. Los módulos que domina quedan como dominados y su ruta sugerida se reordena (`matricula.orden_modulos`). Nada se bloquea, y para completar un módulo dominado sigue haciendo sus ejercicios de verificación. |
 | H7 | alumno | ver una infografía de cada concepto | entenderlo de un vistazo | **Deseable** | No es una imagen: la IA elige una de nuestras plantillas (capas, jerarquía, comparativa o pasos) y rellena sus datos, y nosotros la dibujamos en HTML. Es legible a 360 px, se genera una por concepto y, como el material común, solo se publica si una persona la ha revisado. |
 | H8 | alumno | comentar dudas con otros alumnos en un foro y ganar puntos e insignias por las buenas respuestas | aprender con los compañeros | **Después del 30/11** | Temas por clase. La IA o un profesor validan las respuestas buenas, y el profesor prevalece. Las tablas se crean ya; las pantallas, después. |
+| H9 | alumno | pasar una duda a un tutor humano cuando el tutor IA no me basta | tener el trato cercano por el que pago | **Imprescindible** | Botón «Hablar con un tutor humano» en el chat del tutor. La duda llega al Radar del profesor del curso, que la responde desde allí, y el alumno ve la respuesta en su chat marcada como «respondido por tu tutor». La IA no interviene en esa respuesta. |
 
 ---
 
@@ -95,15 +100,15 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 
 | Pieza | Qué hace |
 |---|---|
-| **Cliente PWA** | Next.js con Tailwind CSS y componentes de shadcn/ui, con diseño mobile-first, usable con una mano (acciones principales en la zona inferior). Es instalable y cachea la interfaz para cargar rápido en 4G. Los vídeos son *embeds* de YouTube y no se alojan aquí. |
+| **Cliente PWA** | Next.js con Tailwind CSS y componentes de shadcn/ui, con diseño mobile-first, usable con una mano (acciones principales en la zona inferior). Es instalable y cachea la interfaz para cargar rápido en 4G. Los vídeos son *embeds* de YouTube y no se alojan aquí. En producción, con vídeos propios, irían a un servicio de vídeo con CDN en la UE y *streaming* adaptativo; en el prototipo no hace falta, porque el cliente pide no gestionar vídeo. |
 | **Capa de caché** | Sirve los estáticos y el material de estudio ya generado. Un resumen o un juego de tarjetas se genera **una vez por módulo** y lo comparten todos los alumnos. |
 | **API** | Rutas de Next.js. Gestiona el catálogo, el progreso y los ejercicios, y orquesta los agentes. Está diseñada como API REST documentada para facilitar la integración futura con la plataforma de 480 Academy. |
 | **Filtro de privacidad** | Es código, no IA. Antes de cualquier llamada a la IA sustituye la identidad del alumno por un seudónimo y elimina datos personales del texto libre (emails, teléfonos, DNI, nombres conocidos). |
 | **IA** | Modelo de pesos abiertos alojado por un proveedor europeo. Los datos no salen de la UE. Se accede a través de una capa propia que permite cambiar de proveedor sin tocar el resto. |
 | **BBDD** | PostgreSQL en **Neon** (región UE), con **Drizzle** como ORM. Es la **única fuente de verdad**: usuarios, catálogo, transcripciones y apuntes en markdown, material generado, ejercicios, intentos, pagos y foro. Detalle en [`docs/bbdd/README.md`](docs/bbdd/README.md). |
-| **Inicio de sesión** | **Better Auth**, con email y contraseña (guardada como hash) o Google. Roles: alumno, profesor y admin; el visitante es quien no ha entrado. El acceso a un curso se da a un email. |
+| **Inicio de sesión** | **En producción:** **Better Auth**, con email y contraseña (guardada como hash) o Google. Roles: alumno, profesor y admin; el visitante es quien no ha entrado. El acceso a un curso se da a un email. **En el MVP: simulado.** Se entra como un usuario de demo del seed a través de `obtenerSesion()`, que es el único punto que cambia al conectar Better Auth. |
 | **Ficheros e imágenes** | Bucket de **Cloudflare R2** con jurisdicción UE. La BBDD solo guarda la URL. |
-| **Pagos** | **Stripe en modo test**: Checkout con tarjetas de prueba y un webhook verificado que crea la matrícula. No se mueve dinero real. |
+| **Pagos** | **En producción:** **Stripe**: Checkout y un webhook verificado que crea la matrícula. **En el MVP: simulado.** Una pantalla de pago de prueba crea el `pedido`, lo marca como `pagado` con la misma función que usará el webhook y crea la matrícula. No se mueve dinero. Pasar a Stripe (primero en modo test) es cambiar esa pantalla por Checkout y añadir el webhook. |
 | **Despliegue** | Vercel, conectado al repositorio de GitHub: cada cambio en `main` se publica solo y cada PR tiene su propia URL de prueba. Las funciones se ejecutan en **París** (`vercel.json`), así que los datos del alumno se procesan en la UE, junto a Scaleway. Da HTTPS, que la PWA necesita para poder instalarse. |
 
 **Integración futura:** la plataforma actual no tiene API. Por eso el prototipo es independiente, pero cada interacción relevante (vídeo visto, ejercicio resuelto, duda planteada) se guarda como un evento con forma **xAPI**, el estándar de registros de aprendizaje. Así se podrá volcar a un LRS o a la plataforma cuando exista una vía de integración.
@@ -119,7 +124,7 @@ El modelo completo (31 tablas), sus reglas y el formato en que la IA guarda el m
 - **Catálogo:** Categoría → Curso → Módulo → Clase (un vídeo con su transcripción y apuntes en markdown). Los módulos llevan etiquetas que usa el diagnóstico para proponer una ruta personal.
 - **Usuarios:** alumno, profesor y admin, con acceso a cada curso por email (invitación o compra).
 - **Aprendizaje:** ejercicios, intentos, progreso, evaluaciones (diagnóstico, test y examen) y material generado por la IA, que se guarda la primera vez y se reutiliza.
-- **Tutor IA:** conversaciones (caducan a los 90 días) y límite diario de consultas.
+- **Tutor IA:** conversaciones (caducan a los 90 días) y límite diario de consultas. Para H9 (tutor humano) hace falta una pequeña migración: marcar un mensaje como «pasado a un tutor humano» y guardar la respuesta del profesor (hoy un mensaje solo puede ser del alumno o del tutor IA).
 - **Foro:** temas por clase, respuestas validadas por la IA o un profesor, e insignias.
 
 ### Qué sale hacia la IA y qué no
@@ -139,7 +144,7 @@ El modelo completo (31 tablas), sus reglas y el formato en que la IA guarda el m
 3. **Filtro de PII:** el texto libre se limpia antes de enviarse, porque un alumno puede escribir su teléfono en una duda.
 4. **Menores:** se exige el consentimiento del tutor legal para menores de 14 años (art. 7 LOPDGDD). Se aplican las mismas reglas a todos los alumnos, sin un trato especial que requiera enviar la edad.
 5. **Retención limitada:** las conversaciones se borran a los 90 días y el progreso se conserva mientras dure la matrícula.
-6. **Transparencia:** el alumno sabe que habla con una IA y puede pedir un tutor humano.
+6. **Transparencia:** el alumno sabe que habla con una IA y puede pasar su duda a un tutor humano con un botón del chat (H9). Esa respuesta la escribe el profesor, sin IA, y se marca como «respondido por tu tutor».
 
 ---
 
@@ -244,7 +249,8 @@ El revisor es necesario en producción por dos motivos: con 400 vídeos el tutor
 **Qué es:** un panel para los 6 tutores que cada mañana les dice **a quién atender y por qué**. Cruza los resultados de los ejercicios y las dudas hechas al tutor IA. Muestra:
 - alumnos con fallos repetidos en un mismo concepto o con días sin actividad,
 - los conceptos que más se fallan en cada módulo,
-- un resumen de las dudas frecuentes, con la respuesta que dio el tutor IA para que el humano la valide o la corrija.
+- un resumen de las dudas frecuentes, con la respuesta que dio el tutor IA para que el humano la valide o la corrija,
+- las dudas que los alumnos le han pasado a un tutor humano (H9), para responderlas desde ahí.
 
 **Por qué mejora la experiencia:**
 - **Para el tutor:** 1.200 alumnos entre 6 tutores es imposible de seguir uno a uno. El Radar convierte ese volumen en una lista corta y priorizada, y el tutor dedica su tiempo a quien lo necesita.
@@ -257,12 +263,13 @@ El revisor es necesario en producción por dos motivos: con 400 vídeos el tutor
 
 | Entra | Por qué |
 |---|---|
-| PWA mobile-first con Home, Curso y Módulo, y ruta sugerida | Es el recorrido de la demo, que se hará desde el teléfono |
-| Catálogo de 4 módulos y 12 vídeos, cargado en la BBDD con el seed (desde `catalog.json`) | Condición del reto: el catálogo se da por cargado |
-| Inicio de sesión (email y contraseña o Google) con usuarios de demo de cada rol | Permite enseñar las vistas de alumno y de profesor, y el acceso a cursos por email |
-| Diagnóstico inicial y ruta personal por etiquetas | Responde a «los itinerarios son iguales para todos» |
-| Compra simulada de un curso con Stripe en modo test | Enseña el circuito completo: compra → matrícula → acceso |
+| PWA mobile-first con portada pública, panel del alumno, Curso y Módulo, y ruta sugerida | Es el recorrido de la demo, que se hará desde el teléfono |
+| Catálogo de 4 módulos y 12 vídeos, cargado en la BBDD con el seed (desde `catalog.json`). Los otros 5 cursos del seed son **solo de escaparate** en la portada, sin contenido | Condición del reto: el catálogo se da por cargado |
+| **Login simulado** con usuarios de demo de cada rol | Permite enseñar el acceso al curso y la vista del profesor sin montar la autenticación real |
+| Diagnóstico inicial y ruta personal por etiquetas (H6) | Responde a «los itinerarios son iguales para todos» y es el centro de la demo |
+| **Compra simulada:** Apuntarse → login → pago de prueba → matrícula → acceso | Enseña el circuito completo sin depender de Stripe |
 | Tutor del módulo: dudas, resumen y tarjetas | Es el núcleo de la propuesta de IA |
+| Pasar una duda a un tutor humano y responderla desde el Radar (H9) | Responde a «prometemos un acompañamiento que no damos»: la IA filtra lo frecuente y el humano llega a quien lo necesita |
 | Ejercicios de verificación pregenerados, con corrección y enlace al minuto | Responde a «se saltan vídeos» y a «no sabemos si aprende» |
 | Radar del tutor básico | Es nuestra idea original |
 | Filtro de privacidad y seudonimización | Es una condición del cliente y un criterio de evaluación |
@@ -276,7 +283,23 @@ El revisor es necesario en producción por dos motivos: con 400 vídeos el tutor
 | Notificaciones push y repaso espaciado | Encaja como evolución, pero no cabe en 4 horas |
 | Integración con la plataforma actual | Sin API. Lo dejamos preparado con eventos xAPI |
 | RAG | Con 12 vídeos cabe el temario entero en el contexto. Sí entra en producción por coste |
-| Diagnóstico rápido e infografías | Deseables: entran solo si sobra tiempo |
+| Infografías | Deseables: entran solo si sobra tiempo |
+| **Panel de administración** para crear o cargar cursos | El cliente lo descarta: «Tampoco queremos un panel de administración para cargar contenido». El catálogo se carga con el seed. Los roles de profesor y admin existen, pero la demo enseña el recorrido del alumno y el Radar |
+| **Login con Better Auth y pago con Stripe reales** | Diseñados (apartado 5) y aislados para cambiarlos sin tocar el resto. Entran si sobra tiempo; el login va primero, porque los permisos dependen de él |
+
+### Recorrido de la demo (5 minutos, desde el móvil)
+
+1. El alumno entra en la portada y ve los cursos.
+2. Elige *Introducción al desarrollo web* → **Apuntarse** → login y pago simulados.
+3. Hace el **diagnóstico inicial**: HTML sale como dominado y su ruta empieza por CSS.
+4. Entra en CSS, ve un vídeo y **pregunta al tutor**, que responde citando el minuto. Una duda que no le basta la **pasa a un tutor humano**.
+5. Consulta el **material** del módulo (resumen o tarjetas).
+6. Hace los **ejercicios de verificación**, falla uno y la corrección le lleva al minuto exacto del vídeo.
+7. Cambia a la vista del profesor: el **Radar** muestra los alumnos atascados (datos simulados) y la duda del paso 4, que responde. El alumno ve la respuesta en su chat.
+
+### Mejoras para producción
+
+- **«Practicar más»:** más ejercicios del banco del módulo, centrados en el concepto que el alumno falla. No tiene coste de IA salvo la corrección de las respuestas abiertas.
 
 ### Preparación imprescindible antes del 30/11
 
@@ -298,6 +321,7 @@ El revisor es necesario en producción por dos motivos: con 400 vídeos el tutor
 | Poca experiencia en frontend | Componentes ya hechos y un responsable de la base visual y la navegación |
 | Las tareas paralelas chocan el 30/11 | El contrato (tipos compartidos, esquema de la BBDD y formato de los ejercicios) queda cerrado antes de la sesión |
 | La versión desplegada falla el día de la demo | Plan B: la app arrancada en un portátil conectado al punto de acceso del móvil (sin depender de la wifi del aula) |
+| El pago simulado crea matrículas sin cobrar | Solo existe en la demo, está aislado en una función y se marca como tal. En producción la matrícula de compra la crea únicamente el webhook verificado de Stripe |
 
 ### Preguntas abiertas al cliente
 

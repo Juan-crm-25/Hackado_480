@@ -29,3 +29,9 @@
 **Decisión:** la IA trabaja **dentro de cada módulo y anclada a su contenido**: un tutor por módulo, limitado a su temario, y ejercicios generados a partir de los ejemplos del profesor. No hay un asistente general.
 **Alternativas:** un chatbot general para todo el curso, o ejercicios escritos a mano sin IA.
 **Por qué:** si el tutor solo conoce su temario, no se inventa respuestas y cita el vídeo y el minuto, y así lleva al alumno de vuelta al contenido. Que los ejercicios partan de ejemplos del profesor evita que la IA se desvíe y respeta que cada curso evalúa de forma distinta (no es lo mismo una oposición que desarrollo web). Además, el material generado por módulo se comparte entre alumnos, y eso mantiene el coste bajo.
+
+## 6. Alcance del MVP (25/11)
+
+**Decisión:** en el MVP, el **inicio de sesión y el pago se simulan** (se entra como un usuario de demo y se paga con un botón de prueba). Better Auth y Stripe quedan diseñados para producción y aislados para cambiarlos sin tocar el resto. **No hay panel de administración**. Entran el **diagnóstico inicial**, que reordena la ruta, y el botón para **pasar una duda a un tutor humano**, que el profesor responde desde el Radar.
+**Alternativas:** construir ya el login con Better Auth y el pago con Stripe en modo test; un panel para que el profesor cree cursos con enlaces de YouTube.
+**Por qué:** el login y la pasarela de pago no responden a ningún problema del alumno y consumen horas que hacen falta en el tutor, los ejercicios, el diagnóstico y el Radar. El cliente descarta expresamente el panel de administración («Tampoco queremos un panel de administración para cargar contenido»). El diagnóstico responde a «los itinerarios son iguales para todos», y el tutor humano a «prometemos un acompañamiento que no damos». Detalle en `SPEC.md`, apartados 2, 5 y 11.
