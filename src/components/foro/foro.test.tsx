@@ -122,14 +122,14 @@ describe("ListaTemas", () => {
 
 describe("FormularioDuda", () => {
   it("pide título y texto y tiene el botón de publicar", () => {
-    const html = renderToStaticMarkup(<FormularioDuda enviando={false} error={null} onEnviar={vi.fn()} />);
+    const html = renderToStaticMarkup(<FormularioDuda abierto onAbrir={vi.fn()} onCancelar={vi.fn()} enviando={false} error={null} onEnviar={vi.fn()} />);
     expect(html).toContain("Título");
     expect(html).toMatch(/<textarea/);
     expect(html).toMatch(/<button[^>]*type="submit"[^>]*>[\s\S]*Publicar duda/);
   });
 
   it("mientras envía, el botón lo dice y se desactiva; los errores se ven", () => {
-    const html = renderToStaticMarkup(<FormularioDuda enviando error="Escribe tu duda" onEnviar={vi.fn()} />);
+    const html = renderToStaticMarkup(<FormularioDuda abierto onAbrir={vi.fn()} onCancelar={vi.fn()} enviando error="Escribe tu duda" onEnviar={vi.fn()} />);
     expect(html).toMatch(/<button[^>]*type="submit"[^>]*disabled[^>]*>[\s\S]*Publicando…/);
     expect(html).toContain('role="alert"');
     expect(html).toContain("Escribe tu duda");

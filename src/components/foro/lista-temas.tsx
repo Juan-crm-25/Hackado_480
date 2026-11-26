@@ -9,7 +9,7 @@ const textoComentarios = (n: number) => (n === 0 ? "Sin comentarios" : n === 1 ?
 /** Dudas del módulo, en el orden que da la API (la más nueva primero). Cada una abre su hilo. */
 export function ListaTemas({ temas, onAbrir }: { temas: TemaResumen[]; onAbrir: (id: string) => void }) {
   if (temas.length === 0) {
-    return <EstadoVacio>Todavía no hay dudas en este módulo. ¡Pregunta la primera!</EstadoVacio>;
+    return <EstadoVacio className="border bg-card">Todavía no hay dudas en este módulo. ¡Pregunta la primera!</EstadoVacio>;
   }
   return (
     <ul className="flex flex-col gap-3">
