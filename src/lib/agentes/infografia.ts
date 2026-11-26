@@ -79,7 +79,13 @@ export function validarInfografia(texto: string, modulo: Modulo, conceptoId: str
   const base = { conceptoId, titulo, ...(fuente ? { fuente } : {}) };
 
   if (datos.plantilla === "comparativa") {
-    const columnas = (Array.isArray(datos.columnas) ? datos.columnas : []).map((c) => corto(c, MAX_NOMBRE)).filter(Boolean).slice(0, 3);
+    let columnas = (Array.isArray(datos.columnas) ? datos.columnas : []).map((c) => corto(c, MAX_NOMBRE)).filter(Boolean).slice(0, 3);
+    // Error típico del modelo: cuenta el nombre de la fila como una columna más (["Selector", "Valor"] con un solo
+    // valor por fila). Si TODAS las filas traen un valor menos que columnas, esa primera columna sobra.
+    const tamanos = (Array.isArray(datos.filas) ? (datos.filas as Record<string, unknown>[]) : []).map((f) =>
+      Array.isArray(f?.valores) ? (f.valores as unknown[]).length : -1,
+    );
+    if (columnas.length > 1 && tamanos.length > 0 && tamanos.every((n) => n === columnas.length - 1)) columnas = columnas.slice(1);
     if (columnas.length < 1) throw new Error("La comparativa no tiene columnas.");
     const filas: { nombre: string; valores: string[] }[] = [];
     for (const f of Array.isArray(datos.filas) ? (datos.filas as Record<string, unknown>[]) : []) {

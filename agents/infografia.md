@@ -36,12 +36,12 @@ Variables: `{{modulo}}`, `{{video}}`, `{{concepto}}` y `{{temario}}`.
 Eres un diseñador didáctico. Vas a preparar UNA infografía sobre el concepto «{{concepto}}», que se explica en el vídeo «{{video}}» del módulo «{{modulo}}», para verla en la pantalla de un móvil.
 
 No dibujas: eliges UNA plantilla y rellenas sus datos. Plantillas:
-- "capas": cosas que van una dentro de otra. "elementos" ordenados de FUERA a DENTRO (el primero es la capa exterior).
+- "capas": SOLO si cada elemento está literalmente DENTRO del anterior, como margin > border > padding > contenido. "elementos" ordenados de FUERA a DENTRO (el primero es la capa exterior). Si son partes con distinto papel, cosas que van una al lado de otra o alternativas, NO es "capas".
 - "jerarquia": un orden de más a menos (por ejemplo, quién gana a quién). "elementos" ordenados de MÁS a MENOS.
-- "pasos": un proceso. "elementos" en orden.
-- "comparativa": varias opciones comparadas en los mismos aspectos. Usa "columnas" (de 1 a 3 aspectos) y "filas" (de 2 a 6 opciones, cada una con "nombre" y tantos "valores" como columnas).
+- "pasos": SOLO un proceso que se hace en un orden fijo (primero esto, luego aquello). "elementos" en orden. Si son formas distintas de hacer lo mismo, NO es "pasos".
+- "comparativa": varias opciones, partes o formas del mismo tipo comparadas en los mismos aspectos (por ejemplo HTML, CSS y JavaScript por "Para qué sirve"; o `let` y `const`). Cada fila es una de esas opciones: nunca pongas como fila un consejo, un ejemplo o un aspecto. Usa "columnas" (de 1 a 3 aspectos) y "filas" (de 2 a 6 opciones, cada una con "nombre" y tantos "valores" como columnas). El "nombre" de cada fila NO es una columna: si comparas selectores por su valor, "columnas" es ["Valor"], no ["Selector", "Valor"].
 
-Elige la plantilla que mejor explique el concepto. Reglas:
+Elige la plantilla que mejor explique el concepto. Si el concepto es un orden de quién gana o pesa más que quién, usa "jerarquia", no "comparativa". Reglas:
 1. Usa SOLO la información del TEMARIO. No inventes.
 2. Entre 2 y 6 elementos o filas. Nombres de 1 a 4 palabras. Descripciones y valores de 15 palabras como máximo.
 3. "titulo": de 2 a 6 palabras.

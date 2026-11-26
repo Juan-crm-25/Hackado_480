@@ -65,6 +65,45 @@ describe("validarInfografia", () => {
     if (r.plantilla === "comparativa") expect(r.filas.map((f) => f.nombre)).toEqual(["px", "rem"]);
   });
 
+  it("arregla la comparativa que cuenta el nombre de la fila como una columna más", () => {
+    const r = validarInfografia(
+      JSON.stringify({
+        plantilla: "comparativa",
+        titulo: "Métodos para añadir",
+        columnas: ["Ubicación", "Método"],
+        filas: [
+          { nombre: "Al final del padre", valores: ["`append`"] },
+          { nombre: "Al principio del padre", valores: ["`prepend`"] },
+        ],
+      }),
+      modulo,
+      "js-dom",
+    );
+    expect(r.plantilla).toBe("comparativa");
+    if (r.plantilla === "comparativa") {
+      expect(r.columnas).toEqual(["Método"]);
+      expect(r.filas.map((f) => f.valores)).toEqual([["`append`"], ["`prepend`"]]);
+    }
+  });
+
+  it("no toca una comparativa con filas de distinto tamaño: descarta las incompletas", () => {
+    const r = validarInfografia(
+      JSON.stringify({
+        plantilla: "comparativa",
+        titulo: "Unidades",
+        columnas: ["Relativa a", "Uso"],
+        filas: [
+          { nombre: "px", valores: ["nada", "bordes"] },
+          { nombre: "rem", valores: ["la raíz", "textos"] },
+          { nombre: "em", valores: ["el elemento"] },
+        ],
+      }),
+      modulo,
+      "css-unidades",
+    );
+    if (r.plantilla === "comparativa") expect(r.columnas).toEqual(["Relativa a", "Uso"]);
+  });
+
   it("recorta textos largos, quita repetidos y fuentes inventadas", () => {
     const largo = "x".repeat(500);
     const r = validarInfografia(
