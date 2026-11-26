@@ -155,17 +155,12 @@ export interface SeccionResumen {
 }
 
 /**
- * Material COMÚN del módulo (#2): se genera una vez con `npm run generar:material`,
- * lo revisa el equipo o el profesor y lo comparten todos los alumnos. Vive en data/material/<moduloId>.json.
+ * Material COMÚN del módulo (#2, #15): el resumen y las tarjetas YA REVISADOS de sus vídeos, juntados en orden.
+ * Se genera una vez por vídeo con `npm run generar:material` (tabla material_clase), lo revisa una persona y lo
+ * comparten todos los alumnos del curso. Respuesta de GET /api/modulos/:id/material.
  */
 export interface MaterialComun {
   moduloId: string;
-  /** Fecha de generación (ISO 8601). */
-  generado: string;
-  /** Modelo que lo generó, para trazabilidad. */
-  modelo: string;
-  /** false hasta que una persona lo revisa y cambia el valor a true en el fichero. */
-  revisado: boolean;
   resumen: SeccionResumen[];
   tarjetas: Tarjeta[];
 }
@@ -233,13 +228,12 @@ export type Infografia =
       filas: { nombre: string; valores: string[] }[];
     });
 
-/** Infografías comunes de un módulo: una por concepto. Vive en data/infografias/<moduloId>.json. */
+/**
+ * Infografías comunes de un módulo YA REVISADAS: una por vídeo, sobre su concepto (#7, #15). Se guardan en
+ * material_clase como el resto del material común. Respuesta de GET /api/modulos/:id/infografias.
+ */
 export interface InfografiasModulo {
   moduloId: string;
-  generado: string;
-  modelo: string;
-  /** Igual que el material común: solo las ven los alumnos cuando una persona las ha revisado. */
-  revisado: boolean;
   infografias: Infografia[];
 }
 

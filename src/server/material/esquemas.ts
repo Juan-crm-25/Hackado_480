@@ -15,3 +15,6 @@ export type DatosPeticionMaterialPersonal = z.output<typeof esquemaPeticionMater
 
 /** GET /api/material-personal?moduloId=<slug>: el material del alumno de la sesión (opcionalmente, de un módulo). */
 export const esquemaQueryMaterialPersonal = z.object({ moduloId: z.string().trim().min(1).max(100).optional() });
+
+/** /api/modulos/:id/material y /api/modulos/:id/infografias: el módulo por su slug (p. ej. "m2-css"). */
+export const esquemaParamsModulo = z.object({ id: z.string().trim().min(1).max(100) });

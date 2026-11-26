@@ -1,8 +1,8 @@
 import "server-only";
-import { and, desc, eq, notInArray } from "drizzle-orm";
+import { and, asc, desc, eq, notInArray, sql } from "drizzle-orm";
 import { getDb, type Db } from "@/lib/db/client";
-import { concepto, materialPersonal, modulo, usuario } from "@/lib/db/schema";
-import type { MaterialPersonal, SeccionResumen, Tarjeta } from "@/lib/types";
+import { clase, concepto, materialClase, materialPersonal, modulo, usuario } from "@/lib/db/schema";
+import type { Infografia, MaterialPersonal, SeccionResumen, Tarjeta } from "@/lib/types";
 
 /** Material personal que se conserva por alumno: al guardar uno nuevo se borran los más antiguos. */
 export const MAXIMO_POR_ALUMNO = 20;
@@ -91,4 +91,96 @@ export async function listarMaterialPersonal(
     else material.tarjetas = f.contenido as Tarjeta[];
     return material;
   });
+}
+
+// ── Material común de cada clase (#15): lo genera la IA una vez por vídeo, lo revisa una persona y lo ven todos ──
+
+/**
+ * Material generado para un vídeo, con el vídeo por su slug del catálogo ("v04").
+ * La infografía se guarda como lista (de una) para que el contenido tenga siempre la misma forma.
+ */
+export type MaterialDeClase =
+  | { videoId: string; tipo: "resumen"; contenido: SeccionResumen[]; modelo: string }
+  | { videoId: string; tipo: "tarjetas"; contenido: Tarjeta[]; modelo: string }
+  | { videoId: string; tipo: "infografia"; contenido: Infografia[]; modelo: string };
+
+export type TipoMaterialClase = MaterialDeClase["tipo"];
+
+/** Lo que el alumno ve de un módulo: el material revisado de sus vídeos, juntado en el orden de los vídeos. */
+export interface MaterialPublicado {
+  resumen: SeccionResumen[];
+  tarjetas: Tarjeta[];
+  infografias: Infografia[];
+}
+
+/** Qué material tiene ya guardado cada vídeo de un módulo (id de la BBDD), para no generarlo dos veces. */
+export async function materialGuardado(
+  moduloId: string,
+  db: Db = getDb(),
+): Promise<{ videoId: string; tipo: TipoMaterialClase; revisado: boolean }[]> {
+  return db
+    .select({ videoId: clase.slug, tipo: materialClase.tipo, revisado: materialClase.revisado })
+    .from(materialClase)
+    .innerJoin(clase, eq(clase.id, materialClase.claseId))
+    .where(eq(clase.moduloId, moduloId))
+    .orderBy(asc(clase.orden), asc(materialClase.tipo));
+}
+
+/**
+ * Guarda el material de los vídeos de un módulo (id de la BBDD) sin revisar, en una transacción.
+ * Traduce cada vídeo a su clase; si alguno no es de ese módulo, falla sin guardar nada.
+ * Si ya existe el de ese vídeo y tipo: sin `reemplazar` no se toca; con `reemplazar` se regenera, salvo que esté
+ * revisado (lo aprobado por una persona no se pisa nunca). Devuelve cuántas filas ha escrito.
+ */
+export async function guardarMaterialClase(
+  moduloId: string,
+  materiales: MaterialDeClase[],
+  opciones: { reemplazar?: boolean } = {},
+  db: Db = getDb(),
+): Promise<number> {
+  return db.transaction(async (tx) => {
+    const clases = await tx.select({ id: clase.id, slug: clase.slug }).from(clase).where(eq(clase.moduloId, moduloId));
+    const claseId = new Map(clases.map((c) => [c.slug, c.id]));
+
+    // Se resuelven todos antes de escribir nada.
+    const filas = materiales.map((m) => {
+      const id = claseId.get(m.videoId);
+      if (!id) throw new Error(`El vídeo "${m.videoId}" no es del módulo.`);
+      return { claseId: id, tipo: m.tipo, contenido: m.contenido, modelo: m.modelo, revisado: false };
+    });
+
+    let escritas = 0;
+    for (const fila of filas) {
+      const insertar = tx.insert(materialClase).values(fila);
+      const resultado = opciones.reemplazar
+        ? await insertar
+            .onConflictDoUpdate({
+              target: [materialClase.claseId, materialClase.tipo],
+              set: { contenido: fila.contenido, modelo: fila.modelo, revisado: false, generado: sql`now()` },
+              setWhere: eq(materialClase.revisado, false),
+            })
+            .returning({ id: materialClase.id })
+        : await insertar.onConflictDoNothing().returning({ id: materialClase.id });
+      escritas += resultado.length;
+    }
+    return escritas;
+  });
+}
+
+/** El material revisado de un módulo (id de la BBDD), juntando sus vídeos en orden. Sin nada revisado, listas vacías. */
+export async function leerMaterialPublicado(moduloId: string, db: Db = getDb()): Promise<MaterialPublicado> {
+  const filas = await db
+    .select({ tipo: materialClase.tipo, contenido: materialClase.contenido })
+    .from(materialClase)
+    .innerJoin(clase, eq(clase.id, materialClase.claseId))
+    .where(and(eq(clase.moduloId, moduloId), eq(materialClase.revisado, true)))
+    .orderBy(asc(clase.orden));
+
+  const publicado: MaterialPublicado = { resumen: [], tarjetas: [], infografias: [] };
+  for (const f of filas) {
+    if (f.tipo === "resumen") publicado.resumen.push(...(f.contenido as SeccionResumen[]));
+    else if (f.tipo === "tarjetas") publicado.tarjetas.push(...(f.contenido as Tarjeta[]));
+    else publicado.infografias.push(...(f.contenido as Infografia[]));
+  }
+  return publicado;
 }

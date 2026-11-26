@@ -1,20 +1,12 @@
-import { getModulo } from "@/lib/catalogo";
-import { leerMaterialComunPublicado } from "@/lib/material";
-import type { ErrorApi, MaterialComun } from "@/lib/types";
+import { ruta } from "@/server/compartido/http";
+import { esquemaParamsModulo } from "@/server/material/esquemas";
+import { materialComunDelModulo } from "@/server/material/servicio";
 
 /**
- * GET /api/modulos/:id/material — material común del módulo (resumen + tarjetas), igual para todos.
- * Se genera con `npm run generar:material` (#2); aquí solo se lee: no se llama a la IA.
- * Solo se devuelve si una persona lo ha revisado ("revisado": true); si no, 404 como si no existiera.
+ * GET /api/modulos/:id/material — material común del módulo (#2, #15): el resumen y las tarjetas de sus vídeos,
+ * de la tabla material_clase y solo lo REVISADO. Necesita el curso (401 sin sesión, 403 sin el curso).
+ * 404 si el módulo no existe o aún no tiene nada revisado. No llama a la IA.
  */
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  if (!getModulo(id)) {
-    return Response.json({ error: `No existe el módulo "${id}"` } satisfies ErrorApi, { status: 404 });
-  }
-  const material = leerMaterialComunPublicado(id);
-  if (!material) {
-    return Response.json({ error: "Este módulo todavía no tiene material de repaso" } satisfies ErrorApi, { status: 404 });
-  }
-  return Response.json(material satisfies MaterialComun);
-}
+export const GET = ruta({ acceso: "usuario", params: esquemaParamsModulo }, ({ usuario, params }) =>
+  materialComunDelModulo(usuario, params.id),
+);

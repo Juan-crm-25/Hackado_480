@@ -1,16 +1,23 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Modulo } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
-import { generarMaterialComun, validarMaterial } from "./material";
+import { generarMaterialDeVideo, MAXIMO_SECCIONES, MAXIMO_TARJETAS, validarMaterial } from "./material";
 
 const modulo: Modulo = {
   id: "m2-css",
   titulo: "CSS",
   descripcion: "",
   ordenSugerido: 2,
-  conceptos: [{ id: "css-caja", nombre: "Modelo de caja" }],
-  videos: [{ id: "v05", titulo: "Caja", youtubeId: "", duracionSegundos: 190, transcripcion: "v05.vtt" }],
+  conceptos: [
+    { id: "css-especificidad", nombre: "Selectores y especificidad" },
+    { id: "css-caja", nombre: "Modelo de caja" },
+  ],
+  videos: [
+    { id: "v04", titulo: "Especificidad", youtubeId: "", duracionSegundos: 300, transcripcion: "v04.vtt" },
+    { id: "v05", titulo: "Caja", youtubeId: "", duracionSegundos: 190, transcripcion: "v05.vtt" },
+  ],
 };
+const caja = modulo.videos[1];
 
 const seccion = (i: number) => ({ titulo: `Apartado ${i}`, texto: `Texto ${i}`, fuente: { videoId: "v05", segundo: 38 } });
 const tarjeta = (i: number) => ({ pregunta: `¿Pregunta ${i}?`, respuesta: `Respuesta ${i}`, fuente: { videoId: "v05", segundo: 85 } });
@@ -18,7 +25,7 @@ const valido = { resumen: [seccion(1), seccion(2)], tarjetas: [1, 2, 3, 4].map(t
 
 describe("instrucciones del generador de material", () => {
   it("se leen de agents/material.md y tienen todas las variables", () => {
-    expect(() => rellenar(leerInstrucciones("material"), { modulo: "CSS", conceptos: "Caja", temario: "T" })).not.toThrow();
+    expect(() => rellenar(leerInstrucciones("material"), { modulo: "CSS", video: "Caja", conceptos: "Caja", temario: "T" })).not.toThrow();
   });
 });
 
@@ -48,21 +55,50 @@ describe("validarMaterial", () => {
   });
 });
 
-describe("generarMaterialComun", () => {
-  it("usa el modelo generador, sin datos de alumnos, y lo marca como no revisado", async () => {
-    const completar = vi.fn().mockResolvedValue({ texto: JSON.stringify(valido), simulado: false });
-    const material = await generarMaterialComun(modulo, { completar, temario: () => "[v05 @38] El padding es el relleno" });
+describe("generarMaterialDeVideo", () => {
+  const responde = (datos: unknown) => vi.fn().mockResolvedValue({ texto: JSON.stringify(datos), simulado: false });
 
-    expect(material).toMatchObject({ moduloId: "m2-css", revisado: false });
+  it("trabaja solo con la transcripción de ese vídeo, con el modelo generador y sin datos de alumnos", async () => {
+    const completar = responde(valido);
+    const temario = vi.fn().mockReturnValue("[v05 @38] El padding es el relleno");
+    const material = await generarMaterialDeVideo(modulo, caja, { completar, temario });
+
+    expect(temario.mock.calls[0][0].videos.map((v: { id: string }) => v.id)).toEqual(["v05"]);
+    expect(material.resumen).toHaveLength(2);
+    expect(material.tarjetas).toHaveLength(4);
+    expect(material).toHaveProperty("modelo");
     const op = completar.mock.calls[0][0];
     expect(op.modelo).toBe("generador");
+    expect(op.mensajes[0].contenido).toContain("«Caja»");
     expect(op.mensajes[0].contenido).toContain("[v05 @38] El padding es el relleno");
   });
 
-  it("no genera nada sin transcripciones ni en modo simulado", async () => {
-    await expect(generarMaterialComun(modulo, { completar: vi.fn(), temario: () => "" })).rejects.toThrow(/transcripciones/);
+  it("descarta las fuentes que apuntan a otro vídeo del módulo", async () => {
+    const otroVideo = { ...seccion(3), fuente: { videoId: "v04", segundo: 10 } };
+    const material = await generarMaterialDeVideo(modulo, caja, {
+      completar: responde({ ...valido, resumen: [seccion(1), otroVideo] }),
+      temario: () => "[v05 @38] x",
+    });
+    expect(material.resumen[1].fuente).toBeUndefined();
+  });
+
+  it("se queda en un tamaño de vídeo: como mucho 3 apartados y 6 tarjetas", async () => {
+    const material = await generarMaterialDeVideo(modulo, caja, {
+      completar: responde({ resumen: [1, 2, 3, 4, 5].map(seccion), tarjetas: [1, 2, 3, 4, 5, 6, 7, 8].map(tarjeta) }),
+      temario: () => "[v05 @38] x",
+    });
+    expect(MAXIMO_SECCIONES).toBe(3);
+    expect(MAXIMO_TARJETAS).toBe(6);
+    expect(material.resumen).toHaveLength(3);
+    expect(material.tarjetas).toHaveLength(6);
+  });
+
+  it("no genera nada si el vídeo no es del módulo, sin transcripción o en modo simulado", async () => {
+    const ajeno = { ...caja, id: "v01" };
+    await expect(generarMaterialDeVideo(modulo, ajeno, { completar: vi.fn(), temario: () => "x" })).rejects.toThrow(/v01/);
+    await expect(generarMaterialDeVideo(modulo, caja, { completar: vi.fn(), temario: () => "" })).rejects.toThrow(/transcripción/);
     await expect(
-      generarMaterialComun(modulo, { completar: vi.fn().mockResolvedValue({ texto: "{}", simulado: true }), temario: () => "x" }),
+      generarMaterialDeVideo(modulo, caja, { completar: vi.fn().mockResolvedValue({ texto: "{}", simulado: true }), temario: () => "x" }),
     ).rejects.toThrow(/simulado/);
   });
 });

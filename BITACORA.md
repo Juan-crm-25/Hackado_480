@@ -216,6 +216,44 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 ---
 
+## Trabajo de Sergio — Jueves 26/11/2026: material común en la BBDD (#15)
+
+**Quién:** Sergio Cid, con Claude Code (Claude Opus 5.5) como asistente de programación.
+**Bloque:** Contenido y ejercicios. El #15 es también el paso 4 del #39 (material por vídeo).
+
+### Qué hicimos
+
+| Parte | Qué se hizo | PR |
+|---|---|---|
+| Guardar y leer | Repositorio de `material_clase`: guarda por vídeo el resumen, las tarjetas y la infografía **sin revisar** (todo o nada; lo revisado no se pisa nunca) y lee lo revisado de un módulo juntando sus vídeos en orden | #60 |
+| Agentes por vídeo | Los agentes de Juan (material e infografías) trabajan **con la transcripción de un solo vídeo**: descartan las fuentes de otros vídeos y se quedan en 2-3 apartados y 4-6 tarjetas. La infografía de cada vídeo es sobre su concepto (el de su misma posición en el catálogo). Sus validaciones no cambian | #60 |
+| `npm run generar:material` | Genera y guarda en la BBDD lo que le falte a cada vídeo (como `generar:ejercicios`: solo la BBDD local salvo `GENERAR_PERMITIR_REMOTO=1`). Si falla una infografía, el resumen y las tarjetas se guardan igual. Sustituye también a `generar:infografias`. Probado con la IA real: 36 filas para los 12 vídeos | #60 |
+| Pantalla y API | La pantalla de material y `/api/modulos/:id/material` e `/infografias` leen de la BBDD, solo lo revisado, y **exigen tener el curso** (como el tutor). Resumen y Tarjetas son pestañas independientes. Probado en el navegador como Lucía | #60 |
+| Limpieza | Fuera `data/material/`, `data/infografias/` y el código que los leía | #60 |
+
+### Decisiones tomadas
+
+| Decisión | Alternativas | Por qué |
+|---|---|---|
+| El material común pasa a la tabla `material_clase` | Generar más JSON en `data/` | `AGENTS.md`: la BBDD es la fuente de verdad y no se crean ficheros nuevos en `data/`. La tabla ya existía para esto |
+| **Por vídeo**, llamando al agente una vez por vídeo | Generar por módulo y repartirlo | La tabla va por clase, y la fuente de cada apartado es opcional: no se podría repartir con seguridad |
+| Se genera una vez **en Neon** y se revisa allí; lo que se genera en local es para desarrollar | Meterlo en el seed | El seed lleva lo que escriben personas (catálogo, transcripciones, ejemplos del profesor); lo que genera la IA se genera dentro de la BBDD, igual que los ejercicios |
+| El alumno solo ve material **revisado** | Enseñarlo con la etiqueta «Generado por IA» (como plantea el #39) | Decisión del #2 y del SPEC para el prototipo. Si algo está casi bien, quien revisa lo corrige a mano en Studio |
+| La validación arregla sola la comparativa que cuenta el nombre de la fila como una columna más | Solo instrucciones | Con instrucciones fallaba la mitad de las veces; el error es siempre el mismo y fácil de reconocer |
+
+### Problemas y cómo los resolvimos
+
+- **Las infografías salían peor que el resumen y las tarjetas.** El modelo abusaba de la plantilla `capas` (cajas una dentro de otra) para cosas que no lo son, como HTML ⊃ CSS ⊃ JS. Se dieron en las instrucciones reglas de cuándo usar cada plantilla: de 12, pasaron a estar bien 11. La que queda (v02, `head` y `body` en `capas`) se corrige al revisar.
+- **Comparativas descartadas enteras:** el modelo ponía `["Selector", "Valor"]` como columnas y un solo valor por fila. Se arregló en la validación (ver decisiones).
+- Coste de las pruebas: unos 0,05 € de IA.
+
+### Pendiente
+
+- **Neon**, por quien tenga la `DATABASE_URL`: la tanda completa está en `docs/bbdd/README.md`, «Para la demo (Neon), en este orden» (migrate → seed → ejercicios → material → revisar y aprobar; y el día de la demo, la actividad simulada).
+- **#15:** las respuestas de reserva para las preguntas del guion de la demo, cuando exista el guion (#17).
+- **#3:** ejercicios de verificación con corrección.
+- **#39:** pasos 1 y 2 (transcripciones en `documento` y el tutor leyendo de la BBDD) y el panel de estudio por vídeo.
+
 ## Trabajo de Héctor — Jueves 26/11/2026
 
 ### Qué hicimos
