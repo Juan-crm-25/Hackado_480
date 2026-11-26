@@ -1,11 +1,13 @@
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { EstadoCargando, EstadoError, EstadoVacio } from "@/components/estado";
+import { DudasParaResponder } from "@/components/radar/dudas-para-responder";
 import { VistaRadar } from "@/components/radar/vista-radar";
 import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
 import { requerirUsuarioActual } from "@/server/auth/usuario-actual";
 import { ErrorApp } from "@/server/compartido/errores";
 import { obtenerRadar } from "@/server/radar/servicio";
+import { listarDudasHumanasDelCurso } from "@/server/tutor/servicio";
 
 /**
  * Radar del tutor (/radar?curso=<slug>, #5): solo para el profesor de ese curso o un admin.
@@ -35,7 +37,20 @@ async function ContenidoRadar({ searchParams }: { searchParams: PageProps<"/rada
     (informe) => ({ informe }),
     (error: unknown) => ({ error }),
   );
-  if ("informe" in resultado) return <VistaRadar informe={resultado.informe} ahora={new Date()} />;
+  if ("informe" in resultado) {
+    // Las dudas para responder (H9) van aparte: si fallan, el resto del Radar se ve igual.
+    const dudas = await listarDudasHumanasDelCurso(usuario, slug).catch((e: unknown) => {
+      console.error(e);
+      return null;
+    });
+    const ahora = new Date();
+    return (
+      <>
+        <DudasParaResponder dudasIniciales={dudas} ahora={ahora} />
+        <VistaRadar informe={resultado.informe} ahora={ahora} />
+      </>
+    );
+  }
 
   const { error } = resultado;
   if (error instanceof ErrorApp && error.codigo === "PROHIBIDO") {

@@ -1,15 +1,23 @@
 "use client";
 
-import { Info } from "lucide-react";
+import { Clock, Info, UserCheck, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { EstadoCargando, EstadoVacio } from "@/components/estado";
 import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { mensajeDeError } from "@/lib/peticiones";
-import type { ErrorApi, Mensaje, PeticionTutor, RespuestaTutor } from "@/lib/types";
+import { leerRespuesta, mensajeDeError } from "@/lib/peticiones";
+import type { DudaHumana, ErrorApi, Mensaje, PeticionTutor, RespuestaTutor } from "@/lib/types";
 
-type Burbuja = Mensaje & { fueraDeTemario?: boolean; error?: boolean };
+type Burbuja = Mensaje & {
+  fueraDeTemario?: boolean;
+  error?: boolean;
+  /** Pregunta guardada a la que responde: permite pasarla a un tutor humano (H9). */
+  preguntaId?: string;
+  /** Estado del envío al tutor humano: un mensaje de texto si falló. */
+  pasada?: "enviando" | "enviada" | { error: string };
+};
 
 export function ChatTutor({
   moduloId,
@@ -24,7 +32,32 @@ export function ChatTutor({
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [restantes, setRestantes] = useState<number | null>(null);
+  const [dudas, setDudas] = useState<DudaHumana[]>([]);
   const finRef = useRef<HTMLDivElement>(null);
+
+  // Dudas que el alumno ya pasó a su tutor en este módulo, con la respuesta cuando la hay (H9).
+  useEffect(() => {
+    fetch(`/api/tutor/humano?modulo=${encodeURIComponent(moduloId)}`)
+      .then((res) => leerRespuesta<DudaHumana[]>(res))
+      .then(setDudas)
+      .catch(() => {}); // Si falla, el chat sigue funcionando: solo no se ven las respuestas del tutor.
+  }, [moduloId]);
+
+  async function pasarATutor(indice: number, preguntaId: string) {
+    setMensajes((prev) => prev.map((m, i) => (i === indice ? { ...m, pasada: "enviando" } : m)));
+    try {
+      const res = await fetch("/api/tutor/humano", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preguntaId }),
+      });
+      const duda = await leerRespuesta<DudaHumana>(res);
+      setDudas((prev) => [...prev.filter((d) => d.id !== duda.id), duda]);
+      setMensajes((prev) => prev.map((m, i) => (i === indice ? { ...m, pasada: "enviada" } : m)));
+    } catch (e) {
+      setMensajes((prev) => prev.map((m, i) => (i === indice ? { ...m, pasada: { error: mensajeDeError(e) } } : m)));
+    }
+  }
 
   useEffect(() => {
     const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -52,7 +85,7 @@ export function ChatTutor({
       if (!res.ok || "error" in datos) {
         throw new Error("error" in datos ? datos.error : "Error inesperado");
       }
-      setMensajes((prev) => [...prev, { ...datos.mensaje, fueraDeTemario: datos.fueraDeTemario }]);
+      setMensajes((prev) => [...prev, { ...datos.mensaje, fueraDeTemario: datos.fueraDeTemario, preguntaId: datos.preguntaId }]);
       if (typeof datos.consultasRestantes === "number") setRestantes(datos.consultasRestantes);
     } catch (e) {
       setMensajes((prev) => [...prev, { rol: "tutor", texto: mensajeDeError(e), error: true }]);
@@ -64,6 +97,7 @@ export function ChatTutor({
   return (
     <>
       <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
+        <DudasConTutor dudas={dudas} />
         {mensajes.length === 0 && (
           <EstadoVacio
             acciones={
@@ -89,7 +123,7 @@ export function ChatTutor({
         {/* Solo la conversación es región viva (role="log"): se anuncian los mensajes nuevos, no toda la pantalla. */}
         <div role="log" aria-label="Conversación con el tutor" className="flex flex-col gap-3">
           {mensajes.map((m, i) => (
-            <BurbujaMensaje key={i} mensaje={m} videos={videos} />
+            <BurbujaMensaje key={i} mensaje={m} videos={videos} onPasarATutor={m.preguntaId ? () => pasarATutor(i, m.preguntaId!) : undefined} />
           ))}
         </div>
 
@@ -130,7 +164,16 @@ export function ChatTutor({
   );
 }
 
-export function BurbujaMensaje({ mensaje, videos }: { mensaje: Burbuja; videos: VideoResumen[] }) {
+export function BurbujaMensaje({
+  mensaje,
+  videos,
+  onPasarATutor,
+}: {
+  mensaje: Burbuja;
+  videos: VideoResumen[];
+  /** Si llega, ofrece pasar la pregunta a un tutor humano (H9). */
+  onPasarATutor?: () => void;
+}) {
   const esAlumno = mensaje.rol === "alumno";
   const estilo = esAlumno
     ? "self-end bg-primary text-primary-foreground"
@@ -162,6 +205,65 @@ export function BurbujaMensaje({ mensaje, videos }: { mensaje: Burbuja; videos: 
           ))}
         </ul>
       )}
+      {!esAlumno && !mensaje.error && mensaje.preguntaId && onPasarATutor && <PasarATutor estado={mensaje.pasada} onPasar={onPasarATutor} />}
     </div>
+  );
+}
+
+/** Botón para pasar la duda a un tutor humano, o la confirmación de que ya se ha enviado. */
+function PasarATutor({ estado, onPasar }: { estado: Burbuja["pasada"]; onPasar: () => void }) {
+  if (estado === "enviada") {
+    return (
+      <p className="flex items-center gap-1 text-xs font-semibold">
+        <UserRound className="size-3.5 shrink-0" aria-hidden />
+        Enviada a tu tutor. Verás su respuesta arriba, en «Tus preguntas a tu tutor».
+      </p>
+    );
+  }
+  return (
+    <div className="flex flex-col items-start gap-1 whitespace-normal">
+      <Button variant="outline" className="h-auto min-h-11 bg-background py-2 text-left" disabled={estado === "enviando"} onClick={onPasar}>
+        <UserRound aria-hidden />
+        {estado === "enviando" ? "Enviando a tu tutor…" : "¿No te sirve? Pregunta a tu tutor"}
+      </Button>
+      {typeof estado === "object" && <p role="alert" className="text-xs text-destructive">{estado.error}</p>}
+    </div>
+  );
+}
+
+/** Dudas que el alumno ha pasado a su tutor humano en este módulo (H9), con la respuesta cuando la hay. */
+export function DudasConTutor({ dudas }: { dudas: DudaHumana[] }) {
+  if (dudas.length === 0) return null;
+  return (
+    <section aria-labelledby="dudas-con-tutor" className="flex flex-col gap-2 rounded-lg border p-4">
+      <h2 id="dudas-con-tutor" className="flex items-center gap-2 text-base font-bold">
+        <UserRound className="size-4 shrink-0" aria-hidden />
+        Tus preguntas a tu tutor
+      </h2>
+      <ul className="flex flex-col gap-3">
+        {dudas.map((d) => (
+          <li key={d.id} className="flex flex-col items-start gap-1 text-sm">
+            {/* El estado arriba: a 360 px, al lado de la pregunta la dejaba en una columna muy estrecha. */}
+            {d.estado === "respondida" ? (
+              <Badge>
+                <UserCheck aria-hidden />
+                Respondido por tu tutor
+              </Badge>
+            ) : (
+              <Badge variant="secondary">
+                <Clock aria-hidden />
+                Pendiente
+              </Badge>
+            )}
+            <p className="w-full font-medium break-words">{d.pregunta}</p>
+            {d.respuesta && (
+              <p className="w-full rounded-md bg-muted px-3 py-2 whitespace-pre-wrap">
+                <TextoConCodigo texto={d.respuesta} />
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

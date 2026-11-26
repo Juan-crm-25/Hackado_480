@@ -15,6 +15,10 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). El alumno es el **usuario de la sesión** (401 sin sesión, 403 sin el curso); `alumnoId` ya no se usa. Límite diario en `uso_ia` (429). Guarda cada pregunta y respuesta, ya filtradas, en `conversacion` y `mensaje` (para el Radar) y devuelve `preguntaId` | #1, #5 |
 | `GET /api/radar?curso=<slug>` | `InformeRadar` | ✅ Real: alumnos atascados o inactivos, conceptos más fallados y dudas frecuentes, calculado con código (sin IA). Solo el profesor de ese curso o un admin (403 si no). Pantalla: `/radar` | #5 |
 | `GET /api/radar/resumen?curso=<slug>` | `RespuestaResumenDudas` | ✅ Real (IA, agente analista): resumen de las dudas al tutor para el profesor. Mismos permisos que el Radar. Caché de 1 hora por curso; 502 si la IA falla (el resto del Radar sigue) | #5 |
+| `POST /api/tutor/humano` | `DudaHumana` | ✅ El alumno pasa **su** pregunta (`preguntaId` de `POST /api/tutor`) a su profesor (H9). Ajena o inexistente: 404. Pasarla dos veces no la duplica | H9 |
+| `GET /api/tutor/humano?modulo=<slug>` | `DudaHumana[]` | ✅ Las dudas que el alumno ha pasado en ese módulo, con la respuesta del profesor cuando la hay | H9 |
+| `GET /api/radar/dudas?curso=<slug>` | `DudaHumanaProfesor[]` | ✅ Para el Radar: pendientes y respondidas en los últimos 7 días. Solo el profesor de ese curso o un admin | H9 |
+| `POST /api/radar/dudas/[id]/respuesta` | `DudaHumanaProfesor` | ✅ El profesor responde (sin IA, máximo 2.000 caracteres). Ya respondida: 409 | H9 |
 | `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (lee `data/material/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #2 |
 | `POST /api/material-personal` | `RespuestaMaterialPersonal` | ✅ Real (IA). Cuenta para el límite diario. Errores 400/404/422/429/502 | #2 |
 | `GET /api/material-personal?alumnoId=&moduloId=` | `MaterialPersonal[]` | ✅ Real (tabla `material_personal`). Necesita el seed (`npm run db:seed`); si no, 404 | #13 login |

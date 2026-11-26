@@ -17,7 +17,7 @@ const TABLAS = [
   "material_clase", "material_personal",
   "plantilla_ejercicio", "ejercicio", "intento", "progreso",
   "evaluacion", "pregunta_evaluacion", "intento_evaluacion",
-  "conversacion", "mensaje", "uso_ia",
+  "conversacion", "mensaje", "uso_ia", "duda_humana",
   "tema_foro", "comentario_foro", "insignia", "usuario_insignia",
 ];
 
@@ -44,12 +44,12 @@ export type EnumsIgualesAlContrato = [
 ];
 
 describe("esquema de la BBDD", () => {
-  it("exporta exactamente las 31 tablas del modelo de datos", () => {
+  it("exporta exactamente las 32 tablas del modelo de datos", () => {
     const nombres = (Object.values(schema) as unknown[])
       .filter((valor): valor is PgTable => valor instanceof PgTable)
       .map((tabla) => getTableConfig(tabla).name);
 
-    expect(TABLAS).toHaveLength(31);
+    expect(TABLAS).toHaveLength(32);
     expect(nombres.sort()).toEqual([...TABLAS].sort());
   });
 
