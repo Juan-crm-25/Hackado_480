@@ -19,6 +19,16 @@ describe("FiguraAcceso", () => {
     expect(html).toContain("motion-safe:animate-flotar");
   });
 
+  it("por defecto se carga cuando hace falta (lazy)", () => {
+    expect(html).toMatch(/<img[^>]*loading="lazy"/);
+  });
+
+  it("si está a la vista al entrar (es el LCP), se carga ya y con prioridad alta", () => {
+    const inmediata = renderToStaticMarkup(<FiguraAcceso className="w-80" cargaInmediata />);
+    expect(inmediata).toMatch(/<img[^>]*loading="eager"/);
+    expect(inmediata).toMatch(/<img[^>]*fetchPriority="high"/i);
+  });
+
   it("la pantalla decide dónde va y su tamaño", () => {
     expect(html).toMatch(/class="[^"]*\bmx-auto\b[^"]*\bw-56\b/);
   });
