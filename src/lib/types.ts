@@ -174,7 +174,8 @@ export type NivelMaterial = "basico" | "normal" | "avanzado";
 
 /** Lo que pide el alumno para crearse su propio material (#2). */
 export interface PeticionMaterialPersonal {
-  alumnoId: string;
+  /** Ya no se usa en la API: el alumno sale de la sesión. El servicio lo rellena para el generador. */
+  alumnoId?: string;
   moduloId: string;
   tipo: "resumen" | "tarjetas";
   /** Concepto concreto; si falta, todo el módulo. */

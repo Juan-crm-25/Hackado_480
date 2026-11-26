@@ -211,4 +211,4 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 - Aplicar la migración `0001_tutor_humano` en Neon (`npm run db:migrate` con la `DATABASE_URL` de Neon).
 - En Neon, después de aprobar el banco de ejercicios: `npm run db:seed:actividad` el día de la demo.
-- El **material personal** («Mío») sigue usando a Lucía fija: pasarlo a la sesión como el tutor.
+- ~~El **material personal** («Mío») sigue usando a Lucía fija: pasarlo a la sesión como el tutor.~~ Hecho: también usa la sesión y exige el curso. Se quitó el «puente» de la demo (`ALUMNO_DEMO_ID` y `buscarUsuarioDemo`), que ya no usaba nadie.

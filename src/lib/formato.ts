@@ -12,8 +12,6 @@ export function enlaceYoutube(youtubeId: string, segundo: number): string | null
   return youtubeId ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}&t=${Math.floor(segundo)}s` : null;
 }
 
-/** Alumno con el que se usa la app mientras no hay login (fuera del alcance del prototipo). */
-export const ALUMNO_DEMO_ID = "a1";
 
 const EUROS = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2 });
 const UN_DECIMAL = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 });

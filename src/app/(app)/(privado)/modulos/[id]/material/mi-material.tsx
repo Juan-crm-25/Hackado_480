@@ -9,7 +9,6 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { ALUMNO_DEMO_ID } from "@/lib/formato";
 import { leerRespuesta, mensajeDeError } from "@/lib/peticiones";
 import type {
   Concepto,
@@ -52,7 +51,8 @@ export function MiMaterial({
   const idSobreQue = useId();
 
   useEffect(() => {
-    fetch(`/api/material-personal?alumnoId=${ALUMNO_DEMO_ID}&moduloId=${encodeURIComponent(moduloId)}`)
+    // El alumno lo pone el servidor a partir de la sesión.
+    fetch(`/api/material-personal?moduloId=${encodeURIComponent(moduloId)}`)
       .then((r) => leerRespuesta<MaterialPersonal[]>(r))
       .then((datos) => {
         setLista(datos);
@@ -72,7 +72,6 @@ export function MiMaterial({
     setError(null);
     try {
       const peticion: PeticionMaterialPersonal = {
-        alumnoId: ALUMNO_DEMO_ID,
         moduloId,
         tipo,
         conceptoId: conceptoId || undefined,
