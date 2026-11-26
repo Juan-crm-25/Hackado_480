@@ -5,6 +5,8 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { CabeceraPantalla } from "@/components/cabecera-pantalla";
 import { EstadoCargando, EstadoError, EstadoVacio } from "@/components/estado";
+import { IrAlForo } from "@/components/foro/ir-al-foro";
+import { SeccionForo } from "@/components/foro/seccion-foro";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { VideoYoutube } from "@/components/video-youtube";
@@ -13,7 +15,8 @@ import { duracionAccesible, duracionVideo } from "@/lib/youtube";
 import { buscarModulo, cargarCursoPrincipal } from "@/server/catalogo/servicio";
 
 /**
- * Pantalla «Módulo»: descripción, conceptos y vídeos de las clases, con enlaces al material y al tutor.
+ * Pantalla «Módulo»: descripción, conceptos y vídeos de las clases, con enlaces al material y al tutor,
+ * y el foro del módulo al pie («Ir al foro», arriba, baja hasta él).
  * Sin generateStaticParams: el módulo se lee de la BBDD en cada petición, dentro de <Suspense>
  * (Cache Components), así `next build` no necesita BBDD.
  */
@@ -74,7 +77,10 @@ async function ContenidoModulo({ params }: { params: PageProps<"/modulos/[id]">[
     <>
       <CabeceraPantalla seccion="Módulo" titulo={modulo.titulo} />
       <div className="flex flex-col gap-6 px-4 py-6">
-        <p className="text-base text-muted-foreground">{modulo.descripcion}</p>
+        <div className="flex flex-col items-start gap-3">
+          <p className="text-base text-muted-foreground">{modulo.descripcion}</p>
+          <IrAlForo />
+        </div>
 
         {modulo.conceptos.length > 0 && (
           <section aria-labelledby="conceptos" className="flex flex-col gap-2">
@@ -120,6 +126,9 @@ async function ContenidoModulo({ params }: { params: PageProps<"/modulos/[id]">[
             Preguntar al tutor
           </Link>
         </nav>
+
+        {/* El id del curso del catálogo es su slug (catalogo/repositorio.ts), y el del módulo, el suyo. */}
+        <SeccionForo cursoSlug={resultado.curso.id} moduloSlug={modulo.id} />
       </div>
     </>
   );
