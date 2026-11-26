@@ -31,7 +31,6 @@ const informe: InformeRadar = {
   dudasFrecuentes: [
     { moduloId: "m2-css", modulo: "CSS", total: 12, masRepetidas: [{ texto: "¿Un id gana a una clase?", veces: 6 }] },
   ],
-  resumenDudas: "",
 };
 
 const pintar = (i: InformeRadar = informe) => renderToStaticMarkup(<VistaRadar informe={i} ahora={AHORA} />);
