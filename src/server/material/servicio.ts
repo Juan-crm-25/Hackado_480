@@ -4,7 +4,7 @@ import { consumirConsulta } from "@/lib/ai/limite";
 import { ErrorMaterial, generarMaterialPersonal } from "@/lib/agentes/material-personal";
 import { getModulo } from "@/lib/catalogo";
 import { getDb, type Db } from "@/lib/db/client";
-import type { Infografia, MaterialPersonal, RespuestaMaterialPersonal, SeccionResumen, Tarjeta } from "@/lib/types";
+import type { Infografia, InfografiasModulo, MaterialComun, MaterialPersonal, RespuestaMaterialPersonal, SeccionResumen, Tarjeta } from "@/lib/types";
 import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
 import type { UsuarioSesion } from "../auth/roles";
 import { datosInvalidos, errorIa, limiteSuperado, noEncontrado } from "../compartido/errores";
@@ -99,7 +99,7 @@ export async function materialComunDelModulo(
   usuario: UsuarioSesion,
   moduloSlug: string,
   db: Db = getDb(),
-): Promise<Pick<MaterialDelModulo, "moduloId" | "resumen" | "tarjetas">> {
+): Promise<MaterialComun> {
   const { moduloId, resumen, tarjetas } = await leerMaterialDelModulo(usuario, moduloSlug, db);
   if (!resumen.length && !tarjetas.length) throw noEncontrado("Este módulo todavía no tiene material de repaso");
   return { moduloId, resumen, tarjetas };
@@ -110,7 +110,7 @@ export async function infografiasDelModulo(
   usuario: UsuarioSesion,
   moduloSlug: string,
   db: Db = getDb(),
-): Promise<Pick<MaterialDelModulo, "moduloId" | "infografias">> {
+): Promise<InfografiasModulo> {
   const { moduloId, infografias } = await leerMaterialDelModulo(usuario, moduloSlug, db);
   if (!infografias.length) throw noEncontrado("Este módulo todavía no tiene infografías");
   return { moduloId, infografias };
