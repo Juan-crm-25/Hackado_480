@@ -2,6 +2,7 @@ import { Marca } from "@/components/marca";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { BotonCerrarSesion } from "./cerrar-sesion";
+import { BotonCreditos } from "./creditos";
 import { type Destino, destinosPrincipales, destinosSecundariosPara, esDestinoActivo, type RolNavegacion } from "./destinos";
 
 // Sobre el fondo oscuro, el foco y la línea del destino activo van en verde (12:1 sobre carbón).
@@ -32,7 +33,7 @@ function ItemLateral({ destino, pathname }: { destino: Destino; pathname: string
 
 /**
  * Barra lateral fija de la web (≥ 1024 px): marca arriba, destinos principales y, al pie,
- * «Contáctanos» y «Cerrar sesión». Por debajo de `lg` la sustituye la barra inferior.
+ * «Contáctanos», «Cerrar sesión» (invisible sin sesión) y «Créditos». Por debajo de `lg` la sustituye la barra inferior.
  */
 export function BarraLateral({ pathname, rol = null }: { pathname: string | null; rol?: RolNavegacion }) {
   return (
@@ -54,10 +55,14 @@ export function BarraLateral({ pathname, rol = null }: { pathname: string | null
         </ul>
         <ul className="flex flex-col gap-1 border-t border-sidebar-border pt-4">
           {destinosSecundariosPara(rol).map((d) => (
-            <li key={d.id}>
+            // Sin sesión, «Cerrar sesión» guarda su hueco (no salta nada) pero no se ve ni se puede pulsar.
+            <li key={d.id} className={cn(d.id === "cerrar-sesion" && !rol && "invisible")}>
               <ItemLateral destino={d} pathname={pathname} />
             </li>
           ))}
+          <li>
+            <BotonCreditos className="text-white/60 hover:text-white focus-visible:ring-sidebar-ring" />
+          </li>
         </ul>
       </nav>
     </aside>

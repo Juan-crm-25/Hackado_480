@@ -12,6 +12,7 @@ import { BarraLateral } from "./barra-lateral";
 import { BarraSuperior } from "./barra-superior";
 import { destinosPrincipales, destinosSecundarios } from "./destinos";
 import { ListaSecundarios } from "./menu-mas";
+import { ContenidoCreditos } from "./creditos";
 
 /** Ids de los destinos pintados (data-destino), en orden. */
 function destinosPintados(html: string): string[] {
@@ -155,5 +156,55 @@ describe("Radar en la navegación (solo profesores y admin)", () => {
   it("el menú «Más» del móvil también, para que no se esconda en ningún tamaño", () => {
     expect(destinosPintados(renderToStaticMarkup(<ListaSecundarios pathname="/" rol="admin" />))).toContain("radar");
     expect(destinosPintados(renderToStaticMarkup(<ListaSecundarios pathname="/" rol="alumno" />))).not.toContain("radar");
+  });
+});
+
+/** <li> que contiene el destino id. */
+function itemDe(html: string, id: string): string {
+  const li = html.match(new RegExp(`<li[^>]*>(?:(?!</li>).)*data-destino="${id}"`));
+  if (!li) throw new Error(`No se pinta el destino ${id}`);
+  return li[0];
+}
+
+describe("«Cerrar sesión» sin sesión", () => {
+  it("en la barra lateral conserva su hueco pero no se ve ni se puede pulsar", () => {
+    const sinSesion = renderToStaticMarkup(<BarraLateral pathname="/" />);
+    expect(itemDe(sinSesion, "cerrar-sesion")).toMatch(/<li[^>]*class="[^"]*\binvisible\b/);
+    const conSesion = renderToStaticMarkup(<BarraLateral pathname="/" rol="alumno" />);
+    expect(itemDe(conSesion, "cerrar-sesion")).not.toContain("invisible");
+  });
+
+  it("en el menú «Más» igual", () => {
+    expect(itemDe(renderToStaticMarkup(<ListaSecundarios pathname="/" />), "cerrar-sesion")).toMatch(/\binvisible\b/);
+    expect(itemDe(renderToStaticMarkup(<ListaSecundarios pathname="/" rol="alumno" />), "cerrar-sesion")).not.toContain("invisible");
+  });
+
+  it("los demás destinos se ven siempre", () => {
+    expect(itemDe(renderToStaticMarkup(<BarraLateral pathname="/" />), "contacto")).not.toContain("invisible");
+  });
+});
+
+describe("créditos", () => {
+  it("un botón «Créditos» pequeño debajo de «Cerrar sesión», en la barra lateral y en el menú «Más», con o sin sesión", () => {
+    for (const html of [
+      renderToStaticMarkup(<BarraLateral pathname="/" />),
+      renderToStaticMarkup(<ListaSecundarios pathname="/" rol="alumno" />),
+    ]) {
+      const boton = html.match(/<button[^>]*data-accion="creditos"[^>]*>/)?.[0] ?? "";
+      expect(boton).toContain("text-xs");
+      expect(html.indexOf('data-accion="creditos"')).toBeGreaterThan(html.indexOf('data-destino="cerrar-sesion"'));
+      expect(html).toContain("Créditos");
+    }
+  });
+
+  it("agradece el material y nombra a sus autores, con la atribución del astronauta tal como la pide Magnific", () => {
+    const html = renderToStaticMarkup(<ContenidoCreditos />);
+    expect(html).toContain(
+      'href="https://www.magnific.com/es/vector-gratis/lindo-astronauta-montando-cohete-agitando-mano-icono-dibujos-animados-ilustracion-concepto-icono-tecnologia-ciencia_10764053.htm#fromView=search&amp;page=1&amp;position=0&amp;uuid=0386de25-b20c-445a-b6d3-d8d185e2898c&amp;track=ais_hybrid&amp;query=Astronauta+svg"',
+    );
+    expect(html).toContain("Imagen de catalyststuff en Magnific");
+    // Los tres astronautas son del mismo autor.
+    expect(html).toMatch(/astronauta[^<]*cohete[^<]*cohetes[^<]*cocinero|cohete[^<]*cohetes[^<]*cocinero/);
+    for (const autor of ["Kiko Palomares", "Dorian Desings", "Lucide", "Simple Icons"]) expect(html).toContain(autor);
   });
 });

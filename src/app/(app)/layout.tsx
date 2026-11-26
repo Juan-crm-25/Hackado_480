@@ -5,6 +5,7 @@ import { BarraSuperior } from "@/components/navegacion/barra-superior";
 import { BarraInferiorActiva, BarraLateralActiva } from "@/components/navegacion/navegacion-activa";
 import { AccesoUsuario } from "@/components/navegacion/avatar-usuario";
 import { ProveedorMensajes } from "@/components/mensajes/bandeja-mensajes";
+import { DespedidaSesion } from "@/components/navegacion/despedida";
 import { obtenerUsuarioActual } from "@/server/auth/usuario-actual";
 
 /**
@@ -45,6 +46,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <BarraInferiorConRol />
           </Suspense>
         </div>
+        {/* Despedida al cerrar sesión: aquí y no en el botón, porque en móvil el menú «Más» se cierra al pulsarlo. */}
+        <DespedidaSesion />
       </ProveedorMensajes>
     </div>
   );
