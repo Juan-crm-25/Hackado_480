@@ -171,3 +171,15 @@ export async function requerirProfesorDelCurso(usuario: UsuarioSesion, slug: str
   if (!(await esProfesorDelCurso(usuario.id, curso.id, db))) throw prohibido("Solo el profesor de este curso puede ver esto");
   return curso;
 }
+
+/**
+ * Comprueba que el usuario puede usar ESTE curso: matriculado (como alumno o profesor) o admin.
+ * Curso que no existe: 404. Sin matrícula: 403.
+ */
+export async function requerirAccesoCurso(usuario: UsuarioSesion, slug: string, db: Db = getDb()) {
+  const curso = await leerCursoPorSlug(slug, db);
+  if (!curso) throw noEncontrado("No existe ese curso");
+  if (usuario.rol === "admin") return curso;
+  if (!(await existeMatriculaDelUsuario(usuario.id, slug, db))) throw prohibido("Necesitas tener este curso para usar su tutor");
+  return curso;
+}

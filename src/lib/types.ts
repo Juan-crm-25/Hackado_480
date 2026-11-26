@@ -295,7 +295,8 @@ export interface RespuestaResumenDudas {
 // ─── API: peticiones y respuestas ────────────────────────────────────────────
 
 export interface PeticionTutor {
-  alumnoId: string;
+  /** Ya no se usa: el alumno sale de la sesión. Se acepta para no romper clientes antiguos. */
+  alumnoId?: string;
   moduloId: string;
   mensaje: string;
   historial?: Mensaje[];
@@ -307,6 +308,8 @@ export interface RespuestaTutor {
   fueraDeTemario?: boolean;
   /** Consultas que le quedan hoy al alumno. */
   consultasRestantes?: number;
+  /** Id de la pregunta guardada (para pasarla a un tutor humano, H9). No hay en modo simulado. */
+  preguntaId?: string;
 }
 
 export interface PeticionIntento {
