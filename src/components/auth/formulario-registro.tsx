@@ -9,11 +9,12 @@ const texto = (datos: FormData, campo: string) => String(datos.get(campo) ?? "")
 
 /** Registro simulado (issue #42): crea una cuenta de alumno en la BBDD y deja la sesión iniciada. */
 export function FormularioRegistro() {
-  const { enviar, enviando, error, volver } = useEnvioAuth("/api/auth/registro");
+  const { enviar, enviando, error, volver, formulario } = useEnvioAuth("/api/auth/registro");
 
   return (
     <div className="flex flex-col gap-6">
       <form
+        ref={formulario}
         className="flex flex-col gap-4"
         onSubmit={(e) =>
           enviar(e, (datos) => ({

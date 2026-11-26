@@ -9,11 +9,12 @@ const texto = (datos: FormData, campo: string) => String(datos.get(campo) ?? "")
 
 /** Login simulado (issue #42): email y contraseña contra la BBDD. Lo social y «he olvidado» son decorativos. */
 export function FormularioLogin() {
-  const { enviar, enviando, error, volver } = useEnvioAuth("/api/auth/login");
+  const { enviar, enviando, error, volver, formulario } = useEnvioAuth("/api/auth/login");
 
   return (
     <div className="flex flex-col gap-6">
       <form
+        ref={formulario}
         className="flex flex-col gap-4"
         onSubmit={(e) =>
           enviar(e, (datos) => ({ email: texto(datos, "login-email"), contrasena: texto(datos, "login-contrasena") }))
