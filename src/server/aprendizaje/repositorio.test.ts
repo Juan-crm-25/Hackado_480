@@ -16,6 +16,7 @@ const generado = (n: number, conceptoId = "css-especificidad", videoId = "v04"):
   enunciado: `¿Qué regla gana en el caso ${n}?`,
   opciones: ["La de la clase", "La del id"],
   solucion: 1,
+  uso: "modulo",
   referencia: { videoId, segundo: 120 + n },
 });
 const abierto: EjercicioGenerado = {
@@ -24,6 +25,7 @@ const abierto: EjercicioGenerado = {
   tipo: "abierta",
   enunciado: "Explica padding y margin.",
   rubrica: "Padding dentro, margin fuera.",
+  uso: "modulo",
   referencia: { videoId: "v05", segundo: 60 },
 };
 
@@ -54,7 +56,7 @@ describe.skipIf(!hayBd)("repositorio de aprendizaje (con BBDD real)", () => {
   });
 
   it("guarda los ejercicios como borrador, con el concepto y el vídeo del módulo y el segundo de referencia", async () => {
-    expect(await contarEjercicios(cssId, bd.db)).toEqual({ borrador: 0, aprobado: 0 });
+    expect(await contarEjercicios(cssId, {}, bd.db)).toEqual({ borrador: 0, aprobado: 0 });
     expect(await guardarBorradores(cssId, [generado(1), abierto], undefined, bd.db)).toBe(2);
 
     const filas = await bd.db
@@ -70,14 +72,14 @@ describe.skipIf(!hayBd)("repositorio de aprendizaje (con BBDD real)", () => {
     ]);
     expect(filas[0].e).toMatchObject({ tipo: "abierta", rubrica: "Padding dentro, margin fuera.", opciones: null, solucion: null });
     expect(filas[1].e).toMatchObject({ tipo: "test", opciones: ["La de la clase", "La del id"], solucion: 1, rubrica: null });
-    expect(await contarEjercicios(cssId, bd.db)).toEqual({ borrador: 2, aprobado: 0 });
+    expect(await contarEjercicios(cssId, {}, bd.db)).toEqual({ borrador: 2, aprobado: 0 });
   });
 
   it("si un concepto o un vídeo no es del módulo, no guarda ninguno", async () => {
-    const antes = await contarEjercicios(cssId, bd.db);
+    const antes = await contarEjercicios(cssId, {}, bd.db);
     await expect(guardarBorradores(cssId, [generado(2), generado(3, "js-eventos")], undefined, bd.db)).rejects.toThrow(/js-eventos/);
     await expect(guardarBorradores(cssId, [generado(4), generado(5, "css-caja", "v10")], undefined, bd.db)).rejects.toThrow(/v10/);
-    expect(await contarEjercicios(cssId, bd.db)).toEqual(antes);
+    expect(await contarEjercicios(cssId, {}, bd.db)).toEqual(antes);
   });
 
   it("al reemplazar, borra los borradores del módulo pero nunca los aprobados", async () => {
@@ -85,11 +87,34 @@ describe.skipIf(!hayBd)("repositorio de aprendizaje (con BBDD real)", () => {
       .update(ejercicio)
       .set({ estado: "aprobado" })
       .where(and(eq(ejercicio.moduloId, cssId), eq(ejercicio.tipo, "abierta")));
-    expect(await contarEjercicios(cssId, bd.db)).toEqual({ borrador: 1, aprobado: 1 });
+    expect(await contarEjercicios(cssId, {}, bd.db)).toEqual({ borrador: 1, aprobado: 1 });
 
     await guardarBorradores(cssId, [generado(6), generado(7)], { reemplazar: true }, bd.db);
-    expect(await contarEjercicios(cssId, bd.db)).toEqual({ borrador: 2, aprobado: 1 });
+    expect(await contarEjercicios(cssId, {}, bd.db)).toEqual({ borrador: 2, aprobado: 1 });
     const enunciados = (await bd.db.select().from(ejercicio).where(eq(ejercicio.moduloId, cssId))).map((e) => e.enunciado).sort();
     expect(enunciados).toEqual(["Explica padding y margin.", "¿Qué regla gana en el caso 6?", "¿Qué regla gana en el caso 7?"]);
+  });
+
+  it("guarda el uso de cada ejercicio y cuenta los de un uso", async () => {
+    const deVideo = { ...generado(8), uso: "video" as const };
+    const deExamen = { ...generado(9), uso: "examen" as const };
+    await guardarBorradores(cssId, [deVideo, deExamen], undefined, bd.db);
+
+    const usos = await bd.db.select({ enunciado: ejercicio.enunciado, uso: ejercicio.uso }).from(ejercicio).where(eq(ejercicio.moduloId, cssId));
+    expect(usos.find((e) => e.enunciado.endsWith("caso 8?"))?.uso).toBe("video");
+    expect(usos.find((e) => e.enunciado.endsWith("caso 9?"))?.uso).toBe("examen");
+    expect(await contarEjercicios(cssId, { uso: "video" }, bd.db)).toEqual({ borrador: 1, aprobado: 0 });
+    expect(await contarEjercicios(cssId, { uso: "modulo" }, bd.db)).toEqual({ borrador: 2, aprobado: 1 });
+  });
+
+  it("al reemplazar, solo borra los borradores del mismo uso que los nuevos", async () => {
+    await guardarBorradores(cssId, [{ ...generado(10), uso: "video" }], { reemplazar: true }, bd.db);
+    const video = await bd.db
+      .select({ enunciado: ejercicio.enunciado })
+      .from(ejercicio)
+      .where(and(eq(ejercicio.moduloId, cssId), eq(ejercicio.uso, "video")));
+    expect(video.map((e) => e.enunciado)).toEqual(["¿Qué regla gana en el caso 10?"]);
+    expect(await contarEjercicios(cssId, { uso: "examen" }, bd.db)).toEqual({ borrador: 1, aprobado: 0 });
+    expect(await contarEjercicios(cssId, { uso: "modulo" }, bd.db)).toEqual({ borrador: 2, aprobado: 1 });
   });
 });

@@ -6,7 +6,7 @@
  *   Nunca a los de la demo en directo (src/lib/datos-prueba.ts) ni a nadie que se registre de verdad.
  * - Se puede repetir: borra la actividad anterior de esos alumnos y la vuelve a crear, en una transacción.
  */
-import { and, eq, inArray, like, notInArray, or } from "drizzle-orm";
+import { and, eq, inArray, like, ne, notInArray, or } from "drizzle-orm";
 import { alumnosDemo } from "../../datos-prueba";
 import { ALUMNOS_SIMULADOS, construirActividad } from "../../demo/actividad";
 import { CURSO_DEMO_SLUG } from "../../usuario-demo";
@@ -47,7 +47,8 @@ export async function sembrarActividad(db: Db, ahora = new Date()): Promise<Recu
       segundoReferencia: ejercicio.segundoReferencia,
     })
     .from(ejercicio)
-    .where(and(inArray(ejercicio.moduloId, moduloIds), eq(ejercicio.estado, "aprobado")))
+    // Los de examen no: sus respuestas van a intento_evaluacion, no a «intento» (ni al Radar).
+    .where(and(inArray(ejercicio.moduloId, moduloIds), eq(ejercicio.estado, "aprobado"), ne(ejercicio.uso, "examen")))
     .orderBy(ejercicio.creado, ejercicio.id);
 
   return db.transaction(async (tx) => {

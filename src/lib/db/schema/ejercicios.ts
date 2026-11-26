@@ -4,7 +4,7 @@ import type { EjercicioBase, Intento as IntentoApi } from "../../types";
 import { usuario } from "./usuarios";
 import { clase, concepto, modulo } from "./catalogo";
 import { ahora, id } from "./columnas";
-import { estadoEjercicio, estadoModulo, tipoEjercicio } from "./enums";
+import { estadoEjercicio, estadoModulo, tipoEjercicio, usoEjercicio } from "./enums";
 
 type Solucion = NonNullable<EjercicioBase["solucion"]>;
 
@@ -33,6 +33,8 @@ export const ejercicio = pgTable("ejercicio", {
     .references(() => clase.id), // vídeo que hay que repasar
   segundoReferencia: integer("segundo_referencia").notNull().default(0), // momento exacto que hay que repasar
   tipo: tipoEjercicio("tipo").notNull(),
+  // Test de vídeo, de módulo o examen del curso. Por defecto «modulo»: los ejercicios de antes eran todos de módulo.
+  uso: usoEjercicio("uso").notNull().default("modulo"),
   enunciado: text("enunciado").notNull(),
   opciones: jsonb("opciones").$type<string[]>(),
   solucion: jsonb("solucion").$type<Solucion>(),
