@@ -8,13 +8,17 @@ import { EstadoCargando, EstadoError, EstadoVacio } from "@/components/estado";
 import { IrAlForo } from "@/components/foro/ir-al-foro";
 import { SeccionForo } from "@/components/foro/seccion-foro";
 import { VideosModulo } from "@/components/modulo/videos-modulo";
+import { TarjetaProfesor } from "@/components/profesor/tarjeta-profesor";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { profesorDelCurso } from "@/lib/demo/profesores";
+import { cn } from "@/lib/utils";
 import { buscarModulo, cargarCursoPrincipal } from "@/server/catalogo/servicio";
 
 /**
  * Pantalla «Módulo»: descripción, conceptos y vídeos de las clases (acordeón con «visto» y progreso),
- * con enlaces al material y al tutor,
+ * con enlaces al material y al tutor (uno al lado del otro, con el mismo peso), la tarjeta de su profesor
+ * (datos de demostración, con «Enviar mensaje» a la bandeja simulada del MVP)
  * y el foro del módulo al pie («Ir al foro», arriba, baja hasta él).
  * Sin generateStaticParams: el módulo se lee de la BBDD en cada petición, dentro de <Suspense>
  * (Cache Components), así `next build` no necesita BBDD.
@@ -35,6 +39,9 @@ export default function ModuloPage({ params }: PageProps<"/modulos/[id]">) {
     </main>
   );
 }
+
+/** Botones de «Material de repaso» y «Preguntar al tutor (IA)»: altura mínima de 44 px y texto en dos líneas si no cabe. */
+const accionModulo = "h-auto min-h-11 py-2 text-center whitespace-normal";
 
 function AyudaBd() {
   return (
@@ -109,16 +116,19 @@ async function ContenidoModulo({ params }: { params: PageProps<"/modulos/[id]">[
           )}
         </section>
 
-        <nav aria-label="Seguir con el módulo" className="flex flex-col gap-3 md:flex-row">
-          <Link href={`/modulos/${modulo.id}/material`} className={buttonVariants({ variant: "accent", size: "lg" })}>
+        {/* Mismo peso para los dos («Ir al foro» es el único botón verde). Lado a lado también a 360 px: el texto baja de línea si no cabe. */}
+        <nav aria-label="Seguir con el módulo" className="grid grid-cols-2 gap-3">
+          <Link href={`/modulos/${modulo.id}/material`} className={cn(buttonVariants({ variant: "outline" }), accionModulo)}>
             <BookOpen aria-hidden />
             Material de repaso
           </Link>
-          <Link href={`/modulos/${modulo.id}/tutor`} className={buttonVariants({ variant: "outline", size: "lg" })}>
+          <Link href={`/modulos/${modulo.id}/tutor`} className={cn(buttonVariants({ variant: "outline" }), accionModulo)}>
             <MessageCircle aria-hidden />
-            Preguntar al tutor
+            Preguntar al tutor (IA)
           </Link>
         </nav>
+
+        <TarjetaProfesor profesor={profesorDelCurso(resultado.curso.id)} />
 
         {/* El id del curso del catálogo es su slug (catalogo/repositorio.ts), y el del módulo, el suyo. */}
         <SeccionForo cursoSlug={resultado.curso.id} moduloSlug={modulo.id} />

@@ -110,6 +110,15 @@ describe("acceso del usuario en la barra superior", () => {
     expect(html).not.toContain("Entrar");
   });
 
+  it("con sesión muestra el icono de mensajes junto al avatar, con los no leídos en texto", () => {
+    const html = renderToStaticMarkup(<AccesoUsuario nombre="Lucía Martín" />);
+    expect(html).toMatch(/aria-label="Mensajes, \d+ sin leer"/);
+  });
+
+  it("sin sesión no hay icono de mensajes", () => {
+    expect(renderToStaticMarkup(<AccesoUsuario nombre={null} />)).not.toContain("Mensajes");
+  });
+
   it("sin sesión muestra «Entrar», que lleva al login", () => {
     const html = renderToStaticMarkup(<AccesoUsuario nombre={null} />);
     expect(html).toMatch(/<a[^>]*href="\/login"[^>]*>Entrar<\/a>/);

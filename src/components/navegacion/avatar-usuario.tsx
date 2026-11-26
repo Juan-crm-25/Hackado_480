@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BotonMensajes } from "@/components/mensajes/bandeja-mensajes";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,9 +30,18 @@ export function AvatarUsuario({ nombre, className }: { nombre: string; className
   );
 }
 
-/** Zona del usuario en la barra superior: su avatar si hay sesión, o «Entrar» si es un visitante. */
+/**
+ * Zona del usuario en la barra superior: con sesión, el icono de mensajes (bandeja simulada del MVP)
+ * y su avatar; si es un visitante, «Entrar».
+ */
 export function AccesoUsuario({ nombre }: { nombre: string | null }) {
-  if (nombre) return <AvatarUsuario nombre={nombre} />;
+  if (nombre)
+    return (
+      <div className="flex items-center gap-1">
+        <BotonMensajes />
+        <AvatarUsuario nombre={nombre} />
+      </div>
+    );
   return (
     <Link href="/login" className={buttonVariants({ variant: "outline" })}>
       Entrar

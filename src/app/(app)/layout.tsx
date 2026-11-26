@@ -4,6 +4,7 @@ import { BarraLateral } from "@/components/navegacion/barra-lateral";
 import { BarraSuperior } from "@/components/navegacion/barra-superior";
 import { BarraInferiorActiva, BarraLateralActiva } from "@/components/navegacion/navegacion-activa";
 import { AccesoUsuario } from "@/components/navegacion/avatar-usuario";
+import { ProveedorMensajes } from "@/components/mensajes/bandeja-mensajes";
 import { obtenerUsuarioActual } from "@/server/auth/usuario-actual";
 
 /**
@@ -15,33 +16,36 @@ import { obtenerUsuarioActual } from "@/server/auth/usuario-actual";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-dvh w-full">
-      <a
-        href="#contenido"
-        className="sr-only z-50 rounded-sm bg-background px-4 py-3 font-medium focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:ring-3 focus:ring-ring"
-      >
-        Saltar al contenido
-      </a>
+      {/* Bandeja de mensajes SIMULADA del MVP: su estado vive aquí para que la abran la barra superior y el módulo. */}
+      <ProveedorMensajes>
+        <a
+          href="#contenido"
+          className="sr-only z-50 rounded-sm bg-background px-4 py-3 font-medium focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:ring-3 focus:ring-ring"
+        >
+          Saltar al contenido
+        </a>
 
-      <Suspense fallback={<BarraLateral pathname={null} />}>
-        <BarraLateralConRol />
-      </Suspense>
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <BarraSuperior
-          usuario={
-            <Suspense fallback={<span className="size-11" aria-hidden />}>
-              <UsuarioDeLaSesion />
-            </Suspense>
-          }
-        />
-        {/* «relative»: los elementos absolutos del contenido (p. ej. los sr-only) se quedan dentro de este scroll y no estiran la página. */}
-        <div id="contenido" className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">
-          {children}
-        </div>
-        <Suspense fallback={<BarraInferior pathname={null} />}>
-          <BarraInferiorConRol />
+        <Suspense fallback={<BarraLateral pathname={null} />}>
+          <BarraLateralConRol />
         </Suspense>
-      </div>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <BarraSuperior
+            usuario={
+              <Suspense fallback={<span className="h-11 w-23" aria-hidden />}>
+                <UsuarioDeLaSesion />
+              </Suspense>
+            }
+          />
+          {/* «relative»: los elementos absolutos del contenido (p. ej. los sr-only) se quedan dentro de este scroll y no estiran la página. */}
+          <div id="contenido" className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">
+            {children}
+          </div>
+          <Suspense fallback={<BarraInferior pathname={null} />}>
+            <BarraInferiorConRol />
+          </Suspense>
+        </div>
+      </ProveedorMensajes>
     </div>
   );
 }
