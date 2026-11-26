@@ -1,22 +1,68 @@
 "use client";
 
 import { Play } from "lucide-react";
-import { useState } from "react";
-import { embedYoutube, miniaturaYoutube } from "@/lib/youtube";
+import { useEffect, useRef, useState } from "react";
+import {
+  embedYoutube,
+  leerMensajeYoutube,
+  miniaturaYoutube,
+  ORIGENES_YOUTUBE,
+  YOUTUBE_REPRODUCIENDO,
+} from "@/lib/youtube";
 
 /**
  * Vídeo de YouTube que respeta la privacidad: hasta que el alumno pulsa «Reproducir» solo se carga
  * la miniatura (ni el reproductor ni cookies de YouTube). Al pulsar se cambia por el reproductor de
  * youtube-nocookie.com, que arranca solo.
+ * Con `onReproduciendo` se activa la API del reproductor (postMessage) y se avisa cada vez que empieza
+ * (true) o deja (false) de reproducirse; sin él, el reproductor se carga como siempre.
  */
-export function VideoYoutube({ youtubeId, titulo }: { youtubeId: string; titulo: string }) {
+export function VideoYoutube({
+  youtubeId,
+  titulo,
+  onReproduciendo,
+}: {
+  youtubeId: string;
+  titulo: string;
+  onReproduciendo?: (reproduciendo: boolean) => void;
+}) {
   const [activo, setActivo] = useState(false);
+  const marco = useRef<HTMLIFrameElement>(null);
+  const escuchar = activo && onReproduciendo !== undefined;
+
+  useEffect(() => {
+    if (!escuchar || !onReproduciendo) return;
+    function alRecibir(e: MessageEvent) {
+      if (e.source !== marco.current?.contentWindow) return;
+      const mensaje = leerMensajeYoutube(e.origin, e.data);
+      if (mensaje) onReproduciendo?.(mensaje.estadoReproductor === YOUTUBE_REPRODUCIENDO);
+    }
+    window.addEventListener("message", alRecibir);
+    return () => {
+      window.removeEventListener("message", alRecibir);
+      onReproduciendo(false);
+    };
+  }, [escuchar, onReproduciendo]);
+
+  /** Pide al reproductor que mande su estado (protocolo de la API de iframes de YouTube). */
+  function pedirEstado() {
+    const ventana = marco.current?.contentWindow;
+    if (!escuchar || !ventana) return;
+    const destino = ORIGENES_YOUTUBE[0];
+    ventana.postMessage(JSON.stringify({ event: "listening", id: youtubeId, channel: "widget" }), destino);
+    ventana.postMessage(
+      JSON.stringify({ event: "command", func: "addEventListener", args: ["onStateChange"], id: youtubeId }),
+      destino,
+    );
+  }
 
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-surface-dark">
       {activo ? (
         <iframe
-          src={embedYoutube(youtubeId)}
+          ref={marco}
+          onLoad={pedirEstado}
+          src={embedYoutube(youtubeId, escuchar ? window.location.origin : undefined)}
           title={`Vídeo: ${titulo}`}
           loading="lazy"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
