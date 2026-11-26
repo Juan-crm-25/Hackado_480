@@ -12,3 +12,15 @@ export const esquemaPeticionTutor = z.object({
 });
 
 export type DatosPeticionTutor = z.output<typeof esquemaPeticionTutor>;
+
+/** POST /api/tutor/humano: la pregunta (preguntaId de POST /api/tutor) que el alumno pasa a un tutor humano. */
+export const esquemaPasarATutorHumano = z.object({ preguntaId: z.string().trim().min(1).max(100) });
+
+/** GET /api/tutor/humano?modulo=<slug>: las dudas del alumno en ese módulo. */
+export const esquemaQueryMisDudas = z.object({ modulo: z.string().trim().min(1).max(100) });
+
+/** POST /api/radar/dudas/[id]/respuesta: la respuesta del profesor. */
+export const esquemaParamsDuda = z.object({ id: z.string().trim().min(1).max(100) });
+export const esquemaRespuestaHumana = z.object({
+  respuesta: z.string().trim().min(1, { error: "Escribe la respuesta" }).max(2000, { error: "La respuesta es demasiado larga (máximo 2000 caracteres)" }),
+});

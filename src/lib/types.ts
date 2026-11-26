@@ -286,6 +286,27 @@ export interface InformeRadar {
   dudasFrecuentes: DudasModulo[];
 }
 
+/** Duda que un alumno ha pasado a un tutor humano (H9), tal como la ve el alumno en su chat. */
+export interface DudaHumana {
+  id: string;
+  /** Id de la pregunta del alumno (la que devolvió POST /api/tutor). */
+  preguntaId: string;
+  /** Texto de la pregunta, ya filtrado. */
+  pregunta: string;
+  moduloId: string;
+  creada: string; // ISO 8601
+  estado: "pendiente" | "respondida";
+  /** La escribe el profesor, sin IA. */
+  respuesta?: string;
+  respondida?: string; // ISO 8601
+}
+
+/** Como la ve el profesor del curso en el Radar: con el alumno y el módulo. */
+export interface DudaHumanaProfesor extends DudaHumana {
+  alumno: string;
+  modulo: string;
+}
+
 /** GET /api/radar/resumen: resumen de las dudas escrito por el agente analista (#5). Se pide aparte del Radar. */
 export interface RespuestaResumenDudas {
   resumen: string;
