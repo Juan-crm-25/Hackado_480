@@ -194,6 +194,10 @@ Estado: ✅ existe · 🔁 existe, se migrará a la BBDD y a esta estructura · 
 | `POST /api/pagos/checkout` | usuario | pagos (crea el pedido y la sesión de Stripe) | ⬜ |
 | `POST /api/pagos/webhook` | **firma de Stripe** (sin sesión) | pagos (marca pagado y crea la matrícula, ver abajo) | ⬜ |
 | `GET /api/radar?curso=<slug>` | profesor del curso | radar (solo datos de los cursos que enseña; `requerirProfesorDelCurso()`) | ✅ |
+| `GET /api/radar/resumen?curso=<slug>` | profesor del curso | radar (agente analista) | ✅ |
+| `GET /api/radar/dudas?curso=<slug>` | profesor del curso | tutor (H9: dudas pasadas a un tutor humano) | ✅ |
+| `POST /api/radar/dudas/[id]/respuesta` | profesor del curso | tutor (H9: el profesor responde, sin IA) | ✅ |
+| `POST /api/tutor/humano` · `GET /api/tutor/humano?modulo=<slug>` | usuario (solo sus preguntas) | tutor (H9) | ✅ |
 
 ### Validación del foro por IA
 

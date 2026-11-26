@@ -87,6 +87,15 @@ describe("interpretarRespuesta", () => {
     );
   });
 
+  it("quita del texto las marcas internas [vídeo @segundo] (las fuentes ya van como enlaces)", () => {
+    const r = interpretarRespuesta(
+      '{"respuesta":"Gana la última [v04 @95]. Por ejemplo, la del final [v04 @877] o (v05 @38).","fuentes":[{"videoId":"v04","segundo":95}]}',
+      modulo,
+    );
+    expect(r.respuesta).toBe("Gana la última. Por ejemplo, la del final o.");
+    expect(r.fuentes).toEqual([{ videoId: "v04", segundo: 95 }]);
+  });
+
   it("si no es JSON, usa el texto tal cual", () => {
     expect(interpretarRespuesta("Respuesta en texto", modulo)).toEqual({ respuesta: "Respuesta en texto", fueraDeTemario: false, fuentes: [] });
   });

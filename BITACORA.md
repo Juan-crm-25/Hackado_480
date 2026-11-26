@@ -169,3 +169,46 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 - **Neon, en este orden** (quien tenga la `DATABASE_URL`, ver `docs/bbdd/README.md`): el seed para cargar las plantillas, `npm run generar:ejercicios` y revisar y aprobar el banco.
 - **#15:** regenerar el material de CSS, desfasado porque se generó con las transcripciones de prueba.
 - **#3:** ejercicios de verificación con corrección. La de las respuestas cortas tiene que ser flexible (mayúsculas, `;` final, `< >`), porque se comparan con la solución.
+
+---
+
+## Trabajo de Juan — Jueves 26/11/2026: Radar del tutor (#5) y tutor humano (H9)
+
+**Quién:** Juan Carmona, con Claude Code (Claude Opus 5.5).
+**Por qué:** el Radar, nuestra idea original, no lo tenía nadie. Se avisó por WhatsApp antes de cogerlo y antes de fusionar cada PR que tocaba código compartido.
+
+### Qué hicimos
+
+| PR | Qué se hizo |
+|---|---|
+| #50 | Las conversaciones con el tutor se guardan en la BBDD (`conversacion` y `mensaje`), **solo con el texto filtrado**: sin nombre, email, teléfono ni DNI |
+| #51 | `npm run db:seed:actividad`: 20 alumnos simulados con intentos, fallos y dudas para la demo. La especificidad queda como el concepto más fallado (60 %), con alumnos atascados e inactivos. Nunca toca a Lucía ni a Pablo |
+| #52 | **El Radar** (`/radar`): alumnos atascados (3 fallos seguidos esta semana) o inactivos (más de 7 días), conceptos más fallados y dudas frecuentes, calculado **con código, sin IA**. Solo lo ve el profesor de ese curso o un admin (`requerirProfesorDelCurso()`). «Radar» en la navegación solo para profesores |
+| #53 | **Agente analista** (`agents/analista-radar.md`): la tarjeta «Resumen de las dudas» resume con IA lo que preguntan los alumnos y propone qué repasar. Solo recibe textos, nunca quién preguntó. Caché de 1 hora; unos 0,0002 € por resumen |
+| #54 | **El tutor usa el usuario de la sesión** (antes trataba a todos como Lucía) y exige tener el curso (`requerirAccesoCurso()`) |
+| #55 | **Tutor humano (H9)**: botón «¿No te sirve? Pregunta a tu tutor» en el chat; la profesora responde desde el Radar («Te han pedido ayuda») y el alumno ve la respuesta como «Respondido por tu tutor». Tabla nueva `duda_humana` (migración `0001`) |
+
+### Decisiones tomadas
+
+| Decisión | Alternativas | Por qué |
+|---|---|---|
+| Los números del Radar los calcula el **código**; la IA solo resume las dudas | Que la IA decida quién necesita ayuda | Reglas predecibles y explicables al cliente. La IA no juzga a ningún alumno |
+| El resumen de dudas se carga **aparte** del Radar | Todo en una petición | El Radar se ve al instante; si la IA falla, solo falla esa tarjeta |
+| Las dudas de los alumnos van en el **mensaje del usuario**, no en las instrucciones del analista | Meterlas en las instrucciones | Son texto de alumnos: así no pueden cambiar las reglas del agente |
+| Actividad simulada con un comando propio (`db:seed:actividad`) | Incluirla en `db:seed` | Depende de que el banco de ejercicios esté aprobado, y conviene lanzarla el día de la demo para que las fechas sean recientes |
+| Tabla nueva `duda_humana` para H9 | Cambiar `mensaje` o su enum | No toca nada que ya funcionaba; una migración pequeña |
+| La tarjeta del analista se llama «Resumen de las dudas» | «Resumen para la clase» | Es para que el profesor vea rápido qué preguntan; «para la clase» parecía material para los alumnos (lo propuso Juan) |
+
+### Problemas y cómo los resolvimos
+
+- **El tutor trataba a todos los alumnos como Lucía** (un identificador fijo de antes del login). Sus dudas se habrían atribuido mal en el Radar y en H9. Se pasó el tutor a la sesión (#54).
+- **`ruta()` convertía en un error 500 una señal interna de Next.js** (con un GET sin parámetros, en el build salía «bail out of prerendering»). Se corrigió con `unstable_rethrow()`, con su test.
+- **Con el banco real, el DOM salía más fallado que la especificidad** en la actividad simulada. Se ajustaron las tasas y el test lo comprueba con 2 y 3 ejercicios por concepto.
+- **Las respuestas del tutor mostraban marcas internas** como `[v04 @95]`. Se quitan del texto: las fuentes ya llegan como enlaces al minuto.
+- **El test que cuenta las tablas del esquema** (de Héctor) falló al añadir `duda_humana`: es su función, avisar de los cambios de esquema. Se actualizó a 32.
+
+### Pendiente
+
+- Aplicar la migración `0001_tutor_humano` en Neon (`npm run db:migrate` con la `DATABASE_URL` de Neon).
+- En Neon, después de aprobar el banco de ejercicios: `npm run db:seed:actividad` el día de la demo.
+- El **material personal** («Mío») sigue usando a Lucía fija: pasarlo a la sesión como el tutor.

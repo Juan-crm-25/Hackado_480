@@ -242,23 +242,22 @@ export function DudasConTutor({ dudas }: { dudas: DudaHumana[] }) {
       </h2>
       <ul className="flex flex-col gap-3">
         {dudas.map((d) => (
-          <li key={d.id} className="flex flex-col gap-1 text-sm">
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <p className="min-w-0 flex-1 font-medium break-words">{d.pregunta}</p>
-              {d.estado === "respondida" ? (
-                <Badge>
-                  <UserCheck aria-hidden />
-                  Respondido por tu tutor
-                </Badge>
-              ) : (
-                <Badge variant="secondary">
-                  <Clock aria-hidden />
-                  Pendiente
-                </Badge>
-              )}
-            </div>
+          <li key={d.id} className="flex flex-col items-start gap-1 text-sm">
+            {/* El estado arriba: a 360 px, al lado de la pregunta la dejaba en una columna muy estrecha. */}
+            {d.estado === "respondida" ? (
+              <Badge>
+                <UserCheck aria-hidden />
+                Respondido por tu tutor
+              </Badge>
+            ) : (
+              <Badge variant="secondary">
+                <Clock aria-hidden />
+                Pendiente
+              </Badge>
+            )}
+            <p className="w-full font-medium break-words">{d.pregunta}</p>
             {d.respuesta && (
-              <p className="rounded-md bg-muted px-3 py-2 whitespace-pre-wrap">
+              <p className="w-full rounded-md bg-muted px-3 py-2 whitespace-pre-wrap">
                 <TextoConCodigo texto={d.respuesta} />
               </p>
             )}

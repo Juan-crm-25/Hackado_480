@@ -155,5 +155,7 @@ function limpiarTexto(texto: string): string {
     .replace(/"\s*\.?\s*\}?\s*$/u, (m) => (m.includes(".") ? "." : ""))
     .replace(/«([^»"\n]*)"/gu, "«$1»") // «Maquetación responsive" → «Maquetación responsive»
     .replace(/«([^»\n]*?)(\.?)$/u, "«$1»$2") // «Maquetación responsive. → «Maquetación responsive».
+    // Las marcas del temario ([v04 @95] o (v04 @95)) son para el modelo: al alumno le llegan como enlaces al minuto.
+    .replace(/\s*[[(]v\d+\s*@\s*\d+[\])]/g, "")
     .trim();
 }
