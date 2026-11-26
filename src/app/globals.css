@@ -12,6 +12,14 @@
     50% { transform: translateY(-10px); }
   }
 
+  /* Despegar: el cohete coge impulso y sale volando hacia arriba a la derecha (cerrar sesión, src/components/navegacion/despedida.tsx). */
+  --animate-despegar: despegar 1.3s ease-in 0.2s both;
+  @keyframes despegar {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    20% { transform: translate3d(-0.5rem, 0.5rem, 0) rotate(3deg); }
+    100% { opacity: 0; transform: translate3d(60vw, -70vh, 0) rotate(-12deg) scale(0.6); }
+  }
+
   /* Confeti: cae desde arriba girando y se desvanece al final (celebración del foro, src/components/foro/celebracion.tsx). */
   --animate-confeti: confeti 2s ease-in both;
   @keyframes confeti {
@@ -58,6 +66,12 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-brand: var(--brand);
+  --color-promo-cyber-1: var(--promo-cyber-1);
+  --color-promo-cyber-2: var(--promo-cyber-2);
+  --color-promo-navidad: var(--promo-navidad);
+  /* Letras de los anuncios de temporada (cargadas en src/app/layout.tsx sin precarga). */
+  --font-cyber: var(--font-orbitron);
+  --font-navidad: var(--font-mountains-of-christmas);
   --color-brand-cyan: var(--brand-cyan);
   --color-brand-coral: var(--brand-coral);
   --color-surface-dark: var(--surface-dark);
@@ -111,6 +125,11 @@
   --brand-coral: oklch(0.670 0.218 23.4);
   --surface-dark: oklch(0.249 0.004 196.9);   /* bloques oscuros en modo claro */
   --surface-darker: oklch(0.211 0.006 236.9);
+
+  /* Anuncios de temporada (docs/estilo.md, apartado 4): solo en títulos grandes, ≥ 4,5:1 sobre la tarjeta. */
+  --promo-cyber-1: oklch(0.450 0.220 268);    /* azul eléctrico */
+  --promo-cyber-2: oklch(0.530 0.165 235);    /* azul cian */
+  --promo-navidad: oklch(0.520 0.210 27);     /* rojo navideño */
 }
 
 .dark {
@@ -132,6 +151,10 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.880 0.213 152.8);
+  /* Anuncios de temporada: más claros para mantener el contraste sobre la tarjeta oscura. */
+  --promo-cyber-1: oklch(0.750 0.150 265);
+  --promo-cyber-2: oklch(0.850 0.130 210);
+  --promo-navidad: oklch(0.720 0.180 22);
   /* chart-*, sidebar-* y los extra de la marca: los mismos que en :root */
 }
 

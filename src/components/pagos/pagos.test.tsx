@@ -86,7 +86,7 @@ describe("PagoCompletado", () => {
     const enlace = html.match(/<a[^>]*href="\/cursos\/python-desde-cero\/ruta"[^>]*>([^<]*)/);
     expect(enlace?.[0]).toContain("bg-brand");
     expect(enlace?.[1]).toContain("Personaliza tu ruta");
-    expect(html).toContain('href="/dashboard"');
+    expect(html).toContain('href="/dashboard/python-desde-cero"');
   });
 
   it("un curso gratis no habla de pago", () => {

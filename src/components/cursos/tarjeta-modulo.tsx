@@ -18,17 +18,20 @@ export type ModuloDeTarjeta = { id: string; titulo: string; descripcion: string;
 /**
  * Tarjeta de un módulo en el panel. Un módulo dominado o completado (solo se consigue aprobando su test) se
  * distingue del resto con borde y fondo de la marca, un icono y el texto «Test superado»: nunca solo con color.
+ * Con `disponible={false}` (cursos sin pantallas de módulo todavía) no enlaza a nada y dice «Contenido próximamente».
  */
 export function TarjetaModulo({
   modulo,
   estado,
   indice,
   recomendado,
+  disponible = true,
 }: {
   modulo: ModuloDeTarjeta;
   estado: EstadoModulo;
   indice: number;
   recomendado: boolean;
+  disponible?: boolean;
 }) {
   const superado = (ESTADOS_COMPLETADOS as readonly EstadoModulo[]).includes(estado);
 
@@ -57,9 +60,13 @@ export function TarjetaModulo({
         )}
         <CardTitle>
           <h3>
-            <Link href={`/modulos/${modulo.id}`} className={`${CLASE_ENLACE} no-underline hover:underline`}>
-              {modulo.titulo}
-            </Link>
+            {disponible ? (
+              <Link href={`/modulos/${modulo.id}`} className={`${CLASE_ENLACE} no-underline hover:underline`}>
+                {modulo.titulo}
+              </Link>
+            ) : (
+              modulo.titulo
+            )}
           </h3>
         </CardTitle>
         <CardDescription>{modulo.descripcion}</CardDescription>
@@ -71,17 +78,21 @@ export function TarjetaModulo({
             {modulo.numConceptos} {modulo.numConceptos === 1 ? "concepto" : "conceptos"}
           </Badge>
         </div>
-        <div className="flex flex-wrap gap-x-4 pt-1 text-sm font-medium">
-          <Link href={`/modulos/${modulo.id}`} className={CLASE_ENLACE}>
-            Ver vídeos
-          </Link>
-          <Link href={`/modulos/${modulo.id}/material`} className={CLASE_ENLACE}>
-            Material de repaso
-          </Link>
-          <Link href={`/modulos/${modulo.id}/tutor`} className={CLASE_ENLACE}>
-            Preguntar al tutor →
-          </Link>
-        </div>
+        {disponible ? (
+          <div className="flex flex-wrap gap-x-4 pt-1 text-sm font-medium">
+            <Link href={`/modulos/${modulo.id}`} className={CLASE_ENLACE}>
+              Ver vídeos
+            </Link>
+            <Link href={`/modulos/${modulo.id}/material`} className={CLASE_ENLACE}>
+              Material de repaso
+            </Link>
+            <Link href={`/modulos/${modulo.id}/tutor`} className={CLASE_ENLACE}>
+              Preguntar al tutor →
+            </Link>
+          </div>
+        ) : (
+          <p className="pt-1 text-sm text-muted-foreground">Contenido próximamente</p>
+        )}
       </CardHeader>
     </Card>
   );

@@ -1,5 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { enlaceCursoDelAlumno } from "@/lib/enlaces";
+import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
 import { Button } from "@/components/ui/button";
 
 /*
@@ -22,7 +24,8 @@ const REDES = [
 ];
 
 /**
- * Cabecera de las pantallas de un módulo: enlace para volver al curso a la izquierda, sección y título
+ * Cabecera de las pantallas de un módulo: enlace para volver al curso (las pantallas de módulo son del curso de demo)
+ * a la izquierda, sección y título
  * centrados y, con `compartir`, botones de «compartir en redes» a la derecha.
  * Móvil (360 px): la flecha y las redes en la primera fila y el título centrado debajo, para que quepa;
  * desde `md:` las tres piezas en una fila, con columnas laterales iguales para que el título quede en el centro.
@@ -40,7 +43,7 @@ export function CabeceraPantalla({
   return (
     <header className="grid grid-cols-2 items-center gap-x-1 gap-y-1 border-b px-2 py-2 md:grid-cols-[1fr_minmax(0,auto)_1fr]">
       <Link
-        href="/dashboard"
+        href={enlaceCursoDelAlumno(CURSO_DEMO_SLUG)}
         aria-label="Volver al curso"
         className="inline-flex min-h-11 shrink-0 items-center gap-1 justify-self-start rounded-sm px-2 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-in-out hover:text-foreground"
       >

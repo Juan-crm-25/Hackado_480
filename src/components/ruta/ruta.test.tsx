@@ -72,7 +72,7 @@ describe("ResultadoRuta", () => {
   });
 
   it("ofrece empezar (acción destacada) y cambiar las respuestas", () => {
-    expect(html).toMatch(/<a[^>]*href="\/dashboard"[^>]*bg-brand[^>]*>[\s\S]*Empezar|<a[^>]*bg-brand[^>]*href="\/dashboard"/);
+    expect(html).toMatch(/<a[^>]*href="\/dashboard\/desarrollo-web"[^>]*bg-brand[^>]*>[\s\S]*Empezar|<a[^>]*bg-brand[^>]*href="\/dashboard\/desarrollo-web"/);
     expect(html).toContain("Cambiar mis respuestas");
   });
 });

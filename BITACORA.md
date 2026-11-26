@@ -263,6 +263,9 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 | Pantalla de módulo (UI/UX) | Título centrado, «Ir al foro» y botones de compartir (solo visuales). Vídeos en acordeón: «Visto» tras 15 s reproduciéndose y un test de demostración bajo cada vídeo que desbloquea el siguiente. Ficha del profesor y bandeja de mensajes simulada. | #59 |
 | Foro y sistema de puntos | Foro por módulo con hilos. Correcta +10 y aproximada +5, pero solo las 3 primeras respuestas correctas de personas distintas y una vez por persona y tema, para que no se pueda hacer spam. El profesor da +1, +3 o +6 y su valoración prevalece. Confeti al ganar puntos. | #59 |
 | IA nueva del foro (Sensei) | Modelo de decisión, separado del tutor (Perplexity Decider V1.3 por OpenRouter), que solo decide si un comentario responde a la duda y si es correcto, aproximado o incorrecto. No escribe texto: el código contesta en el hilo con su avatar. 12 de 12 aciertos en español. | #59 |
+| Flujo de navegación | Desde «Tus cursos» se entra directamente al curso (sus módulos y «Sigue donde lo dejaste»), sin pasar por su ficha de tienda. «Continuar» abre el módulo y las flechas de volver llevan al curso o a la lista. Se acabó el bucle de «Ir a tu curso». | PWA/pantallas |
+| Nuevos detalles de la interfaz | Despedida con astronauta al cerrar sesión, «Créditos» con los autores del material, esqueletos de carga en la home y en «Tus cursos», y banners de Cyber Monday y Navidad con su propia letra, sus colores y sus astronautas. | PWA/pantallas |
+| Errores y rendimiento | El botón de cerrar sesión ya no se ve sin sesión (conserva su hueco). Avisos de fuentes y de LCP corregidos, y las imágenes decorativas se cargan en diferido. | PWA/pantallas |
 
 ### Decisiones tomadas
 

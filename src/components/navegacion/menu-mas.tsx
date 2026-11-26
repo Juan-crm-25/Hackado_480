@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { BotonCerrarSesion } from "./cerrar-sesion";
+import { BotonCreditos } from "./creditos";
 import { type Destino, destinosSecundariosPara, esDestinoActivo, type RolNavegacion } from "./destinos";
 
 const CLASE_ITEM =
@@ -61,10 +62,14 @@ export function ListaSecundarios({
   return (
     <ul className="flex flex-col gap-1 px-2 pb-4">
       {destinosSecundariosPara(rol).map((d) => (
-        <li key={d.id}>
+        // Sin sesión, «Cerrar sesión» guarda su hueco (no salta nada) pero no se ve ni se puede pulsar.
+        <li key={d.id} className={cn(d.id === "cerrar-sesion" && !rol && "invisible")}>
           <ItemSecundario destino={d} pathname={pathname} onElegir={onElegir} />
         </li>
       ))}
+      <li>
+        <BotonCreditos className="text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:ring-ring" />
+      </li>
     </ul>
   );
 }

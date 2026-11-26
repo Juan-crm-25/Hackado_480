@@ -147,6 +147,8 @@ DM Sans es una fuente variable: no hace falta indicar los pesos.
 
 Recurso de la marca: algunos titulares van en mayúsculas, con las comillas `«»` en coral. Úsalo solo en la portada.
 
+**Anuncios de temporada.** Solo los títulos de los anuncios de la home (`TituloAnuncio`) usan otra letra: **Orbitron** para el Cyber Monday (degradado `from-promo-cyber-1 to-promo-cyber-2`) y **Mountains of Christmas** para la Navidad (`text-promo-navidad`). Son de Google Fonts (OFL), se cargan sin precarga y van en `text-2xl`. Los tokens `--promo-*` tienen valor en claro y en oscuro y superan 4,5:1 sobre la tarjeta. No se usan en otro sitio.
+
 ## 5. Fondos
 
 | Superficie | Modo claro | Clase |
