@@ -213,3 +213,23 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 - Aplicar la migración `0001_tutor_humano` en Neon (`npm run db:migrate` con la `DATABASE_URL` de Neon).
 - En Neon, después de aprobar el banco de ejercicios: `npm run db:seed:actividad` el día de la demo.
 - ~~El **material personal** («Mío») sigue usando a Lucía fija: pasarlo a la sesión como el tutor.~~ Hecho en #56: también usa la sesión y exige el curso. Se quitó el «puente» de la demo (`ALUMNO_DEMO_ID` y `buscarUsuarioDemo`), que ya no usaba nadie.
+
+---
+
+## Trabajo de Héctor — Jueves 26/11/2026
+
+### Qué hicimos
+
+| Tema | Qué hace | Issue |
+|---|---|---|
+| Pantalla de módulo (UI/UX) | Título centrado, «Ir al foro» y botones de compartir (solo visuales). Vídeos en acordeón: «Visto» tras 15 s reproduciéndose y un test de demostración bajo cada vídeo que desbloquea el siguiente. Ficha del profesor y bandeja de mensajes simulada. | #59 |
+| Foro y sistema de puntos | Foro por módulo con hilos. Correcta +10 y aproximada +5, pero solo las 3 primeras respuestas correctas de personas distintas y una vez por persona y tema, para que no se pueda hacer spam. El profesor da +1, +3 o +6 y su valoración prevalece. Confeti al ganar puntos. | #59 |
+| IA nueva del foro (Sensei) | Modelo de decisión, separado del tutor (Perplexity Decider V1.3 por OpenRouter), que solo decide si un comentario responde a la duda y si es correcto, aproximado o incorrecto. No escribe texto: el código contesta en el hilo con su avatar. 12 de 12 aciertos en español. | #59 |
+
+### Decisiones tomadas
+
+| Decisión | Por qué |
+|---|---|
+| Para el foro, un **modelo de decisión** en lugar de un chat | Solo puede elegir entre opciones fijas: no puede escribir ni hacer otra cosa que valorar, y es gratis |
+| La IA del foro **sale de la UE solo para el MVP** | Excepción documentada en `docs/decisiones.md` (apartado 7): solo recibe texto filtrado, y en un caso real se usaría un modelo abierto alojado en la UE |
+| «Visto», tests y mensajes se guardan **en el navegador** | Es una demo; el test definitivo llega con la #3 |
