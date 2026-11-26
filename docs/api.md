@@ -12,7 +12,7 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/modulos/:id/ejercicios` | `EjercicioPublico[]` (sin solución ni rúbrica) | 🧪 Prueba. El banco ya se genera en la tabla `ejercicio` (#4, `npm run generar:ejercicios`); falta que el endpoint lea los aprobados | #3 selección |
 | `POST /api/intentos` | `Intento` | 🧪 Test corregido por código; abiertas pendientes | #3 corrector, #13 guardar |
 | `GET /api/progreso?alumnoId=` | `Progreso[]` | 🧪 Prueba | #13 |
-| `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). Límite diario en la tabla `uso_ia`. Guarda cada pregunta y respuesta, ya filtradas, en `conversacion` y `mensaje` (para el Radar). Necesita el seed (`npm run db:seed`); si no, 404. Solo m2-css tiene transcripciones (de prueba) | #11 transcripciones reales, #13 login |
+| `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). El alumno es el **usuario de la sesión** (401 sin sesión, 403 sin el curso); `alumnoId` ya no se usa. Límite diario en `uso_ia` (429). Guarda cada pregunta y respuesta, ya filtradas, en `conversacion` y `mensaje` (para el Radar) y devuelve `preguntaId` | #1, #5 |
 | `GET /api/radar?curso=<slug>` | `InformeRadar` | ✅ Real: alumnos atascados o inactivos, conceptos más fallados y dudas frecuentes, calculado con código (sin IA). Solo el profesor de ese curso o un admin (403 si no). Pantalla: `/radar` | #5 |
 | `GET /api/radar/resumen?curso=<slug>` | `RespuestaResumenDudas` | ✅ Real (IA, agente analista): resumen de las dudas al tutor para el profesor. Mismos permisos que el Radar. Caché de 1 hora por curso; 502 si la IA falla (el resto del Radar sigue) | #5 |
 | `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (lee `data/material/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #2 |
@@ -46,17 +46,19 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 
 ```json
 // Petición (PeticionTutor)
-{ "alumnoId": "a1", "moduloId": "m2-css", "mensaje": "¿Qué es la especificidad?", "historial": [] }
+// Con la cookie de sesión: el alumno sale de ella.
+{ "moduloId": "m2-css", "mensaje": "¿Qué es la especificidad?", "historial": [] }
 
 // Respuesta (RespuestaTutor)
 {
   "mensaje": { "rol": "tutor", "texto": "…", "fuentes": [{ "videoId": "v04", "segundo": 125 }] },
   "fueraDeTemario": false,
-  "consultasRestantes": 29
+  "consultasRestantes": 29,
+  "preguntaId": "…"
 }
 ```
 
-Errores: `400` (faltan campos o la pregunta supera 1.000 caracteres), `404` (módulo o alumno), `429` (límite diario alcanzado), `502` (la IA no responde). El mensaje de `error` se puede mostrar al alumno tal cual.
+Errores: `400` (pregunta vacía o de más de 1.000 caracteres), `401` (sin sesión), `403` (no tiene el curso), `404` (módulo), `429` (límite diario alcanzado), `502` (la IA no responde). El mensaje de `error` se puede mostrar al alumno tal cual.
 Detalle del agente: [agents/tutor.md](../agents/tutor.md).
 
 ## Reglas

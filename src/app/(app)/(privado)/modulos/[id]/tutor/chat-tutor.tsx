@@ -6,7 +6,6 @@ import { EstadoCargando, EstadoVacio } from "@/components/estado";
 import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ALUMNO_DEMO_ID } from "@/lib/formato";
 import { mensajeDeError } from "@/lib/peticiones";
 import type { ErrorApi, Mensaje, PeticionTutor, RespuestaTutor } from "@/lib/types";
 
@@ -42,7 +41,8 @@ export function ChatTutor({
     setEnviando(true);
 
     try {
-      const peticion: PeticionTutor = { alumnoId: ALUMNO_DEMO_ID, moduloId, mensaje: limpia, historial };
+      // El alumno lo pone el servidor a partir de la sesión.
+      const peticion: PeticionTutor = { moduloId, mensaje: limpia, historial };
       const res = await fetch("/api/tutor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -1,76 +1,54 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ErrorIA } from "@/lib/ai/cliente";
-import { consumirConsulta } from "@/lib/ai/limite";
-import { preguntarAlTutor } from "@/lib/agentes/tutor";
-import { buscarModulo, buscarUsuarioDemo } from "@/server/matriculas/demo";
-import { registrarIntercambio } from "@/server/tutor/servicio";
+import { COOKIE_SESION } from "@/server/auth/cookie";
+import { usuarioDeToken } from "@/server/auth/servicio";
+import { limiteSuperado, prohibido } from "@/server/compartido/errores";
+import { consultarTutor } from "@/server/tutor/servicio";
 import { POST } from "./route";
 
-vi.mock("@/lib/ai/limite", () => ({ consumirConsulta: vi.fn() }));
-vi.mock("@/lib/agentes/tutor", () => ({ preguntarAlTutor: vi.fn() }));
-vi.mock("@/server/matriculas/demo", () => ({
-  buscarUsuarioDemo: vi.fn(),
-  buscarModulo: vi.fn(),
-  MENSAJE_SIN_SEED: "Ejecuta «npm run db:seed».",
-}));
-vi.mock("@/server/tutor/servicio", () => ({ registrarIntercambio: vi.fn() }));
+vi.mock("@/server/auth/servicio", () => ({ usuarioDeToken: vi.fn() }));
+vi.mock("@/server/tutor/servicio", () => ({ consultarTutor: vi.fn() }));
 
-const respuestaTutor = { rol: "tutor" as const, texto: "Gana el id", fuentes: [{ videoId: "v04", segundo: 125 }] };
+const carmen = { id: "u-carmen", nombre: "Carmen López", email: "carmen@demo.test", rol: "alumno" as const, emailVerificado: true };
+const contexto = { params: Promise.resolve({}) };
+const respuesta = { mensaje: { rol: "tutor" as const, texto: "Gana el id", fuentes: [] }, fueraDeTemario: false, consultasRestantes: 29 };
 
-function pregunta(mensaje = "¿Por qué gana #enviar?") {
+function pregunta(cuerpo: unknown, conSesion = true) {
   return new Request("http://localhost/api/tutor", {
     method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ alumnoId: "a1", moduloId: "m2-css", mensaje }),
+    headers: { "content-type": "application/json", ...(conSesion ? { cookie: `${COOKIE_SESION}=tok` } : {}) },
+    body: JSON.stringify(cuerpo),
   });
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.mocked(buscarUsuarioDemo).mockResolvedValue({ id: "u-lucia", nombre: "Lucía Martín", email: "lucia@demo.test" });
-  vi.mocked(buscarModulo).mockResolvedValue({ id: "mod-css", slug: "m2-css" });
-  vi.mocked(consumirConsulta).mockResolvedValue({ permitido: true, restantes: 29 });
-  vi.mocked(preguntarAlTutor).mockResolvedValue({ mensaje: respuestaTutor, fueraDeTemario: false, simulado: false });
-  vi.mocked(registrarIntercambio).mockResolvedValue({ conversacionId: "c1" });
+  vi.mocked(usuarioDeToken).mockResolvedValue(carmen);
+  vi.mocked(consultarTutor).mockResolvedValue(respuesta);
 });
 
-describe("POST /api/tutor guarda la conversación (#5)", () => {
-  it("guarda la pregunta y la respuesta con los ids de la BBDD y el nombre del alumno para ocultarlo", async () => {
-    const res = await POST(pregunta());
-
+describe("POST /api/tutor", () => {
+  it("pregunta con el usuario de la SESIÓN, aunque el cuerpo traiga otro alumnoId", async () => {
+    const res = await POST(pregunta({ alumnoId: "a1", moduloId: "m2-css", mensaje: " ¿Por qué gana #enviar? " }), contexto);
     expect(res.status).toBe(200);
-    expect((await res.json()).mensaje).toEqual(respuestaTutor);
-    expect(registrarIntercambio).toHaveBeenCalledWith({
-      usuarioId: "u-lucia",
-      moduloId: "mod-css",
-      pregunta: "¿Por qué gana #enviar?",
-      nombresOcultos: ["Lucía Martín"],
-      respuesta: respuestaTutor,
-    });
+    expect(await res.json()).toEqual(respuesta);
+    expect(consultarTutor).toHaveBeenCalledWith(carmen, { moduloId: "m2-css", mensaje: "¿Por qué gana #enviar?" });
   });
 
-  it("no guarda nada en modo simulado (sin IA no hay conversación real)", async () => {
-    vi.mocked(preguntarAlTutor).mockResolvedValue({ mensaje: respuestaTutor, fueraDeTemario: false, simulado: true });
-    expect((await POST(pregunta())).status).toBe(200);
-    expect(registrarIntercambio).not.toHaveBeenCalled();
+  it("sin sesión responde 401", async () => {
+    expect((await POST(pregunta({ moduloId: "m2-css", mensaje: "hola" }, false), contexto)).status).toBe(401);
+    expect(consultarTutor).not.toHaveBeenCalled();
   });
 
-  it("no guarda nada si la IA falla", async () => {
-    vi.mocked(preguntarAlTutor).mockRejectedValue(new ErrorIA("caído", 503));
-    vi.spyOn(console, "error").mockImplementation(() => {});
-    expect((await POST(pregunta())).status).toBe(502);
-    expect(registrarIntercambio).not.toHaveBeenCalled();
+  it("valida la pregunta: vacía o de más de 1000 caracteres → 400", async () => {
+    expect((await POST(pregunta({ moduloId: "m2-css", mensaje: "  " }), contexto)).status).toBe(400);
+    expect((await POST(pregunta({ moduloId: "m2-css", mensaje: "x".repeat(1001) }), contexto)).status).toBe(400);
+    expect(consultarTutor).not.toHaveBeenCalled();
   });
 
-  it("si falla el guardado, el alumno recibe igualmente su respuesta", async () => {
-    vi.mocked(registrarIntercambio).mockRejectedValue(new Error("BBDD caída"));
-    const error = vi.spyOn(console, "error").mockImplementation(() => {});
-
-    const res = await POST(pregunta());
-    expect(res.status).toBe(200);
-    expect((await res.json()).mensaje).toEqual(respuestaTutor);
-    // Se registra el fallo, pero nunca el texto de la pregunta.
-    expect(error).toHaveBeenCalled();
-    expect(JSON.stringify(error.mock.calls)).not.toContain("#enviar");
+  it("traduce los errores del servicio: sin el curso 403, límite 429", async () => {
+    vi.mocked(consultarTutor).mockRejectedValueOnce(prohibido());
+    expect((await POST(pregunta({ moduloId: "m2-css", mensaje: "hola" }), contexto)).status).toBe(403);
+    vi.mocked(consultarTutor).mockRejectedValueOnce(limiteSuperado());
+    expect((await POST(pregunta({ moduloId: "m2-css", mensaje: "hola" }), contexto)).status).toBe(429);
   });
 });

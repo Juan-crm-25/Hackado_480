@@ -16,7 +16,10 @@ export interface Intercambio {
  * Guarda el intercambio en la conversación vigente del alumno en ese módulo (la crea si no hay
  * ninguna sin caducar). Todo en una transacción: o se guardan los dos mensajes o ninguno.
  */
-export async function guardarIntercambio(intercambio: Intercambio, db: Db = getDb()): Promise<{ conversacionId: string }> {
+export async function guardarIntercambio(
+  intercambio: Intercambio,
+  db: Db = getDb(),
+): Promise<{ conversacionId: string; preguntaId: string }> {
   return db.transaction(async (tx) => {
     // Bloquea al alumno: dos preguntas a la vez no crean dos conversaciones.
     await tx.select({ id: usuario.id }).from(usuario).where(eq(usuario.id, intercambio.usuarioId)).for("update");
@@ -45,7 +48,7 @@ export async function guardarIntercambio(intercambio: Intercambio, db: Db = getD
 
     // Fechas explícitas para que la respuesta quede siempre después de la pregunta.
     const ahora = Date.now();
-    await tx.insert(mensaje).values([
+    const [pregunta] = await tx.insert(mensaje).values([
       { conversacionId, rol: "alumno", texto: intercambio.pregunta, fecha: new Date(ahora) },
       {
         conversacionId,
@@ -54,9 +57,9 @@ export async function guardarIntercambio(intercambio: Intercambio, db: Db = getD
         fuentes: intercambio.respuesta.fuentes,
         fecha: new Date(ahora + 1),
       },
-    ]);
+    ]).returning({ id: mensaje.id });
 
-    return { conversacionId };
+    return { conversacionId, preguntaId: pregunta.id };
   });
 }
 

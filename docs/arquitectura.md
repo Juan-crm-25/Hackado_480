@@ -186,7 +186,7 @@ Estado: ✅ existe · 🔁 existe, se migrará a la BBDD y a esta estructura · 
 | `GET /api/clases/:id/material/:tipo` | acceso al curso | material (se genera la primera vez; como es único por clase y tipo, el coste de IA está acotado) | ⬜ |
 | `GET /api/modulos/:id/material` · `/infografias` | acceso al curso | material | 🔁 |
 | `GET/POST /api/material-personal` | alumno | material | 🔁 |
-| `POST /api/tutor` | acceso al curso | tutor | 🔁 |
+| `POST /api/tutor` | acceso al curso (`requerirAccesoCurso()`) | tutor | ✅ |
 | `GET/POST /api/clases/:id/temas` | acceso al curso | foro | ⬜ |
 | `GET /api/temas/:id` · `POST /api/temas/:id/comentarios` | acceso al curso | foro | ⬜ |
 | `POST /api/comentarios/:id/validacion` | profesor del curso | foro (el profesor marca buena / no útil; prevalece sobre la IA) | ⬜ |
