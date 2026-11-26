@@ -284,8 +284,12 @@ export interface InformeRadar {
   alertas: AlertaAlumno[];
   conceptosMasFallados: ConceptoFallado[];
   dudasFrecuentes: DudasModulo[];
-  /** Resumen de dudas frecuentes, escrito por el agente analista (#5). Vacío hasta que exista. */
-  resumenDudas: string;
+}
+
+/** GET /api/radar/resumen: resumen de las dudas escrito por el agente analista (#5). Se pide aparte del Radar. */
+export interface RespuestaResumenDudas {
+  resumen: string;
+  generado: string; // ISO 8601
 }
 
 // ─── API: peticiones y respuestas ────────────────────────────────────────────

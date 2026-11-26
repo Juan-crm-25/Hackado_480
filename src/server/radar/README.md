@@ -11,7 +11,8 @@ Radar del tutor (#5): a quién ayudar, qué conceptos se fallan y qué se pregun
   - **Conceptos más fallados:** % de fallo de los últimos 30 días, con al menos 5 intentos.
   - **Dudas frecuentes:** preguntas al tutor de las 2 últimas semanas, por módulo (ya filtradas).
 - **`repositorio.ts`:** lee esos datos de un curso. **`servicio.ts`:** permisos + cálculo.
-- Pendiente: el resumen de dudas con IA (agente analista) y responder dudas pasadas a un tutor humano (H9).
+- **Resumen con IA** (`obtenerResumenDudas()`, `GET /api/radar/resumen`): el agente analista (`agents/analista-radar.md`) resume las dudas de las 2 últimas semanas. Solo le llegan los textos (ya filtrados) agrupados por módulo y los conceptos más fallados, nunca quién preguntó. Caché de 1 hora por curso que se invalida si hay preguntas nuevas.
+- Pendiente: responder dudas pasadas a un tutor humano (H9).
 
 Para la demo: `npm run db:seed:actividad` crea actividad simulada (ver docs/bbdd/README.md).
 

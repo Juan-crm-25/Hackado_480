@@ -2,6 +2,7 @@ import { Clock, MessageCircleQuestion, TriangleAlert } from "lucide-react";
 import { EstadoVacio } from "@/components/estado";
 import { Badge } from "@/components/ui/badge";
 import type { AlertaAlumno, InformeRadar } from "@/lib/types";
+import { ResumenDudas } from "./resumen-dudas";
 
 /**
  * Radar del tutor (#5) para el profesor: a quién ayudar, qué conceptos se fallan y qué se pregunta al tutor.
@@ -74,6 +75,7 @@ export function VistaRadar({ informe, ahora }: { informe: InformeRadar; ahora: D
           Dudas frecuentes al tutor
         </h2>
         <p className="text-sm text-muted-foreground">Preguntas de las 2 últimas semanas, ya sin datos personales.</p>
+        {informe.dudasFrecuentes.length > 0 && <ResumenDudas curso={informe.curso.slug} />}
         {informe.dudasFrecuentes.length === 0 ? (
           <EstadoVacio>Aún no hay preguntas al tutor en este curso.</EstadoVacio>
         ) : (

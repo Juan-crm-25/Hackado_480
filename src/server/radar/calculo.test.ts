@@ -199,7 +199,7 @@ describe("calcularRadar: solo alumnos del curso", () => {
 });
 
 describe("calcularRadar: cabecera del informe", () => {
-  it("lleva el curso, cuántos alumnos tiene, la fecha y el resumen vacío (lo escribirá el analista)", () => {
+  it("lleva el curso, cuántos alumnos tiene, sus módulos y la fecha", () => {
     const informe = calcularRadar(datos(), AHORA);
     expect(informe).toMatchObject({
       curso: { slug: "desarrollo-web", titulo: "Desarrollo web" },
@@ -209,7 +209,6 @@ describe("calcularRadar: cabecera del informe", () => {
         { id: "m2-css", titulo: "CSS" },
       ],
       generado: AHORA.toISOString(),
-      resumenDudas: "",
     });
   });
 });

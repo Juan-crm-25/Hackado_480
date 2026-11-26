@@ -45,7 +45,6 @@ export function calcularRadar(datos: DatosRadar, ahora: Date): InformeRadar {
     alertas: [...atascados(deAlumnos, nombres, ahora), ...inactivos(deAlumnos, dudas, nombres, ahora)],
     conceptosMasFallados: conceptosMasFallados(deAlumnos, ahora),
     dudasFrecuentes: dudasFrecuentes(dudas, datos.modulos, ahora),
-    resumenDudas: "",
   };
 }
 
@@ -120,6 +119,14 @@ function conceptosMasFallados(intentos: DatosRadar["intentos"], ahora: Date): Co
 }
 
 function dudasFrecuentes(dudas: DatosRadar["dudas"], modulos: DatosRadar["modulos"], ahora: Date): DudasModulo[] {
+  return agruparDudas(dudas, modulos, ahora).map((d) => ({ ...d, masRepetidas: d.masRepetidas.slice(0, MAXIMO_DUDAS) }));
+}
+
+/**
+ * Dudas de las 2 últimas semanas por módulo (el que más tiene, primero), con cada pregunta distinta
+ * y cuántas veces se ha hecho (de más a menos). La misma pregunta con otras mayúsculas o espacios cuenta como una.
+ */
+export function agruparDudas(dudas: DatosRadar["dudas"], modulos: DatosRadar["modulos"], ahora: Date): DudasModulo[] {
   const recientes = dudas.filter((d) => ahora.getTime() - d.fecha.getTime() <= DIAS_DUDAS * DIA);
   const titulos = new Map(modulos.map((m) => [m.slug, m.titulo]));
   return [...agrupar(recientes, (d) => d.moduloSlug)]
@@ -136,7 +143,7 @@ function dudasFrecuentes(dudas: DatosRadar["dudas"], modulos: DatosRadar["modulo
         moduloId: moduloSlug,
         modulo: titulos.get(moduloSlug) ?? moduloSlug,
         total: lista.length,
-        masRepetidas: [...porTexto.values()].sort((a, b) => b.veces - a.veces).slice(0, MAXIMO_DUDAS),
+        masRepetidas: [...porTexto.values()].sort((a, b) => b.veces - a.veces),
       };
     })
     .sort((a, b) => b.total - a.total);
