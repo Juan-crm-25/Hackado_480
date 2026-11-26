@@ -4,14 +4,14 @@ import { consumirConsulta } from "@/lib/ai/limite";
 import { ErrorMaterial, generarMaterialPersonal } from "@/lib/agentes/material-personal";
 import { getModulo } from "@/lib/catalogo";
 import { getDb, type Db } from "@/lib/db/client";
-import type { MaterialPersonal, RespuestaMaterialPersonal } from "@/lib/types";
+import type { Infografia, MaterialPersonal, RespuestaMaterialPersonal, SeccionResumen, Tarjeta } from "@/lib/types";
 import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
 import type { UsuarioSesion } from "../auth/roles";
 import { datosInvalidos, errorIa, limiteSuperado, noEncontrado } from "../compartido/errores";
 import { buscarConcepto, buscarModulo } from "../matriculas/demo";
 import { requerirAccesoCurso } from "../matriculas/servicio";
 import type { DatosPeticionMaterialPersonal } from "./esquemas";
-import { guardarMaterialPersonal, listarMaterialPersonal } from "./repositorio";
+import { guardarMaterialPersonal, leerMaterialPublicado, listarMaterialPersonal } from "./repositorio";
 
 export interface DependenciasMaterialPersonal {
   generar: typeof generarMaterialPersonal;
@@ -69,4 +69,49 @@ export async function listarMiMaterialPersonal(usuario: UsuarioSesion, moduloSlu
     moduloId = modulo.id;
   }
   return listarMaterialPersonal({ usuarioId: usuario.id, alumnoId: usuario.id, moduloId }, db);
+}
+
+// ── Material común del módulo (#15): lo revisado de sus vídeos, igual para todos los alumnos del curso ──
+
+/** Material común de un módulo (por su slug): el revisado de sus vídeos, juntado en orden. */
+export interface MaterialDelModulo {
+  moduloId: string;
+  resumen: SeccionResumen[];
+  tarjetas: Tarjeta[];
+  infografias: Infografia[];
+}
+
+/**
+ * Pantalla de material: lo revisado del módulo para el usuario de la SESIÓN. Necesita el curso (matrícula, profesor
+ * del curso o admin): 403 si no. Módulo que no existe: 404. Sin nada revisado, listas vacías. No llama a la IA.
+ */
+export async function leerMaterialDelModulo(usuario: UsuarioSesion, moduloSlug: string, db: Db = getDb()): Promise<MaterialDelModulo> {
+  const modulo = getModulo(moduloSlug);
+  if (!modulo) throw noEncontrado(`No existe el módulo "${moduloSlug}"`);
+  await requerirAccesoCurso(usuario, CURSO_DEMO_SLUG, db);
+  const moduloBd = await buscarModulo(modulo.id, db);
+  if (!moduloBd) throw noEncontrado(`El módulo "${modulo.id}" no está en la base de datos`);
+  return { moduloId: modulo.id, ...(await leerMaterialPublicado(moduloBd.id, db)) };
+}
+
+/** GET /api/modulos/:id/material: el resumen y las tarjetas revisados; 404 si aún no hay nada revisado. */
+export async function materialComunDelModulo(
+  usuario: UsuarioSesion,
+  moduloSlug: string,
+  db: Db = getDb(),
+): Promise<Pick<MaterialDelModulo, "moduloId" | "resumen" | "tarjetas">> {
+  const { moduloId, resumen, tarjetas } = await leerMaterialDelModulo(usuario, moduloSlug, db);
+  if (!resumen.length && !tarjetas.length) throw noEncontrado("Este módulo todavía no tiene material de repaso");
+  return { moduloId, resumen, tarjetas };
+}
+
+/** GET /api/modulos/:id/infografias: las infografías revisadas; 404 si aún no hay ninguna. */
+export async function infografiasDelModulo(
+  usuario: UsuarioSesion,
+  moduloSlug: string,
+  db: Db = getDb(),
+): Promise<Pick<MaterialDelModulo, "moduloId" | "infografias">> {
+  const { moduloId, infografias } = await leerMaterialDelModulo(usuario, moduloSlug, db);
+  if (!infografias.length) throw noEncontrado("Este módulo todavía no tiene infografías");
+  return { moduloId, infografias };
 }

@@ -8,14 +8,15 @@ import { VistaInfografia } from "@/components/infografia";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Concepto, Infografia, MaterialComun, SeccionResumen, Tarjeta } from "@/lib/types";
+import type { Concepto, Infografia, SeccionResumen, Tarjeta } from "@/lib/types";
 import { MiMaterial } from "./mi-material";
 
 type Pestana = "resumen" | "tarjetas" | "visual" | "mio";
 
 export function VistaMaterial({
   moduloId,
-  material,
+  resumen,
+  tarjetas,
   infografias,
   conceptos,
   videos,
@@ -23,8 +24,10 @@ export function VistaMaterial({
   enlaceTutor,
 }: {
   moduloId: string;
-  /** Material común YA REVISADO, o null si aún no hay. */
-  material: MaterialComun | null;
+  /** Resumen común YA REVISADO (el de los vídeos del módulo, en orden), o vacío si aún no hay. */
+  resumen: SeccionResumen[];
+  /** Tarjetas comunes YA REVISADAS, o vacío. */
+  tarjetas: Tarjeta[];
   /** Infografías YA REVISADAS (#7), o vacío. */
   infografias: Infografia[];
   conceptos: Concepto[];
@@ -33,12 +36,8 @@ export function VistaMaterial({
   enlaceTutor: string;
 }) {
   const pestanas: { id: Pestana; texto: string }[] = [
-    ...(material
-      ? [
-          { id: "resumen" as const, texto: "Resumen" },
-          { id: "tarjetas" as const, texto: "Tarjetas" },
-        ]
-      : []),
+    ...(resumen.length ? [{ id: "resumen" as const, texto: "Resumen" }] : []),
+    ...(tarjetas.length ? [{ id: "tarjetas" as const, texto: "Tarjetas" }] : []),
     ...(infografias.length ? [{ id: "visual" as const, texto: "Visual" }] : []),
     { id: "mio", texto: "Mío" },
   ];
@@ -56,18 +55,18 @@ export function VistaMaterial({
           ))}
         </TabsList>
 
-        {!material && (
+        {!resumen.length && !tarjetas.length && (
           <EstadoVacio>Este módulo todavía no tiene material de repaso del curso, pero puedes crearte el tuyo.</EstadoVacio>
         )}
 
-        {material && (
+        {resumen.length > 0 && (
           <TabsContent value="resumen">
-            <Resumen secciones={material.resumen} videos={videos} />
+            <Resumen secciones={resumen} videos={videos} />
           </TabsContent>
         )}
-        {material && (
+        {tarjetas.length > 0 && (
           <TabsContent value="tarjetas">
-            <Tarjetas tarjetas={material.tarjetas} videos={videos} />
+            <Tarjetas tarjetas={tarjetas} videos={videos} />
           </TabsContent>
         )}
         {infografias.length > 0 && (
