@@ -9,6 +9,7 @@ import type { IntentoPago, PeticionConfirmar, SesionCheckout } from "@/lib/pagos
 import { leerRespuesta, mensajeDeError } from "@/lib/peticiones";
 import { FormularioPago, type DatosPago } from "./formulario-pago";
 import { PagoCompletado } from "./pago-completado";
+import { enlaceCursoDelAlumno } from "@/lib/enlaces";
 import { ResumenPedido, type CursoDelPedido } from "./resumen-pedido";
 
 /** Lo que tarda el «banco» simulado en responder: da tiempo a ver el estado «Procesando el pago…». */
@@ -81,8 +82,8 @@ export function Checkout({ curso, precioCentimos }: { curso: CursoDelPedido; pre
           {estado.fase === "ya-lo-tienes" && (
             <div className="flex flex-col items-start gap-3 rounded-lg bg-muted p-4 text-sm">
               <p>Ya tienes este curso: no hace falta que lo vuelvas a comprar.</p>
-              <Link href="/dashboard" className={buttonVariants({ variant: "accent" })}>
-                Ir a Tus cursos
+              <Link href={enlaceCursoDelAlumno(curso.slug)} className={buttonVariants({ variant: "accent" })}>
+                Ir a tu curso
               </Link>
             </div>
           )}

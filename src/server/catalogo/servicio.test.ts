@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { CursoCatalogo } from "@/lib/catalogo-bd";
 import type { Db } from "@/lib/db/client";
-import { buscarModulo, cargarCursoPrincipal, cargarCursoPublico, cargarCursosPublicados } from "./servicio";
+import { buscarModulo, cargarCursoPorSlug, cargarCursoPrincipal, cargarCursoPublico, cargarCursosPublicados } from "./servicio";
 
 const curso: CursoCatalogo = {
   id: "intro",
@@ -30,6 +30,17 @@ describe("cargarCursoPrincipal", () => {
       throw new Error("Falta DATABASE_URL");
     };
     expect(await cargarCursoPrincipal(sinUrl)).toEqual({ estado: "error" });
+    aviso.mockRestore();
+  });
+});
+
+describe("cargarCursoPorSlug", () => {
+  it("si la BBDD falla devuelve un error en lugar de romper la página", async () => {
+    const aviso = vi.spyOn(console, "error").mockImplementation(() => {});
+    const sinUrl = () => {
+      throw new Error("Falta DATABASE_URL");
+    };
+    expect(await cargarCursoPorSlug("python-desde-cero", sinUrl)).toEqual({ estado: "error" });
     aviso.mockRestore();
   });
 });

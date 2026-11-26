@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 import { CabeceraPantalla } from "./cabecera-pantalla";
 
 describe("CabeceraPantalla", () => {
-  it("el enlace «Curso» vuelve al panel del alumno, no a la página pública", () => {
+  it("el enlace «Curso» vuelve al curso del alumno, no a la página pública ni a la lista", () => {
     const html = renderToStaticMarkup(<CabeceraPantalla seccion="Módulo" titulo="CSS" />);
-    expect(html).toContain('href="/dashboard"');
+    expect(html).toContain('href="/dashboard/desarrollo-web"');
     expect(html).not.toContain('href="/"');
   });
 

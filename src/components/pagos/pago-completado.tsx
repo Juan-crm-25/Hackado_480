@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatoPrecio } from "@/lib/formato";
+import { enlaceCursoDelAlumno } from "@/lib/enlaces";
 import { NOMBRE_METODO, type IntentoPago } from "@/lib/pagos";
 
 const FECHA = new Intl.DateTimeFormat("es-ES", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Madrid" });
@@ -52,8 +53,8 @@ export function PagoCompletado({ pago }: { pago: IntentoPago }) {
           >
             Personaliza tu ruta (1 min)
           </Link>
-          <Link href="/dashboard" className={buttonVariants({ variant: "outline", size: "lg", className: "flex-1" })}>
-            Ir a Tus cursos
+          <Link href={enlaceCursoDelAlumno(pago.curso.slug)} className={buttonVariants({ variant: "outline", size: "lg", className: "flex-1" })}>
+            Ir a tu curso
           </Link>
         </div>
       </CardContent>

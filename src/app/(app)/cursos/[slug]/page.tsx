@@ -13,6 +13,7 @@ import { resumenValoraciones, valoracionesDe } from "@/lib/demo/valoraciones";
 import { formatoPrecio } from "@/lib/formato";
 import { obtenerUsuarioActual } from "@/server/auth/usuario-actual";
 import { cargarCursoPublico } from "@/server/catalogo/servicio";
+import { enlaceCursoDelAlumno } from "@/lib/enlaces";
 import { tieneElCurso } from "@/server/matriculas/servicio";
 
 /**
@@ -131,7 +132,7 @@ async function AccionCurso({ slug, gratis }: { slug: string; gratis: boolean }) 
   const usuario = await obtenerUsuarioActual();
   if (usuario && (await tieneElCurso(usuario.id, slug))) {
     return (
-      <Link href="/dashboard" className={buttonVariants({ variant: "accent", size: "lg" })}>
+      <Link href={enlaceCursoDelAlumno(slug)} className={buttonVariants({ variant: "accent", size: "lg" })}>
         Ir a tu curso
       </Link>
     );

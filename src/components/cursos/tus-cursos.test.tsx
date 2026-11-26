@@ -53,9 +53,10 @@ describe("ListaTusCursos", () => {
     expect(barras[1]).toContain('aria-valuenow="0"');
   });
 
-  it("cada curso lleva a su página", () => {
-    expect(html).toContain('href="/cursos/desarrollo-web"');
-    expect(html).toContain('href="/cursos/python-desde-cero"');
+  it("cada curso entra directamente al curso del alumno, no a su ficha de tienda", () => {
+    expect(html).toContain('href="/dashboard/desarrollo-web"');
+    expect(html).toContain('href="/dashboard/python-desde-cero"');
+    expect(html).not.toContain('href="/cursos/desarrollo-web"');
   });
 
   it("solo el curso sin ruta invita a personalizarla", () => {
