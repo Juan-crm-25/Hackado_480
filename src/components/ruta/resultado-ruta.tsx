@@ -5,6 +5,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { RespuestaRuta } from "@/lib/ruta";
 import { cn } from "@/lib/utils";
+import { enlaceCursoDelAlumno } from "@/lib/enlaces";
 import { temaDe } from "./temas";
 
 /** La ruta personalizada con la recomendación del tutor (frases de plantilla, sin IA). */
@@ -87,7 +88,7 @@ export function ResultadoRuta({ resultado, onCambiar }: { resultado: RespuestaRu
       </section>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Link href="/dashboard" className={buttonVariants({ variant: "accent", size: "lg", className: "flex-1" })}>
+        <Link href={enlaceCursoDelAlumno(resultado.curso.slug)} className={buttonVariants({ variant: "accent", size: "lg", className: "flex-1" })}>
           Empezar
         </Link>
         <Button type="button" variant="outline" size="lg" className="flex-1" onClick={onCambiar}>

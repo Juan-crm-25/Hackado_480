@@ -20,6 +20,22 @@ export async function cargarCursoPrincipal(obtenerDb: () => Db = getDb): Promise
   }
 }
 
+export type ResultadoCursoPorSlug = { estado: "ok"; curso: CursoCatalogo } | { estado: "no-encontrado" } | { estado: "error" };
+
+/**
+ * Un curso concreto con sus módulos y clases, para la pantalla del curso del alumno. Nunca lanza.
+ * leerCursoPrincipal cae al primer curso si el slug no existe; aquí eso es «no-encontrado».
+ */
+export async function cargarCursoPorSlug(slug: string, obtenerDb: () => Db = getDb): Promise<ResultadoCursoPorSlug> {
+  try {
+    const curso = await leerCursoPrincipal(obtenerDb(), slug);
+    return curso?.id === slug ? { estado: "ok", curso } : { estado: "no-encontrado" };
+  } catch (error) {
+    console.error("[catalogo] No se pudo leer el curso de la BBDD:", error);
+    return { estado: "error" };
+  }
+}
+
 export type ResultadoCursos = { estado: "ok"; cursos: CursoResumen[] } | { estado: "vacio" } | { estado: "error" };
 
 /** Cursos publicados para la home pública. Nunca lanza (igual que cargarCursoPrincipal). */

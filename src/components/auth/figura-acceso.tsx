@@ -6,8 +6,10 @@ import { cn } from "@/lib/utils";
  * - La pantalla decide dónde va y su tamaño con `className`.
  * - Con «reducir movimiento» se queda quieto.
  * - Es decorativa: alt vacío, oculta a los lectores de pantalla y no captura clics.
+ * - `cargaInmediata`: para la que se ve al entrar sin hacer scroll (en web es el LCP); carga ya y con prioridad alta.
+ *   Sin ella se carga cuando hace falta (lazy), como la del móvil, que queda debajo del formulario.
  */
-export function FiguraAcceso({ className }: { className?: string }) {
+export function FiguraAcceso({ className, cargaInmediata = false }: { className?: string; cargaInmediata?: boolean }) {
   return (
     <div
       aria-hidden="true"
@@ -19,6 +21,8 @@ export function FiguraAcceso({ className }: { className?: string }) {
         width={805}
         height={635}
         className="h-auto w-full"
+        loading={cargaInmediata ? "eager" : "lazy"}
+        fetchPriority={cargaInmediata ? "high" : undefined}
         sizes="(min-width: 1280px) 28rem, (min-width: 1024px) 20rem, 16rem"
       />
     </div>

@@ -48,6 +48,12 @@ describe.skipIf(!hayBd)("repositorio del catálogo (con BBDD real)", () => {
     expect((await leerCursoPrincipal(bd.db))!.id).toBe("desarrollo-web");
   });
 
+  it("lee cualquier curso por su slug, con sus módulos", async () => {
+    const python = await leerCursoPrincipal(bd.db, "python-desde-cero");
+    expect(python!.id).toBe("python-desde-cero");
+    expect(python!.modulos).toHaveLength(3);
+  });
+
   it("lista los 6 cursos publicados con categoría, precio, módulos y estudiantes reales", async () => {
     const cursos = await leerCursosPublicados(bd.db);
     expect(cursos).toHaveLength(6);

@@ -2,6 +2,7 @@ import { ChevronRight, Route } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { enlaceCursoDelAlumno } from "@/lib/enlaces";
 import { Progress } from "@/components/ui/progress";
 
 export type CursoConProgreso = {
@@ -26,7 +27,7 @@ export function ListaTusCursos({ cursos }: { cursos: CursoConProgreso[] }) {
         <li key={c.slug} className="flex">
           <Card className="flex-1 gap-0 p-0">
             <Link
-              href={`/cursos/${c.slug}`}
+              href={enlaceCursoDelAlumno(c.slug)}
               className="flex flex-1 flex-col gap-3 rounded-lg p-5 outline-none transition-colors duration-150 hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-inset"
             >
               {c.bannerUrl && (

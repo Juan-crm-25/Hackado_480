@@ -45,4 +45,20 @@ describe("TarjetaModulo", () => {
     expect(html).toContain('href="/modulos/m1-html/material"');
     expect(html).toContain('href="/modulos/m1-html/tutor"');
   });
+
+  it("sin pantallas de módulo (contenido aún no disponible) no enlaza a ninguna y lo dice", () => {
+    const html = renderToStaticMarkup(
+      <TarjetaModulo modulo={MODULO} estado="pendiente" indice={0} recomendado={false} disponible={false} />,
+    );
+    expect(html).not.toContain("<a ");
+    expect(html).toContain("HTML");
+    expect(html).toContain("Contenido próximamente");
+  });
+
+  it("por defecto enlaza a los vídeos, al material y al tutor del módulo", () => {
+    const html = renderToStaticMarkup(<TarjetaModulo modulo={MODULO} estado="pendiente" indice={0} recomendado={false} />);
+    for (const destino of ["/modulos/m1-html", "/modulos/m1-html/material", "/modulos/m1-html/tutor"]) {
+      expect(html).toContain(`href="${destino}"`);
+    }
+  });
 });

@@ -61,7 +61,7 @@ export default function LayoutAcceso({ children }: { children: ReactNode }) {
           */}
           <div className="relative isolate flex flex-col gap-8">
             {/* Web (lg): al lado del título, grande y por detrás del contenido. */}
-            <FiguraAcceso className="absolute -top-[39px] -right-[73px] -z-10 hidden w-80 lg:block xl:-top-[87px] xl:-right-[137px] xl:w-md" />
+            <FiguraAcceso cargaInmediata className="absolute -top-[39px] -right-[73px] -z-10 hidden w-80 lg:block xl:-top-[87px] xl:-right-[137px] xl:w-md" />
             {/*
               Móvil y tableta: título y formulario en un cajón con sombra hacia la derecha y abajo.
               En web (lg) el cajón se quita para que se vea el astronauta por detrás, desenfocado un poco
