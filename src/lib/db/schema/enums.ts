@@ -19,6 +19,9 @@ export const nivelMaterial = pgEnum("nivel_material", ["basico", "normal", "avan
 // Lo comparten ejercicio, pregunta_evaluacion y plantilla_ejercicio.tipos.
 export const tipoEjercicio = pgEnum("tipo_ejercicio", ["test", "respuesta_corta", "abierta", "codigo"]);
 export const estadoEjercicio = pgEnum("estado_ejercicio", ["borrador", "aprobado"]);
+// Para qué test es cada ejercicio del banco: el de cada vídeo (desbloquea el siguiente), el del módulo (lo completa)
+// o el examen del curso (más difíciles). Así un mismo ejercicio no sale en dos tests.
+export const usoEjercicio = pgEnum("uso_ejercicio", ["video", "modulo", "examen"]);
 export const estadoModulo = pgEnum("estado_modulo", ["pendiente", "en_curso", "dominado", "completado"]);
 
 export const tipoEvaluacion = pgEnum("tipo_evaluacion", ["diagnostico", "test", "examen"]);

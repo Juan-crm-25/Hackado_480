@@ -161,14 +161,15 @@ SEED_PERMITIR_REMOTO=1 npm run db:seed     # otra BBDD (p. ej., Neon), solo a pr
 
 ### Generar los ejercicios
 
-El banco de ejercicios de verificación (#4) lo genera la IA a partir de las plantillas, y el código lo guarda en `ejercicio` como **borrador**. Los alumnos solo ven los **aprobados**. Instrucciones del agente y cómo se revisa: [`agents/generador-ejercicios.md`](../../agents/generador-ejercicios.md).
+El banco de ejercicios de verificación (#4) lo genera la IA a partir de las plantillas, y el código lo guarda en `ejercicio` como **borrador**. Los alumnos solo ven los **aprobados**. Cada ejercicio tiene un **`uso`**: `video` (2 por vídeo, el test que desbloquea el siguiente), `modulo` (el test del módulo, #3) o `examen` (el examen del curso). Instrucciones del agente y cómo se revisa: [`agents/generador-ejercicios.md`](../../agents/generador-ejercicios.md).
 
 ```bash
-npm run generar:ejercicios                  # BBDD local: todos los módulos que aún no tienen ejercicios
+npm run generar:ejercicios                  # BBDD local: todos los módulos y usos que aún no tienen ejercicios
+npm run generar:ejercicios -- --uso=video   # solo un uso (video, modulo o examen)
 npm run generar:ejercicios -- --forzar      # regenera los borradores (los aprobados no se tocan)
 ```
 
-- **Se genera una vez:** si un módulo ya tiene ejercicios, no se vuelve a llamar a la IA salvo con `--forzar`.
+- **Se genera una vez:** si un módulo ya tiene ejercicios de un uso, no se vuelve a llamar a la IA para ese uso salvo con `--forzar`. Si falla un uso de un módulo, se repite el comando sin `--forzar` y solo pide lo que falta.
 - **Solo la BBDD local,** salvo `GENERAR_PERMITIR_REMOTO=1`, igual que el seed.
 - Necesita la IA configurada en `.env.local`, también `AI_MODEL_GENERADOR` (el nombre del modelo está en `.env.example`).
 
@@ -225,7 +226,7 @@ Y **el día de la demo**, `npm run db:seed:actividad` (ver abajo), con los ejerc
 El Radar del tutor (#5) necesita actividad para enseñar algo en la demo. `npm run db:seed:actividad` la crea:
 
 - **Quién:** 20 alumnos simulados (`*@simulado.demo.test`) más los inventados del seed. **Nunca** los de la demo en directo (Lucía y Pablo) ni nadie que se registre de verdad: solo emails de prueba (`*.demo.test`).
-- **Qué:** intentos sobre los **ejercicios aprobados** (`intento`), dudas al tutor ya filtradas (`conversacion` y `mensaje`) y su `progreso`. Las fechas son relativas al día en que se ejecuta.
+- **Qué:** intentos sobre los **ejercicios aprobados** de vídeo y de módulo (`intento`; los de examen no), dudas al tutor ya filtradas (`conversacion` y `mensaje`) y su `progreso`. Las fechas son relativas al día en que se ejecuta.
 - **Patrones:** la especificidad es el concepto más fallado (en torno al 60 %), hay alumnos atascados (3 fallos seguidos en los últimos 3 días) y alumnos inactivos (más de 9 días sin entrar).
 - **Orden:** después de `npm run db:seed` y de **aprobar el banco de ejercicios**. Sin ejercicios aprobados no crea intentos y lo avisa.
 - **Se puede repetir:** borra la actividad anterior de esos alumnos y la vuelve a crear. Conviene ejecutarlo el día de la demo para que las fechas sean recientes.

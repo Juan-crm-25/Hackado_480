@@ -19,7 +19,8 @@ describe.skipIf(!hayBd)("sembrarActividad (con BBDD real)", () => {
     await sembrar(bd.db);
     [{ id: lucia }] = await bd.db.select({ id: usuario.id }).from(usuario).where(eq(usuario.email, "lucia@demo.test"));
 
-    // Banco de ejercicios: 2 aprobados por concepto del curso de la demo (menos js-dom) y 1 borrador.
+    // Banco de ejercicios: 2 aprobados por concepto del curso de la demo (menos js-dom), y de js-dom 1 borrador
+    // y 1 aprobado de examen (las respuestas del examen no van a «intento»).
     const conceptos = await bd.db
       .select({ id: concepto.id, slug: concepto.slug, moduloId: concepto.moduloId })
       .from(concepto)
@@ -44,6 +45,8 @@ describe.skipIf(!hayBd)("sembrarActividad (con BBDD real)", () => {
       );
     const dom = conceptos.find((c) => c.slug === "js-dom")!;
     filas.push({ ...filas[0], moduloId: dom.moduloId, conceptoId: dom.id, claseId: clases.find((x) => x.moduloId === dom.moduloId)!.id, estado: "borrador" as never });
+    const deExamen = { ...filas[filas.length - 1], enunciado: "¿Pregunta de examen de js-dom?", estado: "aprobado" as const, uso: "examen" as const };
+    await bd.db.insert(ejercicio).values(deExamen);
     await bd.db.insert(ejercicio).values(filas);
 
     // Lucía (demo en directo) ya tiene una conversación propia: no se puede tocar.
@@ -84,7 +87,7 @@ describe.skipIf(!hayBd)("sembrarActividad (con BBDD real)", () => {
     expect(recuento.intentos).toBe(total.intentos);
   });
 
-  it("avisa de los conceptos sin ejercicios aprobados (los borradores no cuentan)", async () => {
+  it("avisa de los conceptos sin ejercicios aprobados (los borradores y los de examen no cuentan)", async () => {
     const recuento = await sembrarActividad(bd.db, AHORA);
     expect(recuento.conceptosSinEjercicios).toEqual(["js-dom"]);
   });

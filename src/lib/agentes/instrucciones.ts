@@ -7,18 +7,24 @@ import path from "node:path";
 
 const cache = new Map<string, string>();
 
-export function extraerPrompt(markdown: string): string {
-  const bloque = /```prompt\r?\n([\s\S]*?)\r?\n```/.exec(markdown);
-  if (!bloque) throw new Error("No se encontró el bloque ```prompt en las instrucciones del agente");
+/**
+ * El bloque ```prompt del agente. Un agente con varios prompts los distingue por nombre (```prompt video);
+ * sin nombre se devuelve el bloque que no lo tiene.
+ */
+export function extraerPrompt(markdown: string, nombre?: string): string {
+  const cabecera = nombre ? `prompt ${nombre}` : "prompt";
+  const bloque = new RegExp("```" + cabecera + "[ \\t]*\\r?\\n([\\s\\S]*?)\\r?\\n```").exec(markdown);
+  if (!bloque) throw new Error(`No se encontró el bloque \`\`\`${cabecera} en las instrucciones del agente`);
   return bloque[1].trim();
 }
 
-export function leerInstrucciones(agente: string): string {
-  if (!cache.has(agente)) {
+export function leerInstrucciones(agente: string, nombre?: string): string {
+  const clave = nombre ? `${agente}#${nombre}` : agente;
+  if (!cache.has(clave)) {
     const md = readFileSync(path.join(process.cwd(), "agents", `${agente}.md`), "utf8");
-    cache.set(agente, extraerPrompt(md));
+    cache.set(clave, extraerPrompt(md, nombre));
   }
-  return cache.get(agente)!;
+  return cache.get(clave)!;
 }
 
 /** Sustituye las variables {{nombre}} del prompt. Falla si queda alguna sin valor. */

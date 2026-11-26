@@ -77,17 +77,21 @@ export interface EjercicioBase {
 
 export type EstadoEjercicio = "borrador" | "aprobado";
 
+/** Para qué test es: el de cada vídeo (desbloquea el siguiente), el del módulo (lo completa) o el examen del curso. */
+export type UsoEjercicio = "video" | "modulo" | "examen";
+
 /** Ejercicio del banco, generado por la IA a partir de la plantilla del profesor. */
 export interface Ejercicio extends EjercicioBase {
   id: string;
   moduloId: string;
   conceptoId: string;
+  uso: UsoEjercicio;
   referencia: ReferenciaVideo;
   estado: EstadoEjercicio;
 }
 
 /** Versión que se envía al alumno: sin solución ni rúbrica. */
-export type EjercicioPublico = Omit<Ejercicio, "solucion" | "rubrica" | "estado">;
+export type EjercicioPublico = Omit<Ejercicio, "solucion" | "rubrica" | "estado" | "uso">;
 
 // ─── Alumno, intentos y progreso ─────────────────────────────────────────────
 

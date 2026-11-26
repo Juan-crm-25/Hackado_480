@@ -1,7 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Modulo, PlantillaEjercicios } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
-import { EJERCICIOS_POR_CONCEPTO, MINIMO_EJERCICIOS, generarEjercicios, validarEjercicios } from "./ejercicios";
+import {
+  EJERCICIOS_POR_CONCEPTO,
+  MINIMO_EJERCICIOS,
+  MINIMO_PREGUNTAS_EXAMEN,
+  PREGUNTAS_EXAMEN,
+  PREGUNTAS_POR_VIDEO,
+  generarEjercicios,
+  generarPreguntasExamen,
+  generarPreguntasVideo,
+  validarEjercicios,
+  validarPreguntasExamen,
+  validarPreguntasVideo,
+} from "./ejercicios";
 
 const modulo: Modulo = {
   id: "m2-css",
@@ -67,6 +79,14 @@ describe("instrucciones del generador de ejercicios", () => {
     const valores = { modulo: "CSS", conceptos: "c", tipos: "test", ejemplos: "[]", indicaciones: "i", total: "9", temario: "T" };
     expect(() => rellenar(leerInstrucciones("generador-ejercicios"), valores)).not.toThrow();
   });
+
+  it("las de las preguntas de vídeo y de examen están en el mismo fichero, con sus variables", () => {
+    const comunes = { modulo: "CSS", conceptos: "c", tipos: "test", ejemplos: "[]", indicaciones: "i", temario: "T" };
+    const video = { ...comunes, videos: "- v04: Especificidad", por_video: "2" };
+    const examen = { ...comunes, total: "3", anteriores: "Ninguno.", temario_anteriores: "-" };
+    expect(() => rellenar(leerInstrucciones("generador-ejercicios", "video"), video)).not.toThrow();
+    expect(() => rellenar(leerInstrucciones("generador-ejercicios", "examen"), examen)).not.toThrow();
+  });
 });
 
 describe("validarEjercicios", () => {
@@ -80,6 +100,7 @@ describe("validarEjercicios", () => {
       enunciado: "¿Qué regla gana en el caso 1?",
       opciones: ["La de la clase", "La del id", "La última"],
       solucion: 1,
+      uso: "modulo",
       referencia: { videoId: "v04", segundo: 120 },
     });
     expect(r[3]).toEqual({
@@ -88,6 +109,7 @@ describe("validarEjercicios", () => {
       tipo: "respuesta_corta",
       enunciado: "¿Cuántos px son 1rem?",
       solucion: "16px",
+      uso: "modulo",
       referencia: { videoId: "v06", segundo: 300 },
     });
     expect(r[6]).toMatchObject({ tipo: "abierta", rubrica: "Padding es espacio de dentro y margin de fuera." });
@@ -237,5 +259,172 @@ describe("generarEjercicios", () => {
     await expect(generarEjercicios(modulo, conEjemplos, { completar: iaQueResponde(json([test(1)])), temario })).rejects.toThrow(
       /insuficientes/,
     );
+  });
+});
+
+// ─── Preguntas de vídeo: 2 por vídeo, solo test y respuesta corta ────────────
+
+/** Una pregunta de test de un vídeo, como la devuelve el modelo (sin vídeo: lo lleva su grupo). */
+const deVideo = (n: number, conceptoId = "css-especificidad", segundo = 130) => ({
+  conceptoId,
+  tipo: "test",
+  enunciado: `Pregunta ${n} del vídeo`,
+  opciones: ["Sí", "No"],
+  solucion: 0,
+  segundo,
+});
+const cortaDeVideo = (n: number, conceptoId = "css-unidades") => ({
+  conceptoId,
+  tipo: "respuesta_corta",
+  enunciado: `¿Cuántos px son ${n}rem? (vídeo)`,
+  solucion: `${n * 16}px`,
+  segundo: 200,
+});
+/** Respuesta del modelo agrupada por vídeo: { videos: [{ videoId, ejercicios }] }. */
+const porVideo = (grupos: Record<string, Record<string, unknown>[]>) =>
+  JSON.stringify({ videos: Object.entries(grupos).map(([videoId, ejercicios]) => ({ videoId, ejercicios })) });
+/** 2 preguntas válidas por cada vídeo del módulo. */
+const dosPorVideo = () => ({
+  v04: [deVideo(1), deVideo(2)],
+  v05: [deVideo(3, "css-caja", 60), deVideo(4, "css-caja", 90)],
+  v06: [cortaDeVideo(1), cortaDeVideo(2)],
+});
+
+describe("validarPreguntasVideo", () => {
+  it(`acepta ${PREGUNTAS_POR_VIDEO} por vídeo, con el vídeo de su grupo, el segundo de cada una y uso «video»`, () => {
+    const r = validarPreguntasVideo(porVideo(dosPorVideo()), modulo, plantilla);
+    expect(r).toHaveLength(6);
+    expect(r[0]).toEqual({
+      moduloId: "m2-css",
+      conceptoId: "css-especificidad",
+      tipo: "test",
+      enunciado: "Pregunta 1 del vídeo",
+      opciones: ["Sí", "No"],
+      solucion: 0,
+      uso: "video",
+      referencia: { videoId: "v04", segundo: 130 },
+    });
+    expect(r[4]).toMatchObject({ tipo: "respuesta_corta", solucion: "16px", referencia: { videoId: "v06", segundo: 200 } });
+  });
+
+  it(`se queda con ${PREGUNTAS_POR_VIDEO} por vídeo como mucho`, () => {
+    const grupos = { ...dosPorVideo(), v04: [deVideo(1), deVideo(2), deVideo(9)] };
+    const r = validarPreguntasVideo(porVideo(grupos), modulo, plantilla);
+    expect(r.filter((e) => e.referencia.videoId === "v04").map((e) => e.enunciado)).toEqual(["Pregunta 1 del vídeo", "Pregunta 2 del vídeo"]);
+  });
+
+  it("descarta las abiertas o de código aunque la plantilla las permita, y los conceptos que no son del módulo", () => {
+    const abiertaVideo = { conceptoId: "css-caja", tipo: "abierta", enunciado: "Explica la caja", rubrica: "R", segundo: 60 };
+    const ajena = { ...deVideo(8), conceptoId: "js-eventos" };
+    const grupos = { ...dosPorVideo(), v05: [abiertaVideo, ajena, deVideo(3, "css-caja"), deVideo(4, "css-caja")] };
+    const r = validarPreguntasVideo(porVideo(grupos), modulo, plantilla);
+    expect(r.filter((e) => e.referencia.videoId === "v05").map((e) => e.enunciado)).toEqual(["Pregunta 3 del vídeo", "Pregunta 4 del vídeo"]);
+  });
+
+  it("descarta los grupos de vídeos que no son del módulo y los enunciados repetidos", () => {
+    const grupos = { ...dosPorVideo(), v10: [deVideo(5), deVideo(6)], v06: [cortaDeVideo(1), cortaDeVideo(1), cortaDeVideo(2)] };
+    const r = validarPreguntasVideo(porVideo(grupos), modulo, plantilla);
+    expect(r).toHaveLength(6);
+    expect(r.some((e) => e.enunciado.startsWith("Pregunta 5"))).toBe(false);
+  });
+
+  it(`falla, sin guardar nada, si a algún vídeo le faltan preguntas para llegar a ${PREGUNTAS_POR_VIDEO}`, () => {
+    const grupos = { ...dosPorVideo(), v05: [deVideo(3, "css-caja")] };
+    expect(() => validarPreguntasVideo(porVideo(grupos), modulo, plantilla)).toThrow(/v05/);
+    expect(() => validarPreguntasVideo("no es json", modulo, plantilla)).toThrow(/JSON/);
+  });
+});
+
+describe("generarPreguntasVideo", () => {
+  const conEjemplos: PlantillaEjercicios = {
+    ...plantilla,
+    ejemplos: [
+      { tipo: "respuesta_corta", enunciado: "¿Cuántos px mide 3rem?", solucion: "48px" },
+      { tipo: "abierta", enunciado: "Explica el modelo de caja.", rubrica: "R" },
+    ],
+  };
+  const temario = () => "[v04 @120] La especificidad decide qué regla gana";
+
+  it("pide 2 por vídeo, solo de test y respuesta corta, con los ejemplos de esos tipos y la lista de vídeos", async () => {
+    const completar = vi.fn().mockResolvedValue({ texto: porVideo(dosPorVideo()), simulado: false });
+    const r = await generarPreguntasVideo(modulo, conEjemplos, { completar, temario });
+
+    expect(r).toHaveLength(6);
+    expect(r.every((e) => e.uso === "video")).toBe(true);
+    const op = completar.mock.calls[0][0];
+    expect(op).toMatchObject({ modelo: "generador", formatoJson: true });
+    const sistema = op.mensajes[0].contenido as string;
+    expect(sistema).toContain("- v04: Especificidad");
+    expect(sistema).toContain("Tipos de pregunta: test, respuesta_corta.");
+    expect(sistema).toContain("¿Cuántos px mide 3rem?");
+    expect(sistema).not.toContain("Explica el modelo de caja.");
+    expect(sistema).toContain("[v04 @120] La especificidad decide qué regla gana");
+  });
+
+  it("si la plantilla no tiene respuesta corta, solo pide test", async () => {
+    const soloTestYCodigo: PlantillaEjercicios = { ...plantilla, tipos: ["test", "codigo"] };
+    const grupos = { ...dosPorVideo(), v06: [deVideo(5, "css-unidades"), deVideo(6, "css-unidades")] };
+    const completar = vi.fn().mockResolvedValue({ texto: porVideo(grupos), simulado: false });
+    await generarPreguntasVideo(modulo, soloTestYCodigo, { completar, temario });
+    expect(completar.mock.calls[0][0].mensajes[0].contenido).toContain("Tipos de pregunta: test.");
+  });
+
+  it("no llama a la IA sin transcripciones ni guarda nada en modo simulado", async () => {
+    const completar = vi.fn();
+    await expect(generarPreguntasVideo(modulo, plantilla, { completar, temario: () => "" })).rejects.toThrow(/transcripciones/);
+    expect(completar).not.toHaveBeenCalled();
+    const simulado = vi.fn().mockResolvedValue({ texto: "{}", simulado: true });
+    await expect(generarPreguntasVideo(modulo, plantilla, { completar: simulado, temario })).rejects.toThrow(/simulado/);
+  });
+});
+
+// ─── Preguntas de examen: unas pocas más difíciles por módulo ────────────────
+
+describe("validarPreguntasExamen", () => {
+  it(`acepta hasta ${PREGUNTAS_EXAMEN}, de cualquier concepto del módulo, con uso «examen»`, () => {
+    const r = validarPreguntasExamen(json([test(1), abierta(1), corta(1), test(2)]), modulo, plantilla);
+    expect(r).toHaveLength(PREGUNTAS_EXAMEN);
+    expect(r.every((e) => e.uso === "examen")).toBe(true);
+    expect(r[0]).toMatchObject({ conceptoId: "css-especificidad", referencia: { videoId: "v04", segundo: 120 } });
+  });
+
+  it("descarta las que citan un vídeo que no es del módulo (también las que mezclan módulos van al vídeo de este)", () => {
+    const deOtroModulo = { ...test(5), fuente: { videoId: "v01", segundo: 10 } };
+    const r = validarPreguntasExamen(json([deOtroModulo, test(1), abierta(1)]), modulo, plantilla);
+    expect(r.map((e) => e.enunciado)).not.toContain("¿Qué regla gana en el caso 5?");
+  });
+
+  it(`falla si quedan menos de ${MINIMO_PREGUNTAS_EXAMEN} válidas`, () => {
+    expect(() => validarPreguntasExamen(json([test(1)]), modulo, plantilla)).toThrow(/insuficientes/);
+  });
+});
+
+describe("generarPreguntasExamen", () => {
+  const html: Modulo = {
+    id: "m1-html",
+    titulo: "HTML",
+    descripcion: "",
+    ordenSugerido: 1,
+    conceptos: [{ id: "html-semantica", nombre: "Etiquetas semánticas" }],
+    videos: [{ id: "v01", titulo: "HTML", youtubeId: "", duracionSegundos: 600 }],
+  };
+  const temario = (m: Modulo) => (m.id === "m1-html" ? "[v01 @10] El nav es para la navegación" : "[v04 @120] La especificidad");
+
+  it("pide preguntas más difíciles con el temario del módulo y, para mezclar, los conceptos y el temario de los anteriores", async () => {
+    const completar = vi.fn().mockResolvedValue({ texto: json([test(1), abierta(1), corta(1)]), simulado: false });
+    const r = await generarPreguntasExamen(modulo, plantilla, [html], { completar, temario });
+
+    expect(r).toHaveLength(3);
+    const sistema = completar.mock.calls[0][0].mensajes[0].contenido as string;
+    expect(sistema).toContain(`Genera ${PREGUNTAS_EXAMEN} preguntas`);
+    expect(sistema).toContain("[v04 @120] La especificidad");
+    expect(sistema).toContain("- HTML: Etiquetas semánticas");
+    expect(sistema).toContain("[v01 @10] El nav es para la navegación");
+  });
+
+  it("en el primer módulo dice que no hay módulos anteriores", async () => {
+    const completar = vi.fn().mockResolvedValue({ texto: json([test(1), abierta(1), corta(1)]), simulado: false });
+    await generarPreguntasExamen(modulo, plantilla, [], { completar, temario });
+    expect(completar.mock.calls[0][0].mensajes[0].contenido).toContain("Ninguno: es el primer módulo.");
   });
 });

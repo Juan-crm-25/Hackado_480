@@ -1,9 +1,9 @@
 import "server-only";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, inArray } from "drizzle-orm";
 import type { EjercicioGenerado } from "@/lib/agentes/ejercicios";
 import { getDb, type Db } from "@/lib/db/client";
 import { clase, concepto, curso, ejercicio, modulo, plantillaEjercicio } from "@/lib/db/schema";
-import type { PlantillaEjercicios } from "@/lib/types";
+import type { PlantillaEjercicios, UsoEjercicio } from "@/lib/types";
 import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
 
 /** Plantilla del profesor de un módulo, con el id del módulo en la BBDD (para guardar sus ejercicios). */
@@ -40,12 +40,16 @@ export async function leerPlantillaDelModulo(
   return { moduloId: fila.moduloId, plantilla };
 }
 
-/** Cuántos ejercicios tiene un módulo en cada estado. */
-export async function contarEjercicios(moduloId: string, db: Db = getDb()): Promise<{ borrador: number; aprobado: number }> {
+/** Cuántos ejercicios tiene un módulo en cada estado (solo los de un uso, si se pide). */
+export async function contarEjercicios(
+  moduloId: string,
+  opciones: { uso?: UsoEjercicio } = {},
+  db: Db = getDb(),
+): Promise<{ borrador: number; aprobado: number }> {
   const filas = await db
     .select({ estado: ejercicio.estado, total: count() })
     .from(ejercicio)
-    .where(eq(ejercicio.moduloId, moduloId))
+    .where(and(eq(ejercicio.moduloId, moduloId), opciones.uso ? eq(ejercicio.uso, opciones.uso) : undefined))
     .groupBy(ejercicio.estado);
   const de = (estado: string) => filas.find((f) => f.estado === estado)?.total ?? 0;
   return { borrador: de("borrador"), aprobado: de("aprobado") };
@@ -54,7 +58,8 @@ export async function contarEjercicios(moduloId: string, db: Db = getDb()): Prom
 /**
  * Guarda los ejercicios de un módulo como borrador, en una transacción. Traduce el concepto y el vídeo de cada uno
  * (sus slugs, p. ej. "css-especificidad" y "v04") a los ids de la BBDD; si alguno no es de ese módulo, falla sin
- * guardar ninguno. Con `reemplazar`, antes borra los borradores del módulo: los aprobados no se tocan nunca.
+ * guardar ninguno. Con `reemplazar`, antes borra los borradores del módulo de los mismos usos que los nuevos
+ * (regenerar las preguntas de vídeo no toca las del módulo ni las de examen): los aprobados no se tocan nunca.
  * Devuelve cuántos ha guardado.
  */
 export async function guardarBorradores(
@@ -83,6 +88,7 @@ export async function guardarBorradores(
         claseId: idClase,
         segundoReferencia: e.referencia.segundo,
         tipo: e.tipo,
+        uso: e.uso,
         enunciado: e.enunciado,
         opciones: e.opciones ?? null,
         solucion: e.solucion ?? null,
@@ -91,8 +97,11 @@ export async function guardarBorradores(
       };
     });
 
-    if (opciones.reemplazar) {
-      await tx.delete(ejercicio).where(and(eq(ejercicio.moduloId, moduloId), eq(ejercicio.estado, "borrador")));
+    const usos = [...new Set(ejercicios.map((e) => e.uso))];
+    if (opciones.reemplazar && usos.length > 0) {
+      await tx
+        .delete(ejercicio)
+        .where(and(eq(ejercicio.moduloId, moduloId), eq(ejercicio.estado, "borrador"), inArray(ejercicio.uso, usos)));
     }
     if (filas.length > 0) await tx.insert(ejercicio).values(filas);
     return filas.length;

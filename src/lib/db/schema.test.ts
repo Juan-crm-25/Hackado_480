@@ -7,6 +7,7 @@ import type {
   RolMensaje,
   TipoEjercicio,
   TipoMaterial,
+  UsoEjercicio,
 } from "../types";
 import * as schema from "./schema";
 
@@ -37,6 +38,7 @@ type ValoresDe<E extends { enumValues: readonly string[] }> = E["enumValues"][nu
 export type EnumsIgualesAlContrato = [
   Afirmar<Igual<ValoresDe<typeof schema.tipoEjercicio>, TipoEjercicio>>,
   Afirmar<Igual<ValoresDe<typeof schema.estadoEjercicio>, EstadoEjercicio>>,
+  Afirmar<Igual<ValoresDe<typeof schema.usoEjercicio>, UsoEjercicio>>,
   Afirmar<Igual<ValoresDe<typeof schema.estadoModulo>, EstadoModulo>>,
   Afirmar<Igual<ValoresDe<typeof schema.tipoMaterial>, TipoMaterial>>,
   Afirmar<Igual<ValoresDe<typeof schema.nivelMaterial>, NivelMaterial>>,
@@ -57,6 +59,7 @@ describe("esquema de la BBDD", () => {
     const casos: [readonly string[], readonly string[]][] = [
       [schema.tipoEjercicio.enumValues, lista<TipoEjercicio>()(["test", "respuesta_corta", "abierta", "codigo"])],
       [schema.estadoEjercicio.enumValues, lista<EstadoEjercicio>()(["borrador", "aprobado"])],
+      [schema.usoEjercicio.enumValues, lista<UsoEjercicio>()(["video", "modulo", "examen"])],
       [schema.estadoModulo.enumValues, lista<EstadoModulo>()(["pendiente", "en_curso", "dominado", "completado"])],
       [schema.tipoMaterial.enumValues, lista<TipoMaterial>()(["resumen", "tarjetas", "infografia"])],
       [schema.nivelMaterial.enumValues, lista<NivelMaterial>()(["basico", "normal", "avanzado"])],

@@ -271,3 +271,25 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 | Para el foro, un **modelo de decisión** en lugar de un chat | Solo puede elegir entre opciones fijas: no puede escribir ni hacer otra cosa que valorar, y es gratis |
 | La IA del foro **sale de la UE solo para el MVP** | Excepción documentada en `docs/decisiones.md` (apartado 7): solo recibe texto filtrado, y en un caso real se usaría un modelo abierto alojado en la UE |
 | «Visto», tests y mensajes se guardan **en el navegador** | Es una demo; el test definitivo llega con la #3 |
+
+## Trabajo de Sergio — Jueves 26/11/2026 (noche): tres bancos de ejercicios por módulo (#4, antes del #3)
+
+### Qué hicimos
+
+| Tema | Qué hace | Issue |
+|---|---|---|
+| Columna `uso` en `ejercicio` | `video`, `modulo` o `examen` (migración `0003_uso_ejercicio`; los ejercicios de antes quedan como `modulo`). Así una pregunta no sale en dos tests | #4, prepara #3 |
+| Generador por uso | `npm run generar:ejercicios` pide a la IA, por separado, 2 preguntas por vídeo (solo test y respuesta corta), el banco del módulo (9) y 3 más difíciles para el examen del curso, que pueden mezclar un concepto con los de módulos anteriores. `--uso=` genera solo uno | #4 |
+
+### Decisiones tomadas
+
+| Decisión | Por qué |
+|---|---|
+| Tres niveles de test: vídeo (desbloquea el siguiente), módulo (lo completa, 7/10) y examen del curso | Lo hablado en el grupo el 26/11: el vídeo no hace falta verlo, pero sí demostrar que se entiende. Los módulos no se bloquean entre sí |
+| El examen del curso sale del **mismo banco** (`ejercicio`, `uso = examen`), no de `pregunta_evaluacion` | Misma revisión en Studio y mismo vídeo y minuto de referencia; `pregunta_evaluacion` queda para el diagnóstico. Sus respuestas irán a `intento_evaluacion`, no a `intento` (la actividad simulada ya no usa las de examen) |
+| El examen se desbloquea con **todos los módulos aprobados** | Supuesto del equipo: en el SPEC es la pregunta abierta 1 al cliente. La pantalla del examen queda como extra |
+
+### Pendiente
+
+- **Neon:** que nadie genere ejercicios hasta fusionar esta PR; después, `migrate` → `seed` → `generar:ejercicios` (ahora genera los tres bancos) → revisar y aprobar.
+- **#3:** corrector, test del módulo y tests de vídeo con las preguntas de `uso = video`.
