@@ -3,7 +3,7 @@
  * el banco de ejercicios (#4) ni los agentes (#1, #5).
  * Cada bloque los sustituye por la implementación real sin cambiar los tipos.
  */
-import type { Alumno, Ejercicio, InformeRadar, Progreso } from "./types";
+import type { Alumno, Ejercicio, Progreso } from "./types";
 
 export const alumnosDemo: Alumno[] = [
   { id: "a1", nombre: "Lucía Martín", email: "lucia@demo.test", esMenor: false, consentimientoTutorLegal: false },
@@ -51,18 +51,3 @@ export const progresoDemo: Progreso[] = [
   },
 ];
 
-export const radarDemo: InformeRadar = {
-  generado: "2026-11-23T07:00:00Z",
-  alertas: [
-    {
-      alumnoId: "a1",
-      nombre: "Lucía Martín",
-      motivo: "fallos_repetidos",
-      moduloId: "m2-css",
-      conceptoId: "css-especificidad",
-      detalle: "3 intentos fallidos en especificidad de selectores.",
-    },
-  ],
-  conceptosMasFallados: [{ moduloId: "m2-css", conceptoId: "css-especificidad", porcentajeFallo: 0.6 }],
-  resumenDudas: "Datos de prueba: el informe real lo genera el analista del Radar (#5).",
-};

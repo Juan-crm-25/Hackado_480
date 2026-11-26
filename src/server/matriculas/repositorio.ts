@@ -85,6 +85,16 @@ export async function leerCursoPorSlug(slug: string, db: Db) {
   return fila ?? null;
 }
 
+/** ¿Da este usuario ESTE curso? (matrícula enlazada con rol_en_curso = 'profesor'). */
+export async function esProfesorDelCurso(usuarioId: string, cursoId: string, db: Db): Promise<boolean> {
+  const [fila] = await db
+    .select({ id: matricula.id })
+    .from(matricula)
+    .where(and(eq(matricula.usuarioId, usuarioId), eq(matricula.cursoId, cursoId), eq(matricula.rolEnCurso, "profesor")))
+    .limit(1);
+  return Boolean(fila);
+}
+
 /** Matrícula enlazada del usuario en el curso, con su ruta personal, o null. */
 export async function leerMatriculaDelUsuario(usuarioId: string, cursoId: string, db: Db) {
   const [fila] = await db

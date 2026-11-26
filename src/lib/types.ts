@@ -246,24 +246,45 @@ export interface InfografiasModulo {
 
 export interface AlertaAlumno {
   alumnoId: string;
-  nombre: string; // se reidentifica en nuestro servidor; la IA solo ve seudónimos
+  nombre: string; // solo lo ve el profesor del curso; la IA solo ve seudónimos
   motivo: "fallos_repetidos" | "inactividad";
   moduloId: string;
   conceptoId?: string;
   detalle: string;
+  /** Cuándo pasó lo que se avisa (el último fallo o la última actividad). ISO 8601. */
+  fecha: string;
 }
 
 export interface ConceptoFallado {
   moduloId: string;
   conceptoId: string;
+  /** Nombre del concepto, para mostrarlo. */
+  concepto: string;
   porcentajeFallo: number; // de 0 a 1
+  /** Intentos con los que se calcula el porcentaje. */
+  intentos: number;
+}
+
+/** Dudas que los alumnos han hecho al tutor IA en un módulo (ya filtradas). */
+export interface DudasModulo {
+  moduloId: string;
+  modulo: string;
+  total: number;
+  /** Las preguntas que más se repiten, de más a menos. */
+  masRepetidas: { texto: string; veces: number }[];
 }
 
 export interface InformeRadar {
+  curso: { slug: string; titulo: string };
   generado: string; // ISO 8601
+  /** Alumnos matriculados en el curso. */
+  alumnos: number;
+  /** Módulos del curso (slug → título), para mostrar el nombre del módulo de cada aviso. */
+  modulos: { id: string; titulo: string }[];
   alertas: AlertaAlumno[];
   conceptosMasFallados: ConceptoFallado[];
-  /** Resumen de dudas frecuentes, escrito por el agente analista. */
+  dudasFrecuentes: DudasModulo[];
+  /** Resumen de dudas frecuentes, escrito por el agente analista (#5). Vacío hasta que exista. */
   resumenDudas: string;
 }
 

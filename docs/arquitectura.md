@@ -193,7 +193,7 @@ Estado: ✅ existe · 🔁 existe, se migrará a la BBDD y a esta estructura · 
 | `GET /api/yo/recompensas` · `GET /api/insignias` | usuario · publico | recompensas | ⬜ |
 | `POST /api/pagos/checkout` | usuario | pagos (crea el pedido y la sesión de Stripe) | ⬜ |
 | `POST /api/pagos/webhook` | **firma de Stripe** (sin sesión) | pagos (marca pagado y crea la matrícula, ver abajo) | ⬜ |
-| `GET /api/radar?cursoId=` | profesor del curso | radar (solo datos de los cursos que enseña) | 🔁 |
+| `GET /api/radar?curso=<slug>` | profesor del curso | radar (solo datos de los cursos que enseña; `requerirProfesorDelCurso()`) | ✅ |
 
 ### Validación del foro por IA
 

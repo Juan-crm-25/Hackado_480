@@ -227,3 +227,18 @@ describe("ruta: respuesta y errores", () => {
     expect(await res.text()).not.toContain("bbdd");
   });
 });
+
+describe("ruta: señales internas de Next.js", () => {
+  it("las deja pasar (no las convierte en un 500): Next.js las usa, p. ej., para saber que un GET no se puede prerenderizar", async () => {
+    const senal = Object.assign(new Error("Dynamic server usage"), { digest: "DYNAMIC_SERVER_USAGE" });
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const GET = crearRuta({
+      obtenerSesion: async () => {
+        throw senal;
+      },
+    })({ acceso: "profesor" }, () => ({ ok: true }));
+
+    await expect(GET(new Request(URL_BASE), contexto())).rejects.toBe(senal);
+    expect(error).not.toHaveBeenCalled();
+  });
+});

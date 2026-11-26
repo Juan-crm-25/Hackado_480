@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { destinosPrincipales, destinosSecundarios, esDestinoActivo } from "./destinos";
+import { destinosPrincipales, destinosSecundarios, destinosSecundariosPara, esDestinoActivo } from "./destinos";
 
 describe("destinos de la navegación", () => {
   it("son los de docs/estilo.md, en el mismo orden", () => {
@@ -41,5 +41,24 @@ describe("esDestinoActivo", () => {
 
   it("sin ruta conocida no hay destino activo", () => {
     expect(esDestinoActivo(null, "/")).toBe(false);
+  });
+});
+
+describe("destinosSecundariosPara (según el rol)", () => {
+  it("alumnos y visitantes ven los secundarios de siempre", () => {
+    expect(destinosSecundariosPara(null).map((d) => d.id)).toEqual(destinosSecundarios.map((d) => d.id));
+    expect(destinosSecundariosPara("alumno").map((d) => d.id)).toEqual(destinosSecundarios.map((d) => d.id));
+  });
+
+  it("profesores y admin ven además el Radar, el primero", () => {
+    for (const rol of ["profesor", "admin"] as const) {
+      const destinos = destinosSecundariosPara(rol);
+      expect(destinos[0]).toMatchObject({ id: "radar", etiqueta: "Radar", href: "/radar" });
+      expect(destinos.slice(1).map((d) => d.id)).toEqual(destinosSecundarios.map((d) => d.id));
+    }
+  });
+
+  it("el Radar está activo en /radar", () => {
+    expect(esDestinoActivo("/radar", "/radar")).toBe(true);
   });
 });

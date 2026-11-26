@@ -23,7 +23,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </a>
 
       <Suspense fallback={<BarraLateral pathname={null} />}>
-        <BarraLateralActiva />
+        <BarraLateralConRol />
       </Suspense>
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -39,11 +39,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
         <Suspense fallback={<BarraInferior pathname={null} />}>
-          <BarraInferiorActiva />
+          <BarraInferiorConRol />
         </Suspense>
       </div>
     </div>
   );
+}
+
+/** La navegación depende del rol (el Radar, solo para profesores y admin). Lee la sesión: va dentro de <Suspense>. */
+async function BarraLateralConRol() {
+  const usuario = await obtenerUsuarioActual();
+  return <BarraLateralActiva rol={usuario?.rol ?? null} />;
+}
+
+async function BarraInferiorConRol() {
+  const usuario = await obtenerUsuarioActual();
+  return <BarraInferiorActiva rol={usuario?.rol ?? null} />;
 }
 
 /** Lee la sesión (cookies), así que va dentro de <Suspense>: el resto del marco no espera por ella. */

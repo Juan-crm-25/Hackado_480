@@ -15,6 +15,7 @@ import type { UsuarioSesion } from "../auth/roles";
 import { datosInvalidos, noEncontrado, prohibido } from "../compartido/errores";
 import type { DatosRuta } from "./esquemas";
 import {
+  esProfesorDelCurso,
   existeMatriculaDelUsuario,
   guardarRutaDeMatricula,
   leerCursoPorSlug,
@@ -158,3 +159,15 @@ export async function cargarAvanceDelCurso(
   }
 }
 
+
+/**
+ * Comprueba que el usuario es profesor de ESTE curso (docs/arquitectura.md, apartado 3) y devuelve el curso.
+ * El admin pasa siempre. Ser profesor de otro curso no basta: 403. Curso que no existe: 404.
+ */
+export async function requerirProfesorDelCurso(usuario: UsuarioSesion, slug: string, db: Db = getDb()) {
+  const curso = await leerCursoPorSlug(slug, db);
+  if (!curso) throw noEncontrado("No existe ese curso");
+  if (usuario.rol === "admin") return curso;
+  if (!(await esProfesorDelCurso(usuario.id, curso.id, db))) throw prohibido("Solo el profesor de este curso puede ver esto");
+  return curso;
+}

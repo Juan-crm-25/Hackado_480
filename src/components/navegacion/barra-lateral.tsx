@@ -2,7 +2,7 @@ import { Marca } from "@/components/marca";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { BotonCerrarSesion } from "./cerrar-sesion";
-import { type Destino, destinosPrincipales, destinosSecundarios, esDestinoActivo } from "./destinos";
+import { type Destino, destinosPrincipales, destinosSecundariosPara, esDestinoActivo, type RolNavegacion } from "./destinos";
 
 // Sobre el fondo oscuro, el foco y la línea del destino activo van en verde (12:1 sobre carbón).
 const CLASE_ITEM =
@@ -34,7 +34,7 @@ function ItemLateral({ destino, pathname }: { destino: Destino; pathname: string
  * Barra lateral fija de la web (≥ 1024 px): marca arriba, destinos principales y, al pie,
  * «Contáctanos» y «Cerrar sesión». Por debajo de `lg` la sustituye la barra inferior.
  */
-export function BarraLateral({ pathname }: { pathname: string | null }) {
+export function BarraLateral({ pathname, rol = null }: { pathname: string | null; rol?: RolNavegacion }) {
   return (
     <aside className="hidden w-64 shrink-0 flex-col gap-6 bg-surface-dark px-3 py-5 text-white lg:flex">
       <Link
@@ -53,7 +53,7 @@ export function BarraLateral({ pathname }: { pathname: string | null }) {
           ))}
         </ul>
         <ul className="flex flex-col gap-1 border-t border-sidebar-border pt-4">
-          {destinosSecundarios.map((d) => (
+          {destinosSecundariosPara(rol).map((d) => (
             <li key={d.id}>
               <ItemLateral destino={d} pathname={pathname} />
             </li>

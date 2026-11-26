@@ -135,3 +135,16 @@ describe("posición de la marca", () => {
   });
 });
 
+
+describe("Radar en la navegación (solo profesores y admin)", () => {
+  it("la barra lateral lo pinta para la profesora y no para el alumno", () => {
+    expect(destinosPintados(renderToStaticMarkup(<BarraLateral pathname="/" rol="profesor" />))).toContain("radar");
+    expect(destinosPintados(renderToStaticMarkup(<BarraLateral pathname="/" rol="alumno" />))).not.toContain("radar");
+    expect(destinosPintados(renderToStaticMarkup(<BarraLateral pathname="/" />))).not.toContain("radar");
+  });
+
+  it("el menú «Más» del móvil también, para que no se esconda en ningún tamaño", () => {
+    expect(destinosPintados(renderToStaticMarkup(<ListaSecundarios pathname="/" rol="admin" />))).toContain("radar");
+    expect(destinosPintados(renderToStaticMarkup(<ListaSecundarios pathname="/" rol="alumno" />))).not.toContain("radar");
+  });
+});
