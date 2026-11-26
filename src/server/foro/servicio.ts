@@ -3,7 +3,7 @@ import { after } from "next/server";
 import { ErrorValidadorForo, validarComentarioForo } from "@/lib/agentes/validador-foro";
 import { getDb, type Db } from "@/lib/db/client";
 import { EMAIL_IA_FORO } from "@/lib/db/seed/datos";
-import { FRASES_SENSEI, PUNTOS_POR_VALIDACION, type MotivoPuntos, type ValidacionForo } from "@/lib/foro";
+import { calcularPuntosRespuestas, FRASES_SENSEI, type MotivoPuntos, type ValidacionForo } from "@/lib/foro";
 import type { UsuarioSesion } from "../auth/roles";
 import { datosInvalidos, noEncontrado, prohibido } from "../compartido/errores";
 import { requerirAccesoCurso, requerirProfesorDelCurso } from "../matriculas/servicio";
@@ -63,7 +63,7 @@ export interface ComentarioHilo {
   autor: AutorForo;
   validacion: ValidacionForo;
   validadoPor: "ia" | "profesor" | null;
-  /** Puntos por la valoración (correcta +10, aproximada +5); no se guardan. */
+  /** Puntos por la valoración (correcta +10, aproximada +5) con la regla anti-spam del tema (S12); no se guardan. */
   puntos: number;
   puntosProfesor: PuntosProfesorForo | null;
   respuestas: ComentarioHilo[];
@@ -120,7 +120,12 @@ function aAutor(a: FilaAutor): AutorForo {
 const aPuntos = (f: { puntos: number | null; motivo: MotivoPuntos | null }): PuntosProfesorForo | null =>
   f.puntos !== null && f.motivo !== null ? { puntos: f.puntos, motivo: f.motivo } : null;
 
-function aComentario(f: FilaComentario): ComentarioHilo {
+/** Puntos de las respuestas de un tema (S12): solo cuentan los comentarios de alumnos. */
+function puntosDelTema(filas: (Pick<FilaComentario, "id" | "autorId" | "validacion" | "creado"> & Pick<FilaAutor, "autorEmail" | "autorRol">)[]) {
+  return calcularPuntosRespuestas(filas.filter((f) => !esSensei(f) && !esProfesorGlobal(f)));
+}
+
+function aComentario(f: FilaComentario, puntos: number): ComentarioHilo {
   return {
     id: f.id,
     respuestaAId: f.respuestaAId,
@@ -129,7 +134,7 @@ function aComentario(f: FilaComentario): ComentarioHilo {
     autor: aAutor(f),
     validacion: f.validacion,
     validadoPor: f.validadoPor,
-    puntos: PUNTOS_POR_VALIDACION[f.validacion],
+    puntos,
     puntosProfesor: aPuntos(f),
     respuestas: [],
   };
@@ -137,7 +142,8 @@ function aComentario(f: FilaComentario): ComentarioHilo {
 
 /** Construye el árbol por `respuestaAId`, conservando el orden de llegada (del más antiguo al más nuevo). */
 function arbol(filas: FilaComentario[]): ComentarioHilo[] {
-  const porId = new Map(filas.map((f) => [f.id, aComentario(f)]));
+  const puntos = puntosDelTema(filas);
+  const porId = new Map(filas.map((f) => [f.id, aComentario(f, puntos.get(f.id) ?? 0)]));
   const raiz: ComentarioHilo[] = [];
   for (const c of porId.values()) {
     const padre = c.respuestaAId ? porId.get(c.respuestaAId) : undefined;
@@ -271,11 +277,12 @@ export async function crearComentario(
   if (datos.respuestaAId) {
     const padre = await leerComentarioDelTema(datos.respuestaAId, db);
     if (!padre || padre.temaId !== tema.id) throw datosInvalidos(undefined, "Ese comentario no es de este tema");
+    if (esSensei(padre)) throw datosInvalidos(undefined, "No se puede responder a Sensei");
   }
   const id = await insertarComentario({ temaId: tema.id, autorId: usuario.id, cuerpo: datos.cuerpo, respuestaAId: datos.respuestaAId }, db);
   deps.programar(() => validarSinRomper(id, db, deps));
   const fila = await leerComentarioDelTema(id, db);
-  return aComentario(fila!);
+  return aComentario(fila!, 0); // recién creado: pendiente, sin puntos
 }
 
 export type ResultadoValoracion = "omitido" | "pendiente" | "valorado";
@@ -335,8 +342,9 @@ export async function validarComoProfesor(
 ): Promise<ComentarioHilo> {
   const c = await cargarComentarioDeAlumno(usuario, comentarioId, db);
   await guardarValidacionProfesor(c.id, validacion, usuario.id, new Date(), db);
-  const fila = await leerComentarioDelTema(c.id, db);
-  return aComentario(fila!);
+  const filas = await leerComentariosDelTema(c.temaId, db);
+  const fila = filas.find((f) => f.id === c.id)!;
+  return aComentario(fila, puntosDelTema(filas).get(c.id) ?? 0);
 }
 
 // ─── Puntos del profesor (S8) ────────────────────────────────────────────────

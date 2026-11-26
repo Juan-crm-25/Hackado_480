@@ -145,15 +145,18 @@ function ComentarioForo({ comentario: c, ctx }: { comentario: ComentarioHilo; ct
           </div>
         )}
 
-        <div>
-          <Button type="button" variant="ghost" aria-expanded={respondiendo} onClick={() => ctx.setRespondiendoA(respondiendo ? null : c.id)}>
-            <Reply aria-hidden />
-            Responder
-          </Button>
-        </div>
+        {/* A Sensei no se le responde (S11). */}
+        {!c.autor.esIa && (
+          <div>
+            <Button type="button" variant="ghost" aria-expanded={respondiendo} onClick={() => ctx.setRespondiendoA(respondiendo ? null : c.id)}>
+              <Reply aria-hidden />
+              Responder
+            </Button>
+          </div>
+        )}
       </article>
 
-      {respondiendo && (
+      {respondiendo && !c.autor.esIa && (
         <div className="pl-4">
           <CajaRespuesta
             etiqueta={`Tu respuesta a ${nombre}`}

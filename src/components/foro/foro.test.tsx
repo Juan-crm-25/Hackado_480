@@ -183,9 +183,19 @@ describe("VistaHilo", () => {
     expect(alumno.match(/aria-label="Respuestas a /g)?.length).toBe(2);
   });
 
-  it("cada comentario tiene «Responder» y hay caja para comentar", () => {
-    expect(alumno.match(/>Responder</g)?.length).toBe(4);
+  it("cada comentario tiene «Responder» salvo los de Sensei (S11), y hay caja para comentar", () => {
+    // Luis, Ana y la profesora: sí; Sensei: no.
+    expect(alumno.match(/>Responder</g)?.length).toBe(3);
     expect(alumno).toContain("Tu comentario");
+  });
+
+  it("a Sensei no se le puede responder; a un alumno sí (S11)", () => {
+    const sensei = comentario({ id: "c-s", cuerpo: "¡Me gusta cómo piensas!", autor: SENSEI });
+    const html = renderToStaticMarkup(<VistaHilo hilo={hilo(false, [sensei])} acciones={ACCIONES} />);
+    expect(html).toContain("¡Me gusta cómo piensas!");
+    expect(html).not.toMatch(/>Responder</);
+    const deAlumno = renderToStaticMarkup(<VistaHilo hilo={hilo(false, [comentario({ id: "c-l", cuerpo: "Hola", autor: LUIS })])} acciones={ACCIONES} />);
+    expect(deAlumno.match(/>Responder</g)?.length).toBe(1);
   });
 
   it("el alumno no ve los controles del profesor", () => {

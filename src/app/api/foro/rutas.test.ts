@@ -99,6 +99,13 @@ describe("GET /api/temas/[id] y POST /api/temas/[id]/comentarios", () => {
     expect((await rutaComentarios.POST(peticion("POST", { cuerpo: "x", respuestaAId: ID }), ctx({ id: ID }))).status).toBe(400);
     expect((await rutaComentarios.POST(peticion("POST", { cuerpo: "   " }), ctx({ id: ID }))).status).toBe(400);
   });
+
+  it("responder a un comentario de Sensei: 400 con el mensaje del servicio (S11)", async () => {
+    vi.mocked(crearComentario).mockRejectedValue(new ErrorApp("DATOS_INVALIDOS", "No se puede responder a Sensei"));
+    const res = await rutaComentarios.POST(peticion("POST", { cuerpo: "¡Gracias!", respuestaAId: ID }), ctx({ id: ID }));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: "No se puede responder a Sensei", codigo: "DATOS_INVALIDOS" });
+  });
 });
 
 describe("PUT /api/comentarios/[id]/validacion", () => {

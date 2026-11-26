@@ -158,6 +158,64 @@ describe.skipIf(!hayBd)("foro, H10 (con BBDD real)", () => {
       expect((await obtenerHilo(profesora, tema.id, bd.db, deps)).puedeDarPuntos).toBe(true);
       expect((await obtenerHilo(admin, tema.id, bd.db, deps)).puedeDarPuntos).toBe(true);
     });
+
+    it("no se puede responder a Sensei (S11): 400 con un mensaje claro y no se guarda nada", async () => {
+      const tema = await nuevaDuda();
+      const r = await responder(javier, tema.id);
+      await ejecutarTareas(); // correcta → Sensei contesta
+      const [sensei] = await respuestasA(r.id);
+      expect(sensei.autorId).toBe(senseiId);
+
+      await expect(responder(carmen, tema.id, "¡Gracias, Sensei!", sensei.id)).rejects.toMatchObject({
+        codigo: "DATOS_INVALIDOS",
+        message: "No se puede responder a Sensei",
+      });
+      expect(await respuestasA(sensei.id)).toHaveLength(0);
+      expect(tareas).toHaveLength(0);
+      // Responder a un alumno sigue funcionando.
+      await expect(responder(carmen, tema.id, "Gracias", r.id)).resolves.toMatchObject({ respuestaAId: r.id });
+    });
+
+    it("los puntos del hilo siguen la regla anti-spam (S12): 3 primeras correctas de personas distintas y una vez por persona", async () => {
+      const tema = await nuevaDuda();
+      const alumnos = await bd.db
+        .insert(usuario)
+        .values(
+          ["eva", "pau", "noa"].map((n) => ({ nombre: n, email: `${n}.s12@demo.test`, rol: "alumno" as const, emailVerificado: true, seudonimo: `alumno_${n}_s12` })),
+        )
+        .returning();
+      const [eva, pau, noa] = alumnos.map((a) => a.id);
+      const base = Date.UTC(2026, 10, 20, 10, 0);
+      const fila = (autorId: string, minuto: number, validacion: "correcta" | "aproximada" | "incorrecta" | "pendiente") => ({
+        temaId: tema.id,
+        autorId,
+        cuerpo: `${validacion} ${minuto}`,
+        validacion,
+        validadoPor: validacion === "pendiente" ? null : ("ia" as const),
+        creado: new Date(base + minuto * 60_000),
+      });
+      const filas = await bd.db
+        .insert(comentarioForo)
+        .values([
+          fila(javier.id, 1, "correcta"), // +10
+          fila(javier.id, 2, "correcta"), // ya ganó en este tema: 0
+          fila(senseiId, 3, "pendiente"), // Sensei: 0
+          fila(eva, 4, "aproximada"), // +5
+          fila(eva, 5, "correcta"), // ya ganó: 0
+          fila(pau, 6, "correcta"), // +10
+          fila(noa, 7, "correcta"), // +10 (tercera)
+          fila(carmen.id, 8, "pendiente"), // la autora de la duda: 0
+        ])
+        .returning();
+      const otroAlumno = (await bd.db.insert(usuario).values({ nombre: "leo", email: "leo.s12@demo.test", rol: "alumno", emailVerificado: true, seudonimo: "alumno_leo_s12" }).returning())[0];
+      const [cuarta] = await bd.db.insert(comentarioForo).values(fila(otroAlumno.id, 9, "correcta")).returning(); // cuarta correcta: 0
+
+      const hilo = await obtenerHilo(carmen, tema.id, bd.db, deps);
+      const puntosPorId = Object.fromEntries(hilo.comentarios.map((c) => [c.id, c.puntos]));
+      expect([...filas, cuarta].map((f) => puntosPorId[f.id])).toEqual([10, 0, 0, 5, 0, 10, 10, 0, 0]);
+      // Las valoraciones no cambian: solo los puntos.
+      expect(hilo.comentarios.find((c) => c.id === filas[1].id)!.validacion).toBe("correcta");
+    });
   });
 
   describe("validarYResponder (S4–S7)", () => {
