@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, type ComponentProps, type FormEvent } from "react";
+import { useLayoutEffect, useRef, useState, type ComponentProps, type FormEvent } from "react";
 import { EstadoError } from "@/components/estado";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,12 +59,27 @@ export function rutaConVolver(ruta: string, volver: string | null): string {
 /**
  * Envía el formulario a la API de auth. Si va bien, la cookie ya está puesta: se navega al destino
  * (`?volver=` o «Tus cursos») y se refresca para que el layout muestre al usuario.
+ *
+ * Next 16 (Cache Components) no desmonta la página al salir: la oculta con <Activity> y conserva su estado y
+ * lo escrito en los campos. Por eso, al ocultarse, se reinicia el envío y se vacía el formulario
+ * (docs de Next: «Preserving UI state», «Resetting stale status messages»). Si no, al cerrar sesión y volver,
+ * el botón seguía en «Entrando…» y la contraseña seguía escrita.
  */
 export function useEnvioAuth(url: string) {
   const router = useRouter();
   const volver = useVolver();
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const formulario = useRef<HTMLFormElement>(null);
+
+  useLayoutEffect(() => {
+    const form = formulario.current;
+    return () => {
+      setEnviando(false);
+      setError(null);
+      form?.reset();
+    };
+  }, []);
 
   async function enviar(evento: FormEvent<HTMLFormElement>, cuerpo: (datos: FormData) => Record<string, string>) {
     evento.preventDefault();
@@ -85,7 +100,7 @@ export function useEnvioAuth(url: string) {
     }
   }
 
-  return { enviar, enviando, error, volver };
+  return { enviar, enviando, error, volver, formulario };
 }
 
 export function ErrorFormulario({ error }: { error: string | null }) {
