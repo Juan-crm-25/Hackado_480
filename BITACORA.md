@@ -172,7 +172,7 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 ---
 
-## Trabajo de Juan — Jueves 26/11/2026: Radar del tutor (#5) y tutor humano (H9)
+## Trabajo de Juan — Jueves 26/11/2026: Radar del tutor (#5), tutor humano (H9) y sesión en el material personal
 
 **Quién:** Juan Carmona, con Claude Code (Claude Opus 5.5).
 **Por qué:** el Radar, nuestra idea original, no lo tenía nadie. Se avisó por WhatsApp antes de cogerlo y antes de fusionar cada PR que tocaba código compartido.
@@ -187,6 +187,7 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 | #53 | **Agente analista** (`agents/analista-radar.md`): la tarjeta «Resumen de las dudas» resume con IA lo que preguntan los alumnos y propone qué repasar. Solo recibe textos, nunca quién preguntó. Caché de 1 hora; unos 0,0002 € por resumen |
 | #54 | **El tutor usa el usuario de la sesión** (antes trataba a todos como Lucía) y exige tener el curso (`requerirAccesoCurso()`) |
 | #55 | **Tutor humano (H9)**: botón «¿No te sirve? Pregunta a tu tutor» en el chat; la profesora responde desde el Radar («Te han pedido ayuda») y el alumno ve la respuesta como «Respondido por tu tutor». Tabla nueva `duda_humana` (migración `0001`) |
+| #56 | **El material personal («Mío») usa el usuario de la sesión**, igual que el tutor: cada alumno ve solo su material, crearlo exige tener el curso y gasta su propio límite diario. Ya ninguna pantalla ni endpoint usa el alumno fijo de Lucía |
 
 ### Decisiones tomadas
 
@@ -201,7 +202,7 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 ### Problemas y cómo los resolvimos
 
-- **El tutor trataba a todos los alumnos como Lucía** (un identificador fijo de antes del login). Sus dudas se habrían atribuido mal en el Radar y en H9. Se pasó el tutor a la sesión (#54).
+- **El tutor trataba a todos los alumnos como Lucía** (un identificador fijo de antes del login). Sus dudas se habrían atribuido mal en el Radar y en H9. Se pasó el tutor a la sesión (#54) y después el material personal (#56), que tenía el mismo problema: el material de cualquier alumno se guardaba como de Lucía.
 - **`ruta()` convertía en un error 500 una señal interna de Next.js** (con un GET sin parámetros, en el build salía «bail out of prerendering»). Se corrigió con `unstable_rethrow()`, con su test.
 - **Con el banco real, el DOM salía más fallado que la especificidad** en la actividad simulada. Se ajustaron las tasas y el test lo comprueba con 2 y 3 ejercicios por concepto.
 - **Las respuestas del tutor mostraban marcas internas** como `[v04 @95]`. Se quitan del texto: las fuentes ya llegan como enlaces al minuto.
@@ -211,4 +212,4 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 - Aplicar la migración `0001_tutor_humano` en Neon (`npm run db:migrate` con la `DATABASE_URL` de Neon).
 - En Neon, después de aprobar el banco de ejercicios: `npm run db:seed:actividad` el día de la demo.
-- ~~El **material personal** («Mío») sigue usando a Lucía fija: pasarlo a la sesión como el tutor.~~ Hecho: también usa la sesión y exige el curso. Se quitó el «puente» de la demo (`ALUMNO_DEMO_ID` y `buscarUsuarioDemo`), que ya no usaba nadie.
+- ~~El **material personal** («Mío») sigue usando a Lucía fija: pasarlo a la sesión como el tutor.~~ Hecho en #56: también usa la sesión y exige el curso. Se quitó el «puente» de la demo (`ALUMNO_DEMO_ID` y `buscarUsuarioDemo`), que ya no usaba nadie.
