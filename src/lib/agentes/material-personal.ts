@@ -28,7 +28,8 @@ const FORMATOS = {
 
 export interface EntradaMaterialPersonal {
   modulo: Modulo;
-  peticion: PeticionMaterialPersonal;
+  /** Con el alumno ya resuelto (el servicio lo pone a partir de la sesión). */
+  peticion: PeticionMaterialPersonal & { alumnoId: string };
   nombresOcultos: string[];
 }
 

@@ -19,7 +19,7 @@ const deps = (texto: string) => ({
   ahora: () => new Date("2026-11-24T10:00:00Z"),
   id: () => "mp-1",
 });
-const peticion = (extra: Partial<PeticionMaterialPersonal> = {}): PeticionMaterialPersonal => ({
+const peticion = (extra: Partial<PeticionMaterialPersonal> = {}): PeticionMaterialPersonal & { alumnoId: string } => ({
   alumnoId: "a1",
   moduloId: "m2-css",
   tipo: "tarjetas",
