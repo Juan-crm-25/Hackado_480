@@ -182,6 +182,18 @@ npm run db:studio                                              # 3. revisar y ap
 
 Los scripts y Drizzle Studio usan la `DATABASE_URL` de la terminal antes que la de `.env.local`.
 
+### Actividad simulada para el Radar
+
+El Radar del tutor (#5) necesita actividad para enseñar algo en la demo. `npm run db:seed:actividad` la crea:
+
+- **Quién:** 20 alumnos simulados (`*@simulado.demo.test`) más los inventados del seed. **Nunca** los de la demo en directo (Lucía y Pablo) ni nadie que se registre de verdad: solo emails de prueba (`*.demo.test`).
+- **Qué:** intentos sobre los **ejercicios aprobados** (`intento`), dudas al tutor ya filtradas (`conversacion` y `mensaje`) y su `progreso`. Las fechas son relativas al día en que se ejecuta.
+- **Patrones:** la especificidad es el concepto más fallado (en torno al 60 %), hay alumnos atascados (3 fallos seguidos en los últimos 3 días) y alumnos inactivos (más de 9 días sin entrar).
+- **Orden:** después de `npm run db:seed` y de **aprobar el banco de ejercicios**. Sin ejercicios aprobados no crea intentos y lo avisa.
+- **Se puede repetir:** borra la actividad anterior de esos alumnos y la vuelve a crear. Conviene ejecutarlo el día de la demo para que las fechas sean recientes.
+- **Neon:** como el seed, con `SEED_PERMITIR_REMOTO=1`.
+- Código: `src/lib/demo/actividad.ts` (qué se genera, función pura) y `src/lib/db/seed/actividad.ts` (cómo se guarda).
+
 ### Tests con BBDD
 
 Los tests de integración crean su propia BBDD en el Docker local (`hackado_test_…`), le aplican las migraciones de `drizzle/`, la usan y la borran: `crearBdPrueba()` en `src/lib/db/test-utils.ts`. Si el Docker no está arrancado, esos tests se saltan con un aviso. Nunca tocan la BBDD `hackado`.
