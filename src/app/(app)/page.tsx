@@ -1,22 +1,16 @@
-import { Megaphone } from "lucide-react";
-import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { TarjetaAnuncio } from "@/components/anuncios/tarjeta-anuncio";
 import { AyudaBd } from "@/components/cursos/ayuda-bd";
 import { CatalogoCursos } from "@/components/cursos/catalogo-cursos";
+import { EsqueletoCatalogo } from "@/components/cursos/esqueletos";
 import type { CursoConValoracion } from "@/components/cursos/tarjeta-curso";
-import { EstadoCargando, EstadoError, EstadoVacio } from "@/components/estado";
+import { EstadoError, EstadoVacio } from "@/components/estado";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { anuncios } from "@/lib/demo/anuncios";
 import { cursosDestacados, resumenValoraciones, valoracionesDe } from "@/lib/demo/valoraciones";
 import { cargarCursosPublicados } from "@/server/catalogo/servicio";
 
-// Enlace de texto con zona táctil de 44 px (docs/estilo.md, apartado 7).
-const CLASE_ENLACE = "inline-flex min-h-11 items-center rounded-sm font-medium underline underline-offset-4";
-
-// Franja decorativa de cada anuncio (docs/estilo.md, «Color con intención»).
-const FRANJAS_ANUNCIO = ["bg-chart-2", "bg-chart-5"];
 
 /**
  * Home pública de la academia: presentación, anuncios, buscador con filtro y el catálogo de cursos.
@@ -52,24 +46,7 @@ export default function Inicio() {
         <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {anuncios.map((a, i) => (
             <li key={a.id} className="flex">
-              <Card className="flex-1 pt-0">
-                <div aria-hidden className={`h-1.5 ${FRANJAS_ANUNCIO[i % FRANJAS_ANUNCIO.length]}`} />
-                <CardHeader className="flex flex-1 flex-col gap-2">
-                  <p className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground">
-                    <Megaphone className="size-4" aria-hidden />
-                    Anuncio
-                  </p>
-                  <CardTitle>
-                    <h3 className="text-lg leading-tight font-bold">{a.titulo}</h3>
-                  </CardTitle>
-                  <CardDescription>{a.texto}</CardDescription>
-                  <div className="mt-auto">
-                    <Link href={a.href} className={CLASE_ENLACE}>
-                      {a.cta}
-                    </Link>
-                  </div>
-                </CardHeader>
-              </Card>
+              <TarjetaAnuncio anuncio={a} indice={i} />
             </li>
           ))}
         </ul>
@@ -79,7 +56,7 @@ export default function Inicio() {
         <h2 id="titulo-catalogo" className="text-2xl leading-tight font-bold">
           Nuestros cursos
         </h2>
-        <Suspense fallback={<EstadoCargando texto="Cargando los cursos…" />}>
+        <Suspense fallback={<EsqueletoCatalogo />}>
           <Catalogo />
         </Suspense>
       </section>
