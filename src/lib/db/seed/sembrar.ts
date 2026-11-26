@@ -31,6 +31,7 @@ import {
 import {
   BANNERS_CURSO,
   CONTRASENA_DEMO,
+  USUARIO_IA_FORO,
   construirCatalogos,
   construirMatriculas,
   construirPlantillas,
@@ -178,6 +179,12 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
       })
       .returning({ id: usuario.id, email: usuario.email });
     const usuarioIds = new Map(filas.map((u) => [u.email, u.id]));
+
+    // Sensei, la IA del foro: aparte de los usuarios de la demo para que no tenga cuenta ni matrículas.
+    await tx
+      .insert(usuario)
+      .values(USUARIO_IA_FORO)
+      .onConflictDoUpdate({ target: usuario.email, set: { nombre: nuevo("nombre"), imagenUrl: nuevo("imagen_url") } });
 
     // Cuenta de email y contraseña para el login simulado. Si ya existe no se toca (no se pisa la contraseña).
     await tx

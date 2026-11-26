@@ -1,9 +1,9 @@
 import { sql } from "drizzle-orm";
-import { type AnyPgColumn, check, jsonb, pgTable, primaryKey, text, uuid } from "drizzle-orm/pg-core";
+import { type AnyPgColumn, check, integer, jsonb, pgTable, primaryKey, text, unique, uuid } from "drizzle-orm/pg-core";
 import { usuario } from "./usuarios";
-import { clase } from "./catalogo";
+import { clase, modulo } from "./catalogo";
 import { ahora, fechaHora, id } from "./columnas";
-import { validacionForo, validadorForo } from "./enums";
+import { motivoPuntoForo, validacionForo, validadorForo } from "./enums";
 
 /** Regla para conseguir una insignia, evaluada en código: { respuestasBuenas: 3, etiqueta: "css" }. */
 export interface CriterioInsignia {
@@ -11,11 +11,13 @@ export interface CriterioInsignia {
   etiqueta?: string;
 }
 
+/** Una duda del foro. El foro es por módulo (H10); la clase (vídeo) es opcional, por si la duda es de un vídeo concreto. */
 export const temaForo = pgTable("tema_foro", {
   id: id(),
-  claseId: uuid("clase_id")
+  moduloId: uuid("modulo_id")
     .notNull()
-    .references(() => clase.id, { onDelete: "cascade" }),
+    .references(() => modulo.id, { onDelete: "cascade" }),
+  claseId: uuid("clase_id").references(() => clase.id, { onDelete: "set null" }),
   autorId: uuid("autor_id")
     .notNull()
     .references(() => usuario.id, { onDelete: "cascade" }),
@@ -27,7 +29,7 @@ export const temaForo = pgTable("tema_foro", {
 
 /**
  * Valida la IA (con el texto filtrado) o un profesor, y el profesor prevalece.
- * Los puntos no se guardan: se calculan a partir de los comentarios validados como buenos.
+ * Los puntos de las respuestas no se guardan: se calculan de la validación (correcta +10, aproximada +5).
  */
 export const comentarioForo = pgTable(
   "comentario_foro",
@@ -55,6 +57,33 @@ export const comentarioForo = pgTable(
     ),
     // Al revés no se exige a propósito: si se borra la cuenta del profesor, profesor_id pasa a NULL y la validación se conserva.
     check("comentario_foro_profesor_check", sql`${t.profesorId} IS NULL OR ${t.validadoPor} = 'profesor'`),
+  ],
+);
+
+/**
+ * Puntos que da el profesor del curso por una buena pregunta (un tema) o por buena conducta (un tema o un
+ * comentario): +1, +3 o +6. Estos sí se guardan porque no se pueden calcular. Uno por tema o comentario:
+ * el profesor lo cambia, no lo acumula.
+ */
+export const puntoForo = pgTable(
+  "punto_foro",
+  {
+    id: id(),
+    profesorId: uuid("profesor_id").references(() => usuario.id, { onDelete: "set null" }),
+    alumnoId: uuid("alumno_id")
+      .notNull()
+      .references(() => usuario.id, { onDelete: "cascade" }),
+    temaId: uuid("tema_id").references(() => temaForo.id, { onDelete: "cascade" }),
+    comentarioId: uuid("comentario_id").references(() => comentarioForo.id, { onDelete: "cascade" }),
+    puntos: integer("puntos").notNull(),
+    motivo: motivoPuntoForo("motivo").notNull(),
+    creado: ahora("creado"),
+  },
+  (t) => [
+    check("punto_foro_puntos_check", sql`${t.puntos} IN (1, 3, 6)`),
+    check("punto_foro_destino_check", sql`(${t.temaId} IS NULL) <> (${t.comentarioId} IS NULL)`),
+    unique("punto_foro_tema_unique").on(t.temaId),
+    unique("punto_foro_comentario_unique").on(t.comentarioId),
   ],
 );
 
@@ -86,6 +115,8 @@ export type TemaForo = typeof temaForo.$inferSelect;
 export type NuevoTemaForo = typeof temaForo.$inferInsert;
 export type ComentarioForo = typeof comentarioForo.$inferSelect;
 export type NuevoComentarioForo = typeof comentarioForo.$inferInsert;
+export type PuntoForo = typeof puntoForo.$inferSelect;
+export type NuevoPuntoForo = typeof puntoForo.$inferInsert;
 export type Insignia = typeof insignia.$inferSelect;
 export type NuevaInsignia = typeof insignia.$inferInsert;
 export type UsuarioInsignia = typeof usuarioInsignia.$inferSelect;

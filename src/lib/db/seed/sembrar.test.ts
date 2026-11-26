@@ -4,7 +4,7 @@ import { bdPruebasDisponible, crearBdPrueba, type BdPrueba } from "../test-utils
 import { comprobarContrasena } from "../../contrasena";
 import m2Css from "../../../../data/ejemplos-profesor/m2-css.json";
 import { clase, cuenta, curso, cursoImagen, matricula, modulo, plantillaEjercicio, usuario } from "../schema";
-import { CONTRASENA_DEMO } from "./datos";
+import { CONTRASENA_DEMO, EMAIL_IA_FORO } from "./datos";
 import { sembrar } from "./sembrar";
 
 const hayBd = await bdPruebasDisponible();
@@ -26,8 +26,8 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
       modulo: 18,
       concepto: 12,
       clase: 12,
-      usuario: 12,
-      cuenta: 12,
+      usuario: 13, // 12 de la demo + Sensei, la IA del foro
+      cuenta: 12, // Sensei no tiene cuenta: no puede iniciar sesión
       matricula: 34,
       progreso: 2,
       plantilla_ejercicio: 4,
@@ -40,6 +40,12 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
       .innerJoin(curso, eq(curso.id, cursoImagen.cursoId))
       .where(eq(curso.slug, "desarrollo-web"));
     expect(banner).toEqual({ url: "/banners/desarrollo-web.webp", uso: "banner" });
+
+    // Sensei, la IA del foro (H10): un usuario con avatar, sin cuenta ni matrículas.
+    const [sensei] = await bd.db.select().from(usuario).where(eq(usuario.email, EMAIL_IA_FORO));
+    expect(sensei).toMatchObject({ nombre: "Sensei", imagenUrl: "/avatars/sensei.svg", emailVerificado: true });
+    expect(await bd.db.select().from(cuenta).where(eq(cuenta.usuarioId, sensei.id))).toEqual([]);
+    expect(await bd.db.select().from(matricula).where(eq(matricula.email, EMAIL_IA_FORO))).toEqual([]);
 
     const lucia = await bd.db.query.usuario.findFirst({ where: eq(usuario.email, "lucia@demo.test") });
     expect(lucia).toMatchObject({ nombre: "Lucía Martín", rol: "alumno", emailVerificado: true });
@@ -61,7 +67,7 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
     const antes = await bd.db.select().from(usuario).orderBy(usuario.email);
     const cuentasAntes = await bd.db.select().from(cuenta).orderBy(cuenta.id);
     const recuento = await sembrar(bd.db);
-    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 12, cuenta: 12, matricula: 34, clase: 12, progreso: 2, curso_imagen: 6 });
+    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 13, cuenta: 12, matricula: 34, clase: 12, progreso: 2, curso_imagen: 6 });
     expect(await bd.db.select().from(usuario).orderBy(usuario.email)).toEqual(antes);
     // La contraseña de una cuenta que ya existe no se vuelve a cifrar (ni se pisa si alguien la cambió).
     expect(await bd.db.select().from(cuenta).orderBy(cuenta.id)).toEqual(cuentasAntes);

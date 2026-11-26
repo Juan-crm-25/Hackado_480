@@ -306,3 +306,18 @@ export const BANNERS_CURSO: Record<string, string> = {
   "oposiciones-auxiliar-administrativo": "/banners/oposiciones-auxiliar-administrativo.webp",
 };
 
+/**
+ * Sensei, la IA del foro (H10): un usuario para que sus respuestas aparezcan en el hilo con nombre y avatar.
+ * No tiene cuenta (no puede iniciar sesión) ni matrículas. El código la reconoce por este email.
+ */
+export const EMAIL_IA_FORO = "sensei@ia.480academy.test";
+
+export const USUARIO_IA_FORO = {
+  nombre: "Sensei",
+  email: EMAIL_IA_FORO,
+  rol: "alumno" as const,
+  emailVerificado: true,
+  imagenUrl: "/avatars/sensei.svg",
+  seudonimo: "ia_sensei",
+};
+
