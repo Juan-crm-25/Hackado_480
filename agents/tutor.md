@@ -38,6 +38,7 @@ Las fuentes que no correspondan a un vídeo del módulo se descartan, y los segu
 - Respuestas de 120 palabras como máximo, pensadas para el móvil.
 - Máximo de consultas diarias por alumno (`AI_LIMITE_DIARIO`, 30 por defecto).
 - Si la IA falla o tarda más de 30 s, el alumno recibe un mensaje de error amable y la consulta no se pierde del historial.
+- **Cada pregunta y su respuesta se guardan** en las tablas `conversacion` y `mensaje` (una conversación por alumno y módulo, que caduca a los 90 días), para el Radar (#5). Se guarda **solo el texto filtrado**, el mismo que llega a la IA: sin nombre, email, teléfono ni DNI. No se guarda nada en modo simulado ni si la IA falla, y si el guardado falla, el alumno recibe igualmente su respuesta. Código: `src/server/tutor/`.
 
 ## Instrucciones (prompt de sistema)
 
