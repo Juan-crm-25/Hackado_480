@@ -25,5 +25,9 @@ export const tipoEvaluacion = pgEnum("tipo_evaluacion", ["diagnostico", "test", 
 
 export const rolMensaje = pgEnum("rol_mensaje", ["alumno", "tutor"]);
 
-export const validacionForo = pgEnum("validacion_foro", ["pendiente", "buena", "no_util"]);
+// Foro (H10): la IA o el profesor deciden si un comentario responde a la duda y cómo de bien.
+// correcta = +10 puntos, aproximada = +5, incorrecta y no_respuesta = 0 (los puntos se calculan, no se guardan).
+export const validacionForo = pgEnum("validacion_foro", ["pendiente", "correcta", "aproximada", "incorrecta", "no_respuesta"]);
+/** Por qué da puntos el profesor en el foro (+1, +3 o +6). */
+export const motivoPuntoForo = pgEnum("motivo_punto_foro", ["buena_pregunta", "buena_conducta"]);
 export const validadorForo = pgEnum("validador_foro", ["ia", "profesor"]);

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Sensei">
+  <circle cx="32" cy="32" r="32" fill="#1e1f20"/>
+  <circle cx="32" cy="34" r="18" fill="#39fe90"/>
+  <path d="M14 26c6-10 30-10 36 0" fill="none" stroke="#5ff0ff" stroke-width="5" stroke-linecap="round"/>
+  <rect x="21" y="30" width="8" height="4" rx="2" fill="#1e1f20"/>
+  <rect x="35" y="30" width="8" height="4" rx="2" fill="#1e1f20"/>
+  <path d="M25 41c4 4 10 4 14 0" fill="none" stroke="#1e1f20" stroke-width="3" stroke-linecap="round"/>
+  <rect x="27" y="52" width="10" height="4" rx="2" fill="#ff5a4e"/>
+</svg>

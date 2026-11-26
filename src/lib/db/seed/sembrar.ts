@@ -18,6 +18,7 @@ import type { Db } from "../client";
 import {
   categoria,
   clase,
+  comentarioForo,
   concepto,
   cuenta,
   curso,
@@ -26,16 +27,20 @@ import {
   modulo,
   plantillaEjercicio,
   progreso,
+  puntoForo,
+  temaForo,
   usuario,
 } from "../schema";
 import {
   BANNERS_CURSO,
   CONTRASENA_DEMO,
+  USUARIO_IA_FORO,
   construirCatalogos,
   construirMatriculas,
   construirPlantillas,
   construirUsuarios,
 } from "./datos";
+import { construirForoDemo, PROFESORA_FORO } from "./foro";
 
 /** Ejemplos del profesor de cada módulo del curso de la demo (#12): origen de `plantilla_ejercicio`. */
 const PLANTILLAS_DEMO = [m1Html, m2Css, m3Responsive, m4Javascript] as PlantillaEjercicios[];
@@ -54,7 +59,10 @@ export type RecuentoSeed = Record<
   | "matricula"
   | "progreso"
   | "plantilla_ejercicio"
-  | "curso_imagen",
+  | "curso_imagen"
+  | "tema_foro"
+  | "comentario_foro"
+  | "punto_foro",
   number
 >;
 
@@ -179,6 +187,14 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
       .returning({ id: usuario.id, email: usuario.email });
     const usuarioIds = new Map(filas.map((u) => [u.email, u.id]));
 
+    // Sensei, la IA del foro: aparte de los usuarios de la demo para que no tenga cuenta ni matrículas.
+    const [sensei] = await tx
+      .insert(usuario)
+      .values(USUARIO_IA_FORO)
+      .onConflictDoUpdate({ target: usuario.email, set: { nombre: nuevo("nombre"), imagenUrl: nuevo("imagen_url") } })
+      .returning({ id: usuario.id, email: usuario.email });
+    usuarioIds.set(sensei.email, sensei.id);
+
     // Cuenta de email y contraseña para el login simulado. Si ya existe no se toca (no se pisa la contraseña).
     await tx
       .insert(cuenta)
@@ -214,6 +230,51 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
         target: [matricula.cursoId, matricula.email],
         set: { usuarioId: nuevo("usuario_id"), rolEnCurso: nuevo("rol_en_curso") },
       });
+
+    // Foro de la demo (src/lib/db/seed/foro.ts). Sin clave natural: un tema se reconoce por (módulo, título).
+    // Si ya existe no se toca, ni sus comentarios ni sus puntos: pueden tener respuestas reales de la demo.
+    const idDe = (email: string) => usuarioIds.get(email)!;
+    for (const t of construirForoDemo()) {
+      const moduloId = moduloIds.get(`${CURSO_DEMO_SLUG}/${t.moduloSlug}`)!;
+      const [existe] = await tx
+        .select({ id: temaForo.id })
+        .from(temaForo)
+        .where(and(eq(temaForo.moduloId, moduloId), eq(temaForo.titulo, t.titulo)))
+        .limit(1);
+      if (existe) continue;
+
+      const autorTema = idDe(t.autor);
+      const [tema] = await tx
+        .insert(temaForo)
+        .values({ moduloId, autorId: autorTema, titulo: t.titulo, cuerpo: t.cuerpo, creado: t.creado, actualizado: t.creado })
+        .returning({ id: temaForo.id });
+      if (t.puntosProfesor) {
+        await tx.insert(puntoForo).values({ profesorId: idDe(PROFESORA_FORO), alumnoId: autorTema, temaId: tema.id, creado: t.creado, ...t.puntosProfesor });
+      }
+
+      // Uno a uno y en orden: la respuesta de Sensei necesita el id del comentario al que contesta.
+      const comentarioIds = new Map<string, string>();
+      for (const c of t.comentarios) {
+        const [fila] = await tx
+          .insert(comentarioForo)
+          .values({
+            temaId: tema.id,
+            autorId: idDe(c.autor),
+            respuestaAId: c.respuestaA ? comentarioIds.get(c.respuestaA)! : null,
+            cuerpo: c.cuerpo,
+            validacion: c.validacion,
+            validadoPor: c.validadoPor ?? null,
+            profesorId: c.profesor ? idDe(c.profesor) : null,
+            validadoEn: c.validadoEn ?? null,
+            creado: c.creado,
+          })
+          .returning({ id: comentarioForo.id });
+        comentarioIds.set(c.clave, fila.id);
+        if (c.puntosProfesor) {
+          await tx.insert(puntoForo).values({ profesorId: idDe(PROFESORA_FORO), alumnoId: idDe(c.autor), comentarioId: fila.id, creado: c.creado, ...c.puntosProfesor });
+        }
+      }
+    }
   });
 
   const contar = async (tabla: PgTable) => {
@@ -232,5 +293,8 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
     progreso: await contar(progreso),
     plantilla_ejercicio: await contar(plantillaEjercicio),
     curso_imagen: await contar(cursoImagen),
+    tema_foro: await contar(temaForo),
+    comentario_foro: await contar(comentarioForo),
+    punto_foro: await contar(puntoForo),
   };
 }

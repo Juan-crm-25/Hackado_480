@@ -35,3 +35,14 @@
 **Decisión:** en el MVP, el **inicio de sesión y el pago se simulan** (se entra como un usuario de demo y se paga con un botón de prueba). Better Auth y Stripe quedan diseñados para producción y aislados para cambiarlos sin tocar el resto. **No hay panel de administración**. Entran el **diagnóstico inicial**, que reordena la ruta, y el botón para **pasar una duda a un tutor humano**, que el profesor responde desde el Radar.
 **Alternativas:** construir ya el login con Better Auth y el pago con Stripe en modo test; un panel para que el profesor cree cursos con enlaces de YouTube.
 **Por qué:** el login y la pasarela de pago no responden a ningún problema del alumno y consumen horas que hacen falta en el tutor, los ejercicios, el diagnóstico y el Radar. El cliente descarta expresamente el panel de administración («Tampoco queremos un panel de administración para cargar contenido»). El diagnóstico responde a «los itinerarios son iguales para todos», y el tutor humano a «prometemos un acompañamiento que no damos». Detalle en `SPEC.md`, apartados 2, 5 y 11.
+
+## 7. IA del foro: excepción al RGPD solo para el MVP (26/11)
+
+**Decisión:** el foro (H10) usa un **modelo de decisión** separado del tutor, **Perplexity Decider V1.3 (gratis) por OpenRouter**, que solo decide si un comentario responde a la duda y si es correcto, aproximado o incorrecto. Ese modelo **no se procesa en la UE**, así que es una **excepción a la decisión 3, solo para el MVP**.
+**Alternativas:** Gemma en Scaleway con otra clave (se queda en la UE, pero es un chat al que hay que obligar a contestar solo con la decisión); Jev de TypeSafe (de pago y también fuera de la UE); Gemini o Mistral gratis.
+**Por qué se acepta en el MVP**, con estas tres salvaguardas:
+1. **No se envían datos de alumnos:** solo el texto de la duda y del comentario, filtrado (sin nombres, emails, teléfonos ni DNI). Nunca quién lo escribió, ni su edad, ni ningún otro dato del alumno.
+2. **No escribe nada:** es un modelo de decisión que solo elige entre cuatro opciones. Las respuestas de Sensei las pone el código, y si duda (confianza baja) no decide y lo deja para el profesor.
+3. **Se puede cambiar sin tocar código:** va detrás de sus propias variables (`AI_FORO_*`), separado del tutor.
+
+**En un caso real** se traería a la UE con un **modelo de código abierto** alojado en Europa: según su anuncio, los pesos de Decider son abiertos (Apache 2.0) y se podrían alojar aquí (está por confirmar); si no, bastaría con Gemma en Scaleway, como el resto de agentes.

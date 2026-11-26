@@ -2,8 +2,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { iniciales } from "@/components/navegacion/avatar-usuario";
 import { Suspense } from "react";
-import { EstadoCargando } from "@/components/estado";
+import { EstadoCargando, EstadoError } from "@/components/estado";
+import { PuntosForo } from "@/components/foro/puntos-foro";
 import { requerirUsuarioActual } from "@/server/auth/usuario-actual";
+import { obtenerPuntosDelAlumno, type PuntosDelAlumno } from "@/server/recompensas/servicio";
 
 /** Perfil del usuario de la sesión. De momento solo lectura. */
 export default function Perfil() {
@@ -19,6 +21,7 @@ export default function Perfil() {
 
 async function DatosPerfil() {
   const usuario = await requerirUsuarioActual();
+  const puntos = await leerPuntos(usuario.id);
 
   return (
     <>
@@ -36,7 +39,23 @@ async function DatosPerfil() {
         </CardContent>
       </Card>
 
+      {puntos ? (
+        <PuntosForo puntos={puntos} />
+      ) : (
+        <EstadoError className="max-w-xl">No se han podido cargar tus puntos del foro.</EstadoError>
+      )}
+
       <p className="max-w-prose text-sm text-muted-foreground">Pronto podrás editar tu perfil.</p>
     </>
   );
+}
+
+/** Puntos del foro; si la BBDD falla, el perfil se sigue viendo con el aviso del error. */
+async function leerPuntos(usuarioId: string): Promise<PuntosDelAlumno | null> {
+  try {
+    return await obtenerPuntosDelAlumno(usuarioId);
+  } catch (error) {
+    console.error("[perfil] No se pudieron leer los puntos del foro:", error);
+    return null;
+  }
 }

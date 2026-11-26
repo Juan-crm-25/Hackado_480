@@ -18,7 +18,7 @@ const TABLAS = [
   "plantilla_ejercicio", "ejercicio", "intento", "progreso",
   "evaluacion", "pregunta_evaluacion", "intento_evaluacion",
   "conversacion", "mensaje", "uso_ia", "duda_humana",
-  "tema_foro", "comentario_foro", "insignia", "usuario_insignia",
+  "tema_foro", "comentario_foro", "punto_foro", "insignia", "usuario_insignia",
 ];
 
 // Lista completa de una unión: si falta un valor, el tipo es `never` y tsc falla;
@@ -44,12 +44,12 @@ export type EnumsIgualesAlContrato = [
 ];
 
 describe("esquema de la BBDD", () => {
-  it("exporta exactamente las 32 tablas del modelo de datos", () => {
+  it("exporta exactamente las 33 tablas del modelo de datos", () => {
     const nombres = (Object.values(schema) as unknown[])
       .filter((valor): valor is PgTable => valor instanceof PgTable)
       .map((tabla) => getTableConfig(tabla).name);
 
-    expect(TABLAS).toHaveLength(32);
+    expect(TABLAS).toHaveLength(33);
     expect(nombres.sort()).toEqual([...TABLAS].sort());
   });
 
@@ -67,4 +67,10 @@ describe("esquema de la BBDD", () => {
       expect([...enumBbdd].sort()).toEqual([...union].sort());
     }
   });
+
+  it("el foro valora respuestas en tres niveles y distingue lo que no es respuesta (H10)", () => {
+    expect(schema.validacionForo.enumValues).toEqual(["pendiente", "correcta", "aproximada", "incorrecta", "no_respuesta"]);
+    expect(schema.motivoPuntoForo.enumValues).toEqual(["buena_pregunta", "buena_conducta"]);
+  });
 });
+

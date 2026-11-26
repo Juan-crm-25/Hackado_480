@@ -5,15 +5,21 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { CabeceraPantalla } from "@/components/cabecera-pantalla";
 import { EstadoCargando, EstadoError, EstadoVacio } from "@/components/estado";
+import { IrAlForo } from "@/components/foro/ir-al-foro";
+import { SeccionForo } from "@/components/foro/seccion-foro";
+import { VideosModulo } from "@/components/modulo/videos-modulo";
+import { TarjetaProfesor } from "@/components/profesor/tarjeta-profesor";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { VideoYoutube } from "@/components/video-youtube";
-import type { ClaseCatalogo } from "@/lib/catalogo-bd";
-import { duracionAccesible, duracionVideo } from "@/lib/youtube";
+import { profesorDelCurso } from "@/lib/demo/profesores";
+import { cn } from "@/lib/utils";
 import { buscarModulo, cargarCursoPrincipal } from "@/server/catalogo/servicio";
 
 /**
- * Pantalla «Módulo»: descripción, conceptos y vídeos de las clases, con enlaces al material y al tutor.
+ * Pantalla «Módulo»: descripción, conceptos y vídeos de las clases (acordeón con «visto» y progreso),
+ * con enlaces al material y al tutor (uno al lado del otro, con el mismo peso), la tarjeta de su profesor
+ * (datos de demostración, con «Enviar mensaje» a la bandeja simulada del MVP)
+ * y el foro del módulo al pie («Ir al foro», arriba, baja hasta él).
  * Sin generateStaticParams: el módulo se lee de la BBDD en cada petición, dentro de <Suspense>
  * (Cache Components), así `next build` no necesita BBDD.
  */
@@ -23,7 +29,7 @@ export default function ModuloPage({ params }: PageProps<"/modulos/[id]">) {
       <Suspense
         fallback={
           <>
-            <CabeceraPantalla seccion="Módulo" titulo="Cargando…" />
+            <CabeceraPantalla seccion="Módulo" titulo="Cargando…" compartir />
             <EstadoCargando className="px-4 py-6" texto="Cargando el módulo…" />
           </>
         }
@@ -33,6 +39,9 @@ export default function ModuloPage({ params }: PageProps<"/modulos/[id]">) {
     </main>
   );
 }
+
+/** Botones de «Material de repaso» y «Preguntar al tutor (IA)»: altura mínima de 44 px y texto en dos líneas si no cabe. */
+const accionModulo = "h-auto min-h-11 py-2 text-center whitespace-normal";
 
 function AyudaBd() {
   return (
@@ -51,7 +60,7 @@ async function ContenidoModulo({ params }: { params: PageProps<"/modulos/[id]">[
   if (resultado.estado !== "ok") {
     return (
       <>
-        <CabeceraPantalla seccion="Módulo" titulo="Sin datos" />
+        <CabeceraPantalla seccion="Módulo" titulo="Sin datos" compartir />
         <div className="px-4 py-6">
           {resultado.estado === "error" ? (
             <EstadoError>
@@ -72,9 +81,12 @@ async function ContenidoModulo({ params }: { params: PageProps<"/modulos/[id]">[
 
   return (
     <>
-      <CabeceraPantalla seccion="Módulo" titulo={modulo.titulo} />
+      <CabeceraPantalla seccion="Módulo" titulo={modulo.titulo} compartir />
       <div className="flex flex-col gap-6 px-4 py-6">
-        <p className="text-base text-muted-foreground">{modulo.descripcion}</p>
+        <div className="flex flex-col items-start gap-3">
+          <p className="text-base text-muted-foreground">{modulo.descripcion}</p>
+          <IrAlForo />
+        </div>
 
         {modulo.conceptos.length > 0 && (
           <section aria-labelledby="conceptos" className="flex flex-col gap-2">
@@ -100,54 +112,27 @@ async function ContenidoModulo({ params }: { params: PageProps<"/modulos/[id]">[
           {modulo.clases.length === 0 ? (
             <EstadoVacio>Este módulo todavía no tiene vídeos.</EstadoVacio>
           ) : (
-            <ol className="flex flex-col gap-6">
-              {modulo.clases.map((clase, i) => (
-                <li key={clase.id}>
-                  <ClaseVideo clase={clase} numero={i + 1} />
-                </li>
-              ))}
-            </ol>
+            <VideosModulo cursoSlug={resultado.curso.id} moduloSlug={modulo.id} clases={modulo.clases} />
           )}
         </section>
 
-        <nav aria-label="Seguir con el módulo" className="flex flex-col gap-3 md:flex-row">
-          <Link href={`/modulos/${modulo.id}/material`} className={buttonVariants({ variant: "accent", size: "lg" })}>
+        {/* Mismo peso para los dos («Ir al foro» es el único botón verde). Lado a lado también a 360 px: el texto baja de línea si no cabe. */}
+        <nav aria-label="Seguir con el módulo" className="grid grid-cols-2 gap-3">
+          <Link href={`/modulos/${modulo.id}/material`} className={cn(buttonVariants({ variant: "outline" }), accionModulo)}>
             <BookOpen aria-hidden />
             Material de repaso
           </Link>
-          <Link href={`/modulos/${modulo.id}/tutor`} className={buttonVariants({ variant: "outline", size: "lg" })}>
+          <Link href={`/modulos/${modulo.id}/tutor`} className={cn(buttonVariants({ variant: "outline" }), accionModulo)}>
             <MessageCircle aria-hidden />
-            Preguntar al tutor
+            Preguntar al tutor (IA)
           </Link>
         </nav>
+
+        <TarjetaProfesor profesor={profesorDelCurso(resultado.curso.id)} />
+
+        {/* El id del curso del catálogo es su slug (catalogo/repositorio.ts), y el del módulo, el suyo. */}
+        <SeccionForo cursoSlug={resultado.curso.id} moduloSlug={modulo.id} />
       </div>
     </>
-  );
-}
-
-function ClaseVideo({ clase, numero }: { clase: ClaseCatalogo; numero: number }) {
-  return (
-    <article className="flex flex-col gap-2">
-      <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-base font-semibold">
-          <span className="text-muted-foreground">{numero}.</span> {clase.titulo}
-        </h3>
-        <p className="shrink-0 text-sm text-muted-foreground">
-          <span aria-hidden>{duracionVideo(clase.duracionSegundos)}</span>
-          <span className="sr-only">Duración: {duracionAccesible(clase.duracionSegundos)}</span>
-        </p>
-      </div>
-      {clase.youtubeId ? (
-        <VideoYoutube youtubeId={clase.youtubeId} titulo={clase.titulo} />
-      ) : (
-        <EstadoVacio>
-          Este vídeo no se puede incrustar.{" "}
-          <a href={clase.videoUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
-            Ábrelo en una pestaña nueva
-          </a>
-          .
-        </EstadoVacio>
-      )}
-    </article>
   );
 }

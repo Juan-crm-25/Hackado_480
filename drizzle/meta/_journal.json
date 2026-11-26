@@ -15,6 +15,13 @@
       "when": 1795686602913,
       "tag": "0001_tutor_humano",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795716969270,
+      "tag": "0002_foro_h10",
+      "breakpoints": true
     }
   ]
 }
