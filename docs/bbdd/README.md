@@ -96,7 +96,7 @@ Se aplica a los agentes que producen contenido: material de cada clase (resumen,
 2. **Generar** con el agente correspondiente. A la IA solo le llega contenido del curso y texto filtrado (ver SPEC, apartado 6).
 3. **Validar con código** la respuesta de la IA antes de guardarla, con las funciones de `src/lib/agentes/` (`parsearObjetoJson`, `validarFuentes`, `validarMaterial`, `validarInfografia`…). Las fuentes que no existen se descartan y, si no se llega al mínimo, **no se guarda nada**.
 4. **Guardar** con `INSERT … ON CONFLICT (clase_id, tipo) DO NOTHING` y volver a leer. Así, si dos alumnos lo piden a la vez, solo se guarda una vez.
-5. **Trazabilidad:** se rellenan siempre `modelo` (el que lo generó) y `generado`. `revisado` empieza en `false`; mientras no lo revise un profesor, la interfaz lo muestra con la etiqueta «Generado por IA».
+5. **Trazabilidad:** se rellenan siempre `modelo` (el que lo generó) y `generado`. `revisado` empieza en `false`. En el prototipo, el material común **no se enseña a los alumnos hasta que una persona lo revisa** (decisión del #2, ver «Generar el material común»); la etiqueta «Generado por IA» es para el material personal, que no se revisa.
 
 La IA **nunca** escribe en la BBDD directamente ni decide ids: devuelve JSON, y el código resuelve las claves (clase, módulo, concepto) y hace el `INSERT`.
 
@@ -108,7 +108,7 @@ Usa los tipos de `src/lib/types.ts`. En las fuentes, `videoId` es el `slug` de l
 |---|---|---|
 | `resumen` | `SeccionResumen[]`: `[{ "titulo", "texto", "fuente": { "videoId", "segundo" } }]` | 2 apartados; cabe en una pantalla de móvil |
 | `tarjetas` | `Tarjeta[]`: `[{ "pregunta", "respuesta", "fuente": { "videoId", "segundo" } }]` | 4 tarjetas |
-| `infografia` | `Infografia[]`: una por concepto de la clase, con una de las plantillas `capas`, `jerarquia`, `pasos` o `comparativa` | 1 |
+| `infografia` | `Infografia[]`: una, sobre el concepto de la clase (el de su misma posición en el catálogo), con una de las plantillas `capas`, `jerarquia`, `pasos` o `comparativa` | 1 |
 
 `material_personal.contenido` usa el mismo formato que `resumen` o `tarjetas`. Ningún contenido generado puede incluir datos personales.
 
@@ -171,7 +171,7 @@ npm run generar:ejercicios -- --forzar      # regenera los borradores (los aprob
 - **Solo la BBDD local,** salvo `GENERAR_PERMITIR_REMOTO=1`, igual que el seed.
 - Necesita la IA configurada en `.env.local`, también `AI_MODEL_GENERADOR` (el nombre del modelo está en `.env.example`).
 
-**Para la demo (Neon), una vez y en este orden.** Lo hace quien tenga la `DATABASE_URL` de Neon, que solo está en Vercel. La dirección se pone **solo en la terminal y solo para esos comandos**, nunca en `.env.local`: si se queda ahí, cualquier prueba posterior iría contra producción. Al cerrar la terminal desaparece. En PowerShell:
+**Para la demo (Neon), una vez y en este orden** (la tanda completa, con el material común, está más abajo en «Para la demo (Neon), en este orden»). Lo hace quien tenga la `DATABASE_URL` de Neon, que solo está en Vercel. La dirección se pone **solo en la terminal y solo para esos comandos**, nunca en `.env.local`: si se queda ahí, cualquier prueba posterior iría contra producción. Al cerrar la terminal desaparece. En PowerShell:
 
 ```powershell
 $env:DATABASE_URL = "<la de Neon>"
@@ -181,6 +181,43 @@ npm run db:studio                                              # 3. revisar y ap
 ```
 
 Los scripts y Drizzle Studio usan la `DATABASE_URL` de la terminal antes que la de `.env.local`.
+
+### Generar el material común
+
+El resumen, las tarjetas y la infografía de cada vídeo (#2, #7, #15) los genera la IA **una vez por vídeo** a partir de su transcripción, y el código los guarda en `material_clase` (una fila por clase y tipo) **sin revisar**. Los alumnos solo ven lo **revisado**: la pantalla de material del módulo junta lo de sus vídeos en orden, y una pestaña (Resumen, Tarjetas o Visual) solo aparece si tiene algo revisado. Instrucciones de los agentes: [`agents/material.md`](../../agents/material.md) y [`agents/infografia.md`](../../agents/infografia.md).
+
+```bash
+npm run generar:material                  # BBDD local: lo que les falte a todos los vídeos
+npm run generar:material -- m2-css        # solo los vídeos de ese módulo
+npm run generar:material -- --forzar      # regenera también lo no revisado (lo revisado no se toca nunca)
+```
+
+- **Solo genera lo que falta:** si un vídeo ya tiene un tipo guardado, no se vuelve a llamar a la IA. Cada vídeo se guarda en cuanto se genera; si algo falla, se vuelve a ejecutar y solo se repite lo que falta.
+- **Si falla la infografía** de un vídeo (a veces el modelo no respeta el formato, y se reintenta una vez), su resumen y sus tarjetas se guardan igual.
+- **La infografía de cada vídeo** es sobre el concepto de su **misma posición** en `data/catalog.json` (vídeo 1 ↔ concepto 1). Si se añade un vídeo a un módulo, hay que añadir también su concepto en la misma posición.
+- **Necesita** el seed (para que existan las clases) y la IA configurada en `.env.local`, también `AI_MODEL_GENERADOR`. **Solo la BBDD local,** salvo `GENERAR_PERMITIR_REMOTO=1`. Coste: unos céntimos por los 12 vídeos.
+
+**Revisar** (con `npm run db:studio` → tabla `material_clase`): leer el `contenido` de cada fila y poner `revisado` a `true` en lo que esté bien. Qué mirar:
+
+- Que lo que dice sea correcto y salga del vídeo; las fuentes (`videoId`, `segundo`) llevan al minuto donde se explica.
+- En las infografías, que la plantilla encaje: `capas` solo si cada elemento está de verdad **dentro** del anterior (como el modelo de caja), `pasos` solo si es un proceso en orden, `jerarquia` si es quién gana a quién y `comparativa` para opciones del mismo tipo.
+- **Si algo está casi bien, se corrige a mano** en vez de dejar el vídeo sin ese material: se edita el JSON de `contenido` en Studio (por ejemplo, cambiar una infografía de `capas` a `comparativa` con los mismos datos, o corregir una frase) y se aprueba. Es lo que haría el profesor al revisar.
+- **Para regenerar solo una fila**, se borra esa fila en Studio y se vuelve a ejecutar `npm run generar:material`, que solo genera lo que falta. `--forzar` regenera todo lo no revisado.
+
+### Para la demo (Neon), en este orden
+
+Lo hace quien tenga la `DATABASE_URL` de Neon, como en «Generar los ejercicios»: la dirección **solo en la terminal**, nunca en `.env.local`. En PowerShell:
+
+```powershell
+$env:DATABASE_URL = "<la de Neon>"
+npm run db:migrate                                              # 0. las tablas y las migraciones nuevas
+$env:SEED_PERMITIR_REMOTO = "1"; npm run db:seed               # 1. curso, clases, usuarios y plantillas
+$env:GENERAR_PERMITIR_REMOTO = "1"; npm run generar:ejercicios  # 2. el banco de ejercicios, en borrador
+npm run generar:material                                        # 3. resumen, tarjetas e infografía de cada vídeo, sin revisar
+npm run db:studio                                               # 4. revisar y aprobar los ejercicios y el material
+```
+
+Y **el día de la demo**, `npm run db:seed:actividad` (ver abajo), con los ejercicios ya aprobados. Hasta que se hagan estos pasos, la web desplegada no enseña material ni ejercicios: no es que esté roto.
 
 ### Actividad simulada para el Radar
 

@@ -9,8 +9,6 @@ const nextConfig: NextConfig = {
     "/*": [
       "./agents/**/*.md",
       "./data/transcripciones/**/*",
-      "./data/material/**/*",
-      "./data/infografias/**/*",
     ],
   },
   cacheComponents: true,

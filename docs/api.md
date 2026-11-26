@@ -19,10 +19,10 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/tutor/humano?modulo=<slug>` | `DudaHumana[]` | ✅ Las dudas que el alumno ha pasado en ese módulo, con la respuesta del profesor cuando la hay | H9 |
 | `GET /api/radar/dudas?curso=<slug>` | `DudaHumanaProfesor[]` | ✅ Para el Radar: pendientes y respondidas en los últimos 7 días. Solo el profesor de ese curso o un admin | H9 |
 | `POST /api/radar/dudas/[id]/respuesta` | `DudaHumanaProfesor` | ✅ El profesor responde (sin IA, máximo 2.000 caracteres). Ya respondida: 409 | H9 |
-| `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (lee `data/material/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #2 |
+| `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (tabla `material_clase`; no llama a la IA): lo **revisado** de los vídeos del módulo, en orden. Necesita el curso (401 sin sesión, 403 sin el curso); 404 si aún no hay nada revisado | #2, #15 |
 | `POST /api/material-personal` | `RespuestaMaterialPersonal` | ✅ Real (IA). El alumno es el **usuario de la sesión** (401 sin sesión, 403 sin el curso); `alumnoId` ya no se usa. Cuenta para su límite diario (429). Si no se puede generar con esas indicaciones o el módulo no tiene transcripciones: 400; si falla la IA: 502 | #2 |
 | `GET /api/material-personal?moduloId=` | `MaterialPersonal[]` | ✅ Real (tabla `material_personal`): **solo el material del usuario de la sesión** | #2 |
-| `GET /api/modulos/:id/infografias` | `InfografiasModulo` | ✅ Real (lee `data/infografias/`; no llama a la IA). Solo si está **revisado**; si no, 404 | #7 |
+| `GET /api/modulos/:id/infografias` | `InfografiasModulo` | ✅ Real (tabla `material_clase`; no llama a la IA): una por vídeo, solo las **revisadas**. Necesita el curso (401 sin sesión, 403 sin el curso); 404 si aún no hay ninguna revisada | #7, #15 |
 
 ## Ejemplos
 
