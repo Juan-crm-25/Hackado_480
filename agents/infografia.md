@@ -1,10 +1,10 @@
 # Agente: Generador de infografías
 
-> Issue #7 · Código: `src/lib/agentes/infografia.ts` · Se ejecuta con `npm run generar:infografias`
+> Issues #7 y #15 · Código: `src/lib/agentes/infografia.ts` · Se ejecuta con `npm run generar:material`
 
 ## Qué hace
 
-Para cada concepto del módulo, elige **una plantilla de infografía** y rellena sus datos a partir de las transcripciones. **La IA no dibuja**: nosotros dibujamos la plantilla con nuestros componentes, así que la infografía es ligera (nada de imágenes ni librerías pesadas en 4G), se lee bien en una pantalla de 360 px y nunca sale rota.
+Para cada vídeo (clase), elige **una plantilla de infografía** sobre el concepto que explica y rellena sus datos a partir de su transcripción. Se guarda en la tabla `material_clase` (tipo `infografia`). El concepto de cada vídeo es el de su misma posición en el catálogo (`conceptoDelVideo`). **La IA no dibuja**: nosotros dibujamos la plantilla con nuestros componentes, así que la infografía es ligera (nada de imágenes ni librerías pesadas en 4G), se lee bien en una pantalla de 360 px y nunca sale rota.
 
 | Plantilla | Para qué | Ejemplo |
 |---|---|---|
@@ -15,25 +15,25 @@ Para cada concepto del módulo, elige **una plantilla de infografía** y rellena
 
 ## Modelo y por qué
 
-`gemma-4-26b-a4b-it` en Scaleway (UE), sin razonamiento. Se ejecuta una vez por concepto, no por alumno: unos 0,001 € por módulo.
+`gemma-4-26b-a4b-it` en Scaleway (UE), sin razonamiento. Se ejecuta una vez por vídeo, no por alumno: unos 0,001 € por módulo.
 
 ## Entrada y salida
 
-- **Entrada:** el temario del módulo, el concepto y las plantillas disponibles. **Ningún dato de alumnos.**
-- **Salida:** JSON con la plantilla elegida y sus datos. El código lo valida: plantilla conocida, de 2 a 6 elementos, textos cortos, filas con tantos valores como columnas y fuente real. Si no lo cumple, se descarta.
+- **Entrada:** la transcripción del vídeo, su concepto y las plantillas disponibles. **Ningún dato de alumnos.**
+- **Salida:** JSON con la plantilla elegida y sus datos. El código lo valida: plantilla conocida, de 2 a 6 elementos, textos cortos, filas con tantos valores como columnas y fuente real de ese vídeo. Si no lo cumple, se descarta.
 
 ## Límites
 
 - Solo el contenido del temario.
-- **Revisión humana:** se guardan con `"revisado": false` y los alumnos no las ven hasta que alguien las revisa y lo cambia a `true` (igual que el material común).
-- No se sobrescriben salvo que se use `--forzar`.
+- **Revisión humana:** se guardan con `revisado = false` y los alumnos no las ven hasta que alguien las revisa y lo cambia a `true` (igual que el resumen y las tarjetas).
+- No se regeneran salvo que se use `--forzar`, y lo revisado no se pisa nunca.
 
 ## Instrucciones (prompt de sistema)
 
-Variables: `{{modulo}}`, `{{concepto}}` y `{{temario}}`.
+Variables: `{{modulo}}`, `{{video}}`, `{{concepto}}` y `{{temario}}`.
 
 ```prompt
-Eres un diseñador didáctico. Vas a preparar UNA infografía sobre el concepto «{{concepto}}» del módulo «{{modulo}}», para verla en la pantalla de un móvil.
+Eres un diseñador didáctico. Vas a preparar UNA infografía sobre el concepto «{{concepto}}», que se explica en el vídeo «{{video}}» del módulo «{{modulo}}», para verla en la pantalla de un móvil.
 
 No dibujas: eliges UNA plantilla y rellenas sus datos. Plantillas:
 - "capas": cosas que van una dentro de otra. "elementos" ordenados de FUERA a DENTRO (el primero es la capa exterior).

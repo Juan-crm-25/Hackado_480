@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Modulo } from "../types";
-import { generarInfografia, validarInfografia } from "./infografia";
+import { conceptoDelVideo, generarInfografia, validarInfografia } from "./infografia";
 import { leerInstrucciones, rellenar } from "./instrucciones";
 
 const modulo: Modulo = {
@@ -8,9 +8,16 @@ const modulo: Modulo = {
   titulo: "CSS",
   descripcion: "",
   ordenSugerido: 2,
-  conceptos: [{ id: "css-caja", nombre: "Modelo de caja" }],
-  videos: [{ id: "v05", titulo: "Caja", youtubeId: "", duracionSegundos: 190, transcripcion: "v05.vtt" }],
+  conceptos: [
+    { id: "css-especificidad", nombre: "Selectores y especificidad" },
+    { id: "css-caja", nombre: "Modelo de caja" },
+  ],
+  videos: [
+    { id: "v04", titulo: "Especificidad", youtubeId: "", duracionSegundos: 300, transcripcion: "v04.vtt" },
+    { id: "v05", titulo: "Caja", youtubeId: "", duracionSegundos: 190, transcripcion: "v05.vtt" },
+  ],
 };
+const caja = modulo.videos[1];
 
 const capas = {
   plantilla: "capas",
@@ -24,7 +31,7 @@ const capas = {
 
 describe("instrucciones de infografías", () => {
   it("se leen de agents/infografia.md y tienen todas las variables", () => {
-    expect(() => rellenar(leerInstrucciones("infografia"), { modulo: "CSS", concepto: "Caja", temario: "T" })).not.toThrow();
+    expect(() => rellenar(leerInstrucciones("infografia"), { modulo: "CSS", video: "Caja", concepto: "Caja", temario: "T" })).not.toThrow();
   });
 });
 
@@ -79,14 +86,38 @@ describe("validarInfografia", () => {
   });
 });
 
+describe("conceptoDelVideo", () => {
+  it("empareja cada vídeo con el concepto de su misma posición en el catálogo", () => {
+    expect(conceptoDelVideo(modulo, modulo.videos[0]).id).toBe("css-especificidad");
+    expect(conceptoDelVideo(modulo, caja).id).toBe("css-caja");
+  });
+
+  it("falla si el vídeo no es del módulo o no tiene concepto", () => {
+    expect(() => conceptoDelVideo(modulo, { ...caja, id: "v01" })).toThrow(/v01/);
+    expect(() => conceptoDelVideo({ ...modulo, conceptos: [modulo.conceptos[0]] }, caja)).toThrow(/concepto/);
+  });
+});
+
 describe("generarInfografia", () => {
-  it("pide una infografía del concepto con el modelo generador", async () => {
+  it("pide la infografía del concepto del vídeo, solo con su transcripción y el modelo generador", async () => {
     const completar = vi.fn().mockResolvedValue({ texto: JSON.stringify(capas), simulado: false });
-    const r = await generarInfografia(modulo, modulo.conceptos[0], { completar, temario: () => "[v05 @15] Cuatro capas" });
+    const temario = vi.fn().mockReturnValue("[v05 @15] Cuatro capas");
+    const r = await generarInfografia(modulo, caja, { completar, temario });
+
+    expect(temario.mock.calls[0][0].videos.map((v: { id: string }) => v.id)).toEqual(["v05"]);
     expect(r.conceptoId).toBe("css-caja");
+    expect(r.fuente).toEqual({ videoId: "v05", segundo: 15 });
     const op = completar.mock.calls[0][0];
     expect(op.modelo).toBe("generador");
     expect(op.mensajes[0].contenido).toContain("«Modelo de caja»");
+    expect(op.mensajes[0].contenido).toContain("«Caja»");
     expect(op.mensajes[0].contenido).toContain("[v05 @15] Cuatro capas");
+  });
+
+  it("descarta la fuente si apunta a otro vídeo del módulo", async () => {
+    const otro = { ...capas, fuente: { videoId: "v04", segundo: 10 } };
+    const completar = vi.fn().mockResolvedValue({ texto: JSON.stringify(otro), simulado: false });
+    const r = await generarInfografia(modulo, caja, { completar, temario: () => "[v05 @15] x" });
+    expect(r.fuente).toBeUndefined();
   });
 });

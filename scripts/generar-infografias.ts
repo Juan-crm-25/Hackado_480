@@ -36,16 +36,17 @@ async function main() {
     }
 
     const infografias: Infografia[] = [];
-    for (const concepto of modulo.conceptos) {
-      // Hasta 2 intentos por concepto: a veces el modelo no respeta el formato a la primera.
+    // Una por vídeo, sobre su concepto (provisional hasta que el paso 3 del #15 lo guarde en la BBDD).
+    for (const video of modulo.videos.filter((v) => v.transcripcion)) {
+      // Hasta 2 intentos por vídeo: a veces el modelo no respeta el formato a la primera.
       for (let intento = 1; intento <= 2; intento++) {
         try {
-          const info = await generarInfografia(modulo, concepto);
+          const info = await generarInfografia(modulo, video);
           infografias.push(info);
-          console.log(`✓ ${modulo.id} · ${concepto.nombre}: plantilla «${info.plantilla}»`);
+          console.log(`✓ ${modulo.id} · ${video.id}: plantilla «${info.plantilla}»`);
           break;
         } catch (e) {
-          console.error(`${intento === 2 ? "✗" : "↻"} ${modulo.id} · ${concepto.nombre}: ${(e as Error).message}`);
+          console.error(`${intento === 2 ? "✗" : "↻"} ${modulo.id} · ${video.id}: ${(e as Error).message}`);
           if (intento === 2) errores++;
         }
       }
