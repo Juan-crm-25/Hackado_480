@@ -90,6 +90,27 @@ export async function sumarUsoIa(usuarioId: string, limite: number, db: Db = get
   return fila?.total ?? null;
 }
 
+/** Consultas de IA que lleva hoy (día UTC) el usuario; 0 si ninguna. No cuenta nada. */
+export async function leerUsoIaHoy(usuarioId: string, db: Db = getDb()): Promise<number> {
+  const [fila] = await db
+    .select({ total: usoIa.total })
+    .from(usoIa)
+    .where(and(eq(usoIa.usuarioId, usuarioId), eq(usoIa.dia, sql`(now() at time zone 'utc')::date`)));
+  return fila?.total ?? 0;
+}
+
+/**
+ * Suma `cantidad` consultas de hoy de golpe, SIN tope: lo usan los tests de módulo (#3), que comprueban el límite
+ * al empezar y descuentan sus correcciones con IA al entregar.
+ */
+export async function sumarUsoIaSinTope(usuarioId: string, cantidad: number, db: Db = getDb()): Promise<void> {
+  if (cantidad <= 0) return;
+  await db
+    .insert(usoIa)
+    .values({ usuarioId, dia: sql`(now() at time zone 'utc')::date`, total: cantidad })
+    .onConflictDoUpdate({ target: [usoIa.usuarioId, usoIa.dia], set: { total: sql`"uso_ia"."total" + ${cantidad}` } });
+}
+
 // ─── Tutor humano (H9) ───────────────────────────────────────────────────────
 
 /** Pregunta guardada con su dueño, o null. Para comprobar que es del alumno antes de pasarla. */

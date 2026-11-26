@@ -3,7 +3,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { usoIa, usuario } from "../db/schema";
 import { sembrar } from "../db/seed/sembrar";
 import { bdPruebasDisponible, crearBdPrueba, type BdPrueba } from "../db/test-utils";
-import { consumirConsulta } from "./limite";
+import { consultasRestantes, consumirConsulta, descontarConsultas } from "./limite";
 
 const hayBd = await bdPruebasDisponible();
 const LIMITE = 3;
@@ -64,5 +64,24 @@ describe.skipIf(!hayBd)("límite diario (con BBDD real)", () => {
     const resultados = await Promise.all(Array.from({ length: LIMITE + 5 }, () => consumirConsulta(ids[0], bd.db)));
     expect(resultados.filter((r) => r.permitido)).toHaveLength(LIMITE);
     expect(await totalHoy(ids[0])).toBe(LIMITE);
+  });
+
+  it("dice cuántas consultas quedan hoy sin gastar ninguna", async () => {
+    expect(await consultasRestantes(ids[0], bd.db)).toBe(LIMITE);
+    await consumirConsulta(ids[0], bd.db);
+    expect(await consultasRestantes(ids[0], bd.db)).toBe(LIMITE - 1);
+    expect(await totalHoy(ids[0])).toBe(1);
+    await bd.db.insert(usoIa).values({ usuarioId: ids[1], dia: sql`${HOY_UTC} - 1`, total: LIMITE });
+    expect(await consultasRestantes(ids[1], bd.db)).toBe(LIMITE);
+  });
+
+  it("descuenta varias de golpe (las correcciones de un test), aunque se pase del límite", async () => {
+    await descontarConsultas(ids[0], 2, bd.db);
+    expect(await totalHoy(ids[0])).toBe(2);
+    await descontarConsultas(ids[0], 2, bd.db);
+    expect(await totalHoy(ids[0])).toBe(4);
+    expect(await consultasRestantes(ids[0], bd.db)).toBe(0);
+    await descontarConsultas(ids[0], 0, bd.db);
+    expect(await totalHoy(ids[0])).toBe(4);
   });
 });
