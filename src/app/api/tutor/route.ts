@@ -3,8 +3,9 @@ import { consumirConsulta } from "@/lib/ai/limite";
 import { preguntarAlTutor } from "@/lib/agentes/tutor";
 import { getCurso, getModulo } from "@/lib/catalogo";
 import { alumnosDemo } from "@/lib/datos-prueba";
-import { buscarUsuarioDemo, MENSAJE_SIN_SEED } from "@/server/matriculas/demo";
-import type { ErrorApi, PeticionTutor, RespuestaTutor } from "@/lib/types";
+import { buscarModulo, buscarUsuarioDemo, MENSAJE_SIN_SEED } from "@/server/matriculas/demo";
+import { registrarIntercambio } from "@/server/tutor/servicio";
+import type { ErrorApi, Mensaje, PeticionTutor, RespuestaTutor } from "@/lib/types";
 
 const MAX_CARACTERES = 1000;
 
@@ -56,11 +57,24 @@ export async function POST(req: Request) {
       fueraDeTemario: salida.fueraDeTemario,
       consultasRestantes: limite.restantes,
     };
+    // Para el Radar (#5). Si el guardado falla, el alumno recibe igualmente su respuesta.
+    if (!salida.simulado) await guardarParaElRadar(usuario.id, modulo.id, pregunta, alumno.nombre, salida.mensaje);
     return Response.json(respuesta);
   } catch (e) {
     // Nunca se devuelve el detalle interno al alumno; sí se registra (sin contenido de la pregunta).
     console.error(`[tutor] ${e instanceof ErrorIA ? e.message : "error inesperado"}`);
     return error("El tutor no está disponible ahora mismo. Inténtalo de nuevo en unos segundos.", 502);
+  }
+}
+
+async function guardarParaElRadar(usuarioId: string, moduloSlug: string, pregunta: string, nombre: string, respuesta: Mensaje) {
+  try {
+    const moduloBd = await buscarModulo(moduloSlug);
+    if (!moduloBd) return;
+    await registrarIntercambio({ usuarioId, moduloId: moduloBd.id, pregunta, nombresOcultos: [nombre], respuesta });
+  } catch {
+    // Nunca se registra el contenido de la conversación.
+    console.error("[tutor] no se pudo guardar la conversación");
   }
 }
 
