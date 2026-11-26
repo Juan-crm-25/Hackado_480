@@ -225,11 +225,11 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 | Parte | Qué se hizo | PR |
 |---|---|---|
-| Guardar y leer | Repositorio de `material_clase`: guarda por vídeo el resumen, las tarjetas y la infografía **sin revisar** (todo o nada; lo revisado no se pisa nunca) y lee lo revisado de un módulo juntando sus vídeos en orden | PR_15 |
-| Agentes por vídeo | Los agentes de Juan (material e infografías) trabajan **con la transcripción de un solo vídeo**: descartan las fuentes de otros vídeos y se quedan en 2-3 apartados y 4-6 tarjetas. La infografía de cada vídeo es sobre su concepto (el de su misma posición en el catálogo). Sus validaciones no cambian | PR_15 |
-| `npm run generar:material` | Genera y guarda en la BBDD lo que le falte a cada vídeo (como `generar:ejercicios`: solo la BBDD local salvo `GENERAR_PERMITIR_REMOTO=1`). Si falla una infografía, el resumen y las tarjetas se guardan igual. Sustituye también a `generar:infografias`. Probado con la IA real: 36 filas para los 12 vídeos | PR_15 |
-| Pantalla y API | La pantalla de material y `/api/modulos/:id/material` e `/infografias` leen de la BBDD, solo lo revisado, y **exigen tener el curso** (como el tutor). Resumen y Tarjetas son pestañas independientes. Probado en el navegador como Lucía | PR_15 |
-| Limpieza | Fuera `data/material/`, `data/infografias/` y el código que los leía | PR_15 |
+| Guardar y leer | Repositorio de `material_clase`: guarda por vídeo el resumen, las tarjetas y la infografía **sin revisar** (todo o nada; lo revisado no se pisa nunca) y lee lo revisado de un módulo juntando sus vídeos en orden | #60 |
+| Agentes por vídeo | Los agentes de Juan (material e infografías) trabajan **con la transcripción de un solo vídeo**: descartan las fuentes de otros vídeos y se quedan en 2-3 apartados y 4-6 tarjetas. La infografía de cada vídeo es sobre su concepto (el de su misma posición en el catálogo). Sus validaciones no cambian | #60 |
+| `npm run generar:material` | Genera y guarda en la BBDD lo que le falte a cada vídeo (como `generar:ejercicios`: solo la BBDD local salvo `GENERAR_PERMITIR_REMOTO=1`). Si falla una infografía, el resumen y las tarjetas se guardan igual. Sustituye también a `generar:infografias`. Probado con la IA real: 36 filas para los 12 vídeos | #60 |
+| Pantalla y API | La pantalla de material y `/api/modulos/:id/material` e `/infografias` leen de la BBDD, solo lo revisado, y **exigen tener el curso** (como el tutor). Resumen y Tarjetas son pestañas independientes. Probado en el navegador como Lucía | #60 |
+| Limpieza | Fuera `data/material/`, `data/infografias/` y el código que los leía | #60 |
 
 ### Decisiones tomadas
 
