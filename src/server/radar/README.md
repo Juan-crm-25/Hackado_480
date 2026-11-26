@@ -1,8 +1,18 @@
 # radar
 
-Informe para el profesor: alumnos atascados, conceptos más fallados y resumen de dudas. A la IA solo le llegan estadísticas y textos seudonimizados.
+Radar del tutor (#5): a quién ayudar, qué conceptos se fallan y qué se pregunta al tutor IA. Lo ve el **profesor de ese curso** (o un admin); a la IA nunca le llegan nombres.
 
-- **Tablas:** lee intento, progreso, mensaje
-- **Endpoints:** `GET /api/radar`
+- **Tablas:** lee `matricula`, `intento`, `ejercicio`, `concepto`, `modulo`, `conversacion` y `mensaje`.
+- **Endpoint:** `GET /api/radar?curso=<slug>` (ruta() exige rol profesor; el servicio, que dé ESE curso con `requerirProfesorDelCurso()`).
+- **Pantalla:** `/radar` (en la navegación, solo para profesores y admin).
+- **`calculo.ts`:** las reglas, solo código y sin IA (predecible y explicable):
+  - **Atascado:** 3 fallos seguidos o más en un concepto, el último en los últimos 7 días.
+  - **Inactivo:** había empezado y lleva más de 7 días sin intentos ni preguntas al tutor.
+  - **Conceptos más fallados:** % de fallo de los últimos 30 días, con al menos 5 intentos.
+  - **Dudas frecuentes:** preguntas al tutor de las 2 últimas semanas, por módulo (ya filtradas).
+- **`repositorio.ts`:** lee esos datos de un curso. **`servicio.ts`:** permisos + cálculo.
+- Pendiente: el resumen de dudas con IA (agente analista) y responder dudas pasadas a un tutor humano (H9).
+
+Para la demo: `npm run db:seed:actividad` crea actividad simulada (ver docs/bbdd/README.md).
 
 Patrón y reglas: [docs/arquitectura.md](../../../docs/arquitectura.md).

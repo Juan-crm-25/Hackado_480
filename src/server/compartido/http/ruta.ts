@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_rethrow } from "next/navigation";
 import { z } from "zod";
 import { cumpleAcceso, type NivelAcceso, type UsuarioSesion } from "@/server/auth/roles";
 import { datosInvalidos, noAutenticado, prohibido } from "../errores";
@@ -97,6 +98,8 @@ export function crearRuta({ obtenerSesion }: DependenciasRuta) {
 
         return resultado instanceof Response ? resultado : respuestaJson(resultado);
       } catch (error) {
+        // Las señales internas de Next.js (p. ej., «este GET no se puede prerenderizar») no son errores: se dejan pasar.
+        unstable_rethrow(error);
         return respuestaError(error);
       }
     };

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { BotonCerrarSesion } from "./cerrar-sesion";
-import { type Destino, destinosSecundarios, esDestinoActivo } from "./destinos";
+import { type Destino, destinosSecundariosPara, esDestinoActivo, type RolNavegacion } from "./destinos";
 
 const CLASE_ITEM =
   "flex min-h-11 w-full items-center gap-3 rounded-sm px-3 py-2 text-left text-base font-medium transition-colors duration-150 ease-in-out outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring";
@@ -49,10 +49,18 @@ function ItemSecundario({
 }
 
 /** Destinos secundarios del menú «Más» (en web están al pie de la barra lateral). */
-export function ListaSecundarios({ pathname, onElegir }: { pathname: string | null; onElegir?: () => void }) {
+export function ListaSecundarios({
+  pathname,
+  onElegir,
+  rol = null,
+}: {
+  pathname: string | null;
+  onElegir?: () => void;
+  rol?: RolNavegacion;
+}) {
   return (
     <ul className="flex flex-col gap-1 px-2 pb-4">
-      {destinosSecundarios.map((d) => (
+      {destinosSecundariosPara(rol).map((d) => (
         <li key={d.id}>
           <ItemSecundario destino={d} pathname={pathname} onElegir={onElegir} />
         </li>
@@ -62,7 +70,7 @@ export function ListaSecundarios({ pathname, onElegir }: { pathname: string | nu
 }
 
 /** Cuarta pestaña de la barra inferior: abre un panel desde abajo con los destinos secundarios. */
-export function MenuMas({ pathname, className }: { pathname: string | null; className?: string }) {
+export function MenuMas({ pathname, className, rol = null }: { pathname: string | null; className?: string; rol?: RolNavegacion }) {
   const [abierto, setAbierto] = useState(false);
   return (
     <Sheet open={abierto} onOpenChange={setAbierto}>
@@ -75,7 +83,7 @@ export function MenuMas({ pathname, className }: { pathname: string | null; clas
           <SheetTitle>Más</SheetTitle>
           <SheetDescription className="sr-only">Perfil, contacto y cierre de sesión</SheetDescription>
         </SheetHeader>
-        <ListaSecundarios pathname={pathname} onElegir={() => setAbierto(false)} />
+        <ListaSecundarios pathname={pathname} rol={rol} onElegir={() => setAbierto(false)} />
       </SheetContent>
     </Sheet>
   );

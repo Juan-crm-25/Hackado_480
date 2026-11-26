@@ -1,4 +1,4 @@
-import { GraduationCap, House, LogOut, Mail, MessageCircle, User, type LucideIcon } from "lucide-react";
+import { GraduationCap, House, LogOut, Mail, MessageCircle, Radar, User, type LucideIcon } from "lucide-react";
 
 /**
  * Destinos de la navegación de la app (docs/estilo.md, apartado 10, «Navegación de la app»).
@@ -29,6 +29,19 @@ export const destinosSecundarios = [
   { id: "contacto", etiqueta: "Contáctanos", icono: Mail, href: "/contacto" },
   { id: "cerrar-sesion", etiqueta: "Cerrar sesión", icono: LogOut },
 ] as const satisfies readonly Destino[];
+
+/** Rol de quien navega (`null`: visitante). Coincide con `usuario.rol` de la BBDD. */
+export type RolNavegacion = "alumno" | "profesor" | "admin" | null;
+
+/** Destinos solo para profesores y admin: van al principio de los secundarios. */
+export const destinosProfesor = [
+  { id: "radar", etiqueta: "Radar", icono: Radar, href: "/radar" },
+] as const satisfies readonly (Destino & { href: string })[];
+
+/** Destinos secundarios según el rol: el Radar (#5), solo para profesores y admin. */
+export function destinosSecundariosPara(rol: RolNavegacion): readonly Destino[] {
+  return rol === "profesor" || rol === "admin" ? [...destinosProfesor, ...destinosSecundarios] : destinosSecundarios;
+}
 
 const esRutaOSubruta = (pathname: string, ruta: string) => pathname === ruta || pathname.startsWith(`${ruta}/`);
 
