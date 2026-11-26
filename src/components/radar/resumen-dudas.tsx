@@ -44,7 +44,7 @@ export function TarjetaResumen({ estado, onReintentar }: { estado: Estado; onRei
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 font-bold">
           <Sparkles className="size-4 shrink-0" aria-hidden />
-          Resumen para la clase
+          Resumen de las dudas
         </h3>
         {estado.tipo === "listo" && <Badge variant="outline">Generado por IA</Badge>}
       </div>

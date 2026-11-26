@@ -13,6 +13,7 @@ describe("TarjetaResumen", () => {
     const html = renderToStaticMarkup(
       <TarjetaResumen estado={{ tipo: "listo", resumen: "Repasad `!important` en clase." }} onReintentar={() => {}} />,
     );
+    expect(html).toContain("Resumen de las dudas");
     expect(html).toContain("Generado por IA");
     expect(html).toContain("<code");
     expect(html).toContain("!important");
