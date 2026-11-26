@@ -30,7 +30,7 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 | 4 | **Módulo Y** | Vídeos del módulo, botón al **tutor IA del módulo** y acceso a los **ejercicios de verificación**. |
 | 5 | **Tutor del módulo** | Agente limitado al temario del módulo: responde dudas y genera resúmenes, tarjetas de estudio e infografías. Con el botón **«Hablar con un tutor humano»** el alumno pasa la duda a su profesor, que la responde desde el Radar. |
 | 6 | **Tarea / ejercicios** | Ejercicio arriba y respuesta abajo. Tras responder, hay corrección inmediata con un enlace al minuto exacto del vídeo que hay que repasar. |
-| 7 | **Foro** | Temas por clase. Las respuestas que la IA o un profesor validan como buenas dan puntos e insignias. Las tablas están listas; las pantallas quedan para después del 30/11. |
+| 7 | **Foro** (H10) | Un foro por **módulo**, abajo del todo, con un botón al principio del módulo que baja hasta él. Una IA de decisión valora si un comentario responde a la duda y si es correcto (+10), aproximado (+5) o incorrecto (0), y contesta en el hilo con su avatar. El profesor da +1, +3 o +6 por buenas preguntas o buena conducta. |
 | T | **Radar del tutor** (vista del profesor) | Alumnos atascados, conceptos que fallan, dudas frecuentes por módulo y las **dudas que los alumnos han pasado a un tutor humano**, para responderlas. |
 
 ---
@@ -57,8 +57,9 @@ Paga por un acompañamiento cercano que 6 tutores no pueden dar a 1.200 alumnos.
 | H5 | tutor | ver qué alumnos están atascados y en qué conceptos | dedicar mi tiempo a quien lo necesita | **Imprescindible** | El Radar lista los alumnos con fallos repetidos o inactividad, los conceptos más fallados por módulo y un resumen de las dudas frecuentes hechas al tutor IA. También muestra las dudas que los alumnos le han pasado (H9), para responderlas. |
 | H6 | alumno con experiencia | hacer un diagnóstico inicial al apuntarme a un curso | no tener que ver contenido que ya domino | **Imprescindible** | Unas pocas preguntas al apuntarse. Los módulos que domina quedan como dominados y su ruta sugerida se reordena (`matricula.orden_modulos`). Nada se bloquea, y para completar un módulo dominado sigue haciendo sus ejercicios de verificación. |
 | H7 | alumno | ver una infografía de cada concepto | entenderlo de un vistazo | **Deseable** | No es una imagen: la IA elige una de nuestras plantillas (capas, jerarquía, comparativa o pasos) y rellena sus datos, y nosotros la dibujamos en HTML. Es legible a 360 px, se genera una por concepto y, como el material común, solo se publica si una persona la ha revisado. |
-| H8 | alumno | comentar dudas con otros alumnos en un foro y ganar puntos e insignias por las buenas respuestas | aprender con los compañeros | **Después del 30/11** | Temas por clase. La IA o un profesor validan las respuestas buenas, y el profesor prevalece. Las tablas se crean ya; las pantallas, después. |
+
 | H9 | alumno | pasar una duda a un tutor humano cuando el tutor IA no me basta | tener el trato cercano por el que pago | **Imprescindible** ✅ | Botón «Hablar con un tutor humano» en el chat del tutor. La duda llega al Radar del profesor del curso, que la responde desde allí, y el alumno ve la respuesta en su chat marcada como «respondido por tu tutor». La IA no interviene en esa respuesta. |
+| H10 | alumno | comentar dudas con otros alumnos en el foro del módulo y ganar puntos por las buenas respuestas | aprender con los compañeros | **Deseable** | Un foro por módulo, abajo del todo, con un botón al principio del módulo que baja hasta él. Una **IA de decisión** separada del tutor (Perplexity Decider V1.3 por OpenRouter) solo decide si un comentario de otro alumno **responde a la duda** y si es **correcto (+10)**, **aproximado (+5)** o **incorrecto (0)**; no escribe texto: el código contesta en el hilo con su avatar («¡Genial, tú sí que sabes del tema!», «¡Me gusta cómo piensas, pero se puede afinar más!», «Esta respuesta no es correcta, ¡sigue investigando!»). Los comentarios que no responden a la duda y los de profesores no se valoran. El profesor del curso da **+1, +3 o +6** por buenas preguntas o buena conducta y su valoración prevalece. Las insignias quedan para después. |
 
 ---
 
@@ -125,7 +126,7 @@ El modelo completo (31 tablas), sus reglas y el formato en que la IA guarda el m
 - **Usuarios:** alumno, profesor y admin, con acceso a cada curso por email (invitación o compra).
 - **Aprendizaje:** ejercicios, intentos, progreso, evaluaciones (diagnóstico, test y examen) y material generado por la IA, que se guarda la primera vez y se reutiliza.
 - **Tutor IA:** conversaciones (caducan a los 90 días) y límite diario de consultas. Para H9 (tutor humano) hace falta una pequeña migración: marcar un mensaje como «pasado a un tutor humano» y guardar la respuesta del profesor (hoy un mensaje solo puede ser del alumno o del tutor IA).
-- **Foro:** temas por clase, respuestas validadas por la IA o un profesor, e insignias.
+- **Foro (H10):** temas por módulo; una IA de decisión (Perplexity Decider V1.3 por OpenRouter, separada del tutor) valora las respuestas a una duda y el profesor da puntos y prevalece. Insignias, más adelante.
 
 ### Qué sale hacia la IA y qué no
 
@@ -278,7 +279,7 @@ El revisor es necesario en producción por dos motivos: con 400 vídeos el tutor
 
 | Queda fuera | Por qué |
 |---|---|
-| Pantallas del foro, insignias y exámenes con nota | Las tablas quedan creadas; las pantallas no caben en 4 horas |
+| Insignias del foro y exámenes con nota | Las tablas quedan creadas; las pantallas no caben en 4 horas (el foro sí entra: H10) |
 | Iniciar sesión con Apple | Exige una cuenta de pago de Apple Developer |
 | Notificaciones push y repaso espaciado | Encaja como evolución, pero no cabe en 4 horas |
 | Integración con la plataforma actual | Sin API. Lo dejamos preparado con eventos xAPI |
