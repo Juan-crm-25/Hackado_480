@@ -4,7 +4,7 @@
  */
 import { completar as completarIA } from "../ai/cliente";
 import { contenidoDelCurso } from "../ai/privacidad";
-import { temarioDelModulo } from "../transcripciones";
+import { temarioDelModulo } from "./temario";
 import type { Concepto, ElementoInfografia, Infografia, Modulo, PlantillaLista, Video } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
 import { moduloConSoloElVideo } from "./material";
@@ -18,7 +18,8 @@ const MAX_TEXTO = 140;
 
 export interface DependenciasInfografia {
   completar: typeof completarIA;
-  temario: (modulo: Modulo) => string;
+  /** El temario del módulo; el real lo lee de la BBDD (`documento`, #39). */
+  temario: (modulo: Modulo) => string | Promise<string>;
 }
 
 const dependenciasReales: DependenciasInfografia = { completar: completarIA, temario: (m) => temarioDelModulo(m) };
@@ -42,7 +43,7 @@ export async function generarInfografia(
 ): Promise<Infografia> {
   const concepto = conceptoDelVideo(modulo, video);
   const soloVideo = moduloConSoloElVideo(modulo, video);
-  const temario = deps.temario(soloVideo);
+  const temario = await deps.temario(soloVideo);
   if (!temario) throw new Error(`El vídeo «${video.titulo}» no tiene transcripción.`);
 
   const sistema = rellenar(leerInstrucciones("infografia"), {

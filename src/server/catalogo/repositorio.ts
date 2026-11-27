@@ -2,7 +2,7 @@ import "server-only";
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import type { ClaseCatalogo, ConceptoCatalogo, CursoCatalogo, CursoPublico, CursoResumen } from "@/lib/catalogo-bd";
 import { getDb, type Db } from "@/lib/db/client";
-import { categoria, clase, concepto, curso, cursoImagen, matricula, modulo } from "@/lib/db/schema";
+import { categoria, clase, concepto, curso, cursoImagen, documento, matricula, modulo } from "@/lib/db/schema";
 import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
 import { idDeYoutube } from "@/lib/youtube";
 
@@ -155,4 +155,24 @@ export async function leerCursoPublicado(slug: string, db: Db = getDb()): Promis
     .orderBy(asc(modulo.ordenSugerido), asc(modulo.slug));
 
   return { ...aResumen(fila), modulos };
+}
+
+/**
+ * Transcripciones de las clases de un módulo (#39), de la tabla `documento`: el markdown con marcas [mm:ss] de cada
+ * clase, por el slug de la clase ("v04"). Un módulo que no existe, o sin transcripciones, da un mapa vacío.
+ */
+export async function leerTranscripcionesDelModulo(
+  moduloSlug: string,
+  db: Db = getDb(),
+  cursoSlug: string = CURSO_DEMO_SLUG,
+): Promise<Map<string, string>> {
+  const filas = await db
+    .select({ clase: clase.slug, contenido: documento.contenidoMd })
+    .from(documento)
+    .innerJoin(clase, eq(clase.id, documento.claseId))
+    .innerJoin(modulo, eq(modulo.id, clase.moduloId))
+    .innerJoin(curso, eq(curso.id, modulo.cursoId))
+    .where(and(eq(curso.slug, cursoSlug), eq(modulo.slug, moduloSlug), eq(documento.tipo, "transcripcion")))
+    .orderBy(asc(clase.orden));
+  return new Map(filas.map((f) => [f.clase, f.contenido]));
 }

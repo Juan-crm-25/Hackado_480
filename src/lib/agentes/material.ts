@@ -6,7 +6,7 @@
 import { completar as completarIA } from "../ai/cliente";
 import { getConfigIA } from "../ai/config";
 import { contenidoDelCurso } from "../ai/privacidad";
-import { temarioDelModulo } from "../transcripciones";
+import { temarioDelModulo } from "./temario";
 import type { Modulo, SeccionResumen, Tarjeta, Video } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
 import { parsearObjetoJson, validarFuentes } from "./validacion";
@@ -19,7 +19,8 @@ export const MAXIMO_TARJETAS = 6;
 
 export interface DependenciasMaterial {
   completar: typeof completarIA;
-  temario: (modulo: Modulo) => string;
+  /** El temario del módulo; el real lo lee de la BBDD (`documento`, #39). */
+  temario: (modulo: Modulo) => string | Promise<string>;
 }
 
 const dependenciasReales: DependenciasMaterial = { completar: completarIA, temario: (m) => temarioDelModulo(m) };
@@ -47,7 +48,7 @@ export async function generarMaterialDeVideo(
   deps: DependenciasMaterial = dependenciasReales,
 ): Promise<MaterialDeVideo> {
   const soloVideo = moduloConSoloElVideo(modulo, video);
-  const temario = deps.temario(soloVideo);
+  const temario = await deps.temario(soloVideo);
   if (!temario) throw new Error(`El vídeo «${video.titulo}» no tiene transcripción: no hay de dónde generar material.`);
 
   const sistema = rellenar(leerInstrucciones("material"), {
