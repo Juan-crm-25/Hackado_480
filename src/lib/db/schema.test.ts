@@ -20,6 +20,7 @@ const TABLAS = [
   "evaluacion", "pregunta_evaluacion", "intento_evaluacion",
   "conversacion", "mensaje", "uso_ia", "duda_humana",
   "tema_foro", "comentario_foro", "punto_foro", "insignia", "usuario_insignia",
+  "movimiento_puntos",
 ];
 
 // Lista completa de una unión: si falta un valor, el tipo es `never` y tsc falla;
@@ -46,12 +47,12 @@ export type EnumsIgualesAlContrato = [
 ];
 
 describe("esquema de la BBDD", () => {
-  it("exporta exactamente las 33 tablas del modelo de datos", () => {
+  it("exporta exactamente las 34 tablas del modelo de datos", () => {
     const nombres = (Object.values(schema) as unknown[])
       .filter((valor): valor is PgTable => valor instanceof PgTable)
       .map((tabla) => getTableConfig(tabla).name);
 
-    expect(TABLAS).toHaveLength(33);
+    expect(TABLAS).toHaveLength(34);
     expect(nombres.sort()).toEqual([...TABLAS].sort());
   });
 
@@ -69,6 +70,10 @@ describe("esquema de la BBDD", () => {
     for (const [enumBbdd, union] of casos) {
       expect([...enumBbdd].sort()).toEqual([...union].sort());
     }
+  });
+
+  it("los puntos solo se mueven por un canje de premio (resta) o por puntos de demo (suma)", () => {
+    expect(schema.tipoMovimientoPuntos.enumValues).toEqual(["canje", "demo"]);
   });
 
   it("el foro valora respuestas en tres niveles y distingue lo que no es respuesta (H10)", () => {

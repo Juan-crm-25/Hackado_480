@@ -1,8 +1,9 @@
 "use client";
 
 import { Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
+  detenerVideo,
   embedYoutube,
   leerMensajeYoutube,
   miniaturaYoutube,
@@ -16,6 +17,7 @@ import {
  * youtube-nocookie.com, que arranca solo.
  * Con `onReproduciendo` se activa la API del reproductor (postMessage) y se avisa cada vez que empieza
  * (true) o deja (false) de reproducirse; sin él, el reproductor se carga como siempre.
+ * Al salir de la pantalla el vídeo se para y vuelve la miniatura (ver el efecto de abajo).
  */
 export function VideoYoutube({
   youtubeId,
@@ -29,6 +31,19 @@ export function VideoYoutube({
   const [activo, setActivo] = useState(false);
   const marco = useRef<HTMLIFrameElement>(null);
   const escuchar = activo && onReproduciendo !== undefined;
+
+  /*
+   * Con Cache Components, Next.js no quita la pantalla al navegar: la esconde con <Activity> para recuperarla, y un
+   * iframe escondido sigue sonando. Al esconderla, React ejecuta la limpieza de los efectos: ahí se para el vídeo al
+   * instante y se vuelve a la miniatura, para que al regresar no arranque solo.
+   */
+  useLayoutEffect(() => {
+    const reproductor = marco;
+    return () => {
+      detenerVideo(reproductor.current);
+      setActivo(false);
+    };
+  }, []);
 
   useEffect(() => {
     if (!escuchar || !onReproduciendo) return;

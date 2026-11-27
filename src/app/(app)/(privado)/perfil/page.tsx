@@ -3,9 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { iniciales } from "@/components/navegacion/avatar-usuario";
 import { Suspense } from "react";
 import { EstadoCargando, EstadoError } from "@/components/estado";
-import { PuntosForo } from "@/components/foro/puntos-foro";
+import { BarraPremios } from "@/components/premios/barra-premios";
 import { requerirUsuarioActual } from "@/server/auth/usuario-actual";
-import { obtenerPuntosDelAlumno, type PuntosDelAlumno } from "@/server/recompensas/servicio";
+import { obtenerSaldoPremios, type SaldoPremios } from "@/server/recompensas/servicio";
 
 /** Perfil del usuario de la sesión. De momento solo lectura. */
 export default function Perfil() {
@@ -21,7 +21,7 @@ export default function Perfil() {
 
 async function DatosPerfil() {
   const usuario = await requerirUsuarioActual();
-  const puntos = await leerPuntos(usuario.id);
+  const saldo = await leerSaldo(usuario.id);
 
   return (
     <>
@@ -39,10 +39,11 @@ async function DatosPerfil() {
         </CardContent>
       </Card>
 
-      {puntos ? (
-        <PuntosForo puntos={puntos} />
+      {/* Puntos y premios en un solo cajón: el total, de dónde sale y la barra de canje. */}
+      {saldo ? (
+        <BarraPremios saldoInicial={saldo} />
       ) : (
-        <EstadoError className="max-w-xl">No se han podido cargar tus puntos del foro.</EstadoError>
+        <EstadoError className="max-w-xl">No se han podido cargar tus puntos ni tus premios.</EstadoError>
       )}
 
       <p className="max-w-prose text-sm text-muted-foreground">Pronto podrás editar tu perfil.</p>
@@ -50,12 +51,12 @@ async function DatosPerfil() {
   );
 }
 
-/** Puntos del foro; si la BBDD falla, el perfil se sigue viendo con el aviso del error. */
-async function leerPuntos(usuarioId: string): Promise<PuntosDelAlumno | null> {
+/** Saldo de puntos de los premios (foro + demo − canjes); si la BBDD falla, el perfil se sigue viendo con el aviso. */
+async function leerSaldo(usuarioId: string): Promise<SaldoPremios | null> {
   try {
-    return await obtenerPuntosDelAlumno(usuarioId);
+    return await obtenerSaldoPremios(usuarioId);
   } catch (error) {
-    console.error("[perfil] No se pudieron leer los puntos del foro:", error);
+    console.error("[perfil] No se pudo leer el saldo de los premios:", error);
     return null;
   }
 }

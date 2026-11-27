@@ -8,3 +8,4 @@ export * from "./ejercicios";
 export * from "./evaluaciones";
 export * from "./tutor";
 export * from "./foro";
+export * from "./premios";

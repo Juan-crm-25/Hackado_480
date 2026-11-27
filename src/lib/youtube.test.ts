@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  detenerVideo,
   duracionAccesible,
   duracionVideo,
   embedYoutube,
@@ -78,5 +79,17 @@ describe("leerMensajeYoutube", () => {
     expect(leerMensajeYoutube(NOCOOKIE, "no es json")).toBeNull();
     expect(leerMensajeYoutube(NOCOOKIE, null)).toBeNull();
     expect(leerMensajeYoutube(NOCOOKIE, 42)).toBeNull();
+  });
+});
+
+describe("detenerVideo", () => {
+  it("vacía el reproductor para que deje de sonar al salir de la pantalla (Next lo esconde, no lo quita)", () => {
+    const marco = { src: "https://www.youtube-nocookie.com/embed/abc?autoplay=1" };
+    detenerVideo(marco);
+    expect(marco.src).toBe("about:blank");
+  });
+
+  it("sin reproductor (aún era la miniatura) no hace nada", () => {
+    expect(() => detenerVideo(null)).not.toThrow();
   });
 });

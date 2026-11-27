@@ -32,7 +32,7 @@ Opcional: un script exportará los markdown a `conocimiento/<curso>/<modulo>/<cl
 
 ---
 
-## 3. Tablas (31)
+## 3. Tablas (34)
 
 | Bloque | Tablas |
 |---|---|
@@ -44,7 +44,8 @@ Opcional: un script exportará los markdown a `conocimiento/<curso>/<modulo>/<cl
 | Ejercicios | `plantilla_ejercicio`, `ejercicio`, `intento`, `progreso` |
 | Evaluaciones | `evaluacion`, `pregunta_evaluacion`, `intento_evaluacion` |
 | Tutor IA | `conversacion`, `mensaje`, `uso_ia` |
-| Foro | `tema_foro`, `comentario_foro`, `insignia`, `usuario_insignia` |
+| Foro | `tema_foro`, `comentario_foro`, `punto_foro`, `insignia`, `usuario_insignia` |
+| Premios del perfil | `movimiento_puntos`: lo que cambia el saldo de puntos (canjes, que restan, y puntos de demo, que suman). Saldo = puntos del foro + movimientos. Los premios son datos de demo (`src/lib/demo/premios.ts`). |
 
 ### El esquema en código
 

@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { cn } from "@/lib/utils";
 import { BotonCerrarSesion } from "./cerrar-sesion";
 import { BotonCreditos } from "./creditos";
+import { BotonInstalar } from "@/components/pwa/boton-instalar";
 import { type Destino, destinosSecundariosPara, esDestinoActivo, type RolNavegacion } from "./destinos";
 
 const CLASE_ITEM =
@@ -61,6 +62,10 @@ export function ListaSecundarios({
 }) {
   return (
     <ul className="flex flex-col gap-1 px-2 pb-4">
+      {/* «Descarga la app» (PWA): solo aparece si el navegador permite instalarla; si no, el hueco desaparece. */}
+      <li className="empty:hidden">
+        <BotonInstalar className={CLASE_ITEM} />
+      </li>
       {destinosSecundariosPara(rol).map((d) => (
         // Sin sesión, «Cerrar sesión» guarda su hueco (no salta nada) pero no se ve ni se puede pulsar.
         <li key={d.id} className={cn(d.id === "cerrar-sesion" && !rol && "invisible")}>

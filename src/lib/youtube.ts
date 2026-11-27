@@ -73,3 +73,12 @@ export function duracionAccesible(segundos: number): string {
   const s = Math.floor(segundos % 60);
   return [m > 0 ? `${m} min` : "", s > 0 || m === 0 ? `${s} s` : ""].filter(Boolean).join(" ");
 }
+
+/**
+ * Para el vídeo de un reproductor ya cargado: le quita la página de YouTube (`about:blank`). Se usa al salir de la
+ * pantalla, porque Next.js 16 la esconde (con <Activity>) en lugar de quitarla, y el iframe seguiría sonando.
+ */
+export function detenerVideo(marco: { src: string } | null): void {
+  if (marco) marco.src = "about:blank";
+}
+

@@ -1,12 +1,12 @@
 "use client";
 
 import { Eye, EyeOff } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useLayoutEffect, useRef, useState, type ComponentProps, type FormEvent } from "react";
 import { EstadoError } from "@/components/estado";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { destinoTrasLogin } from "@/lib/destino";
+import { destinoTrasLogin, entrarConSesionNueva } from "@/lib/destino";
 import { leerRespuesta, mensajeDeError } from "@/lib/peticiones";
 
 /** Etiqueta + campo, con el espacio de la guía entre los dos. */
@@ -57,8 +57,8 @@ export function rutaConVolver(ruta: string, volver: string | null): string {
 }
 
 /**
- * Envía el formulario a la API de auth. Si va bien, la cookie ya está puesta: se navega al destino
- * (`?volver=` o «Tus cursos») y se refresca para que el layout muestre al usuario.
+ * Envía el formulario a la API de auth. Si va bien, la cookie ya está puesta: se carga el destino de cero
+ * (`?volver=` o «Tus cursos»; ver `entrarConSesionNueva`), así el layout ya muestra al usuario.
  *
  * Next 16 (Cache Components) no desmonta la página al salir: la oculta con <Activity> y conserva su estado y
  * lo escrito en los campos. Por eso, al ocultarse, se reinicia el envío y se vacía el formulario
@@ -66,7 +66,6 @@ export function rutaConVolver(ruta: string, volver: string | null): string {
  * el botón seguía en «Entrando…» y la contraseña seguía escrita.
  */
 export function useEnvioAuth(url: string) {
-  const router = useRouter();
   const volver = useVolver();
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,8 +91,7 @@ export function useEnvioAuth(url: string) {
         body: JSON.stringify(cuerpo(new FormData(evento.currentTarget))),
       });
       await leerRespuesta(res);
-      router.replace(destinoTrasLogin(volver));
-      router.refresh();
+      entrarConSesionNueva(destinoTrasLogin(volver));
     } catch (e) {
       setError(mensajeDeError(e));
       setEnviando(false);
