@@ -34,3 +34,6 @@ export const validacionForo = pgEnum("validacion_foro", ["pendiente", "correcta"
 /** Por qué da puntos el profesor en el foro (+1, +3 o +6). */
 export const motivoPuntoForo = pgEnum("motivo_punto_foro", ["buena_pregunta", "buena_conducta"]);
 export const validadorForo = pgEnum("validador_foro", ["ia", "profesor"]);
+
+/** Qué mueve el saldo de puntos del perfil: un canje de premio (resta) o los puntos de demo del MVP (suman). */
+export const tipoMovimientoPuntos = pgEnum("tipo_movimiento_puntos", ["canje", "demo"]);

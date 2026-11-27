@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Geist_Mono, Mountains_of_Christmas, Orbitron } from "next/font/google";
+import { RegistroServiceWorker } from "@/components/pwa/registro-service-worker";
 import "./globals.css";
+import manifiesto from "./manifest.json";
 
 // DM Sans sustituye a LL Circular, la tipografía de la marca (docs/estilo.md, apartado 4).
 const dmSans = DM_Sans({
@@ -32,13 +34,21 @@ export const metadata: Metadata = {
   description: "Aprende con un tutor de IA en cada módulo",
 };
 
+/** Color de la barra del navegador y de la app instalada: el carbón de la marca, el mismo theme_color del manifiesto. */
+export const viewport: Viewport = {
+  themeColor: manifiesto.theme_color,
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
       className={`${dmSans.variable} ${geistMono.variable} ${orbitron.variable} ${mountainsOfChristmas.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <RegistroServiceWorker />
+      </body>
     </html>
   );
 }

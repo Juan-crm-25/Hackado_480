@@ -4,7 +4,6 @@ import type { AutorForo, ComentarioHilo, HiloForo, TemaResumen } from "@/server/
 import { FormularioDuda } from "./formulario-duda";
 import { IrAlForo } from "./ir-al-foro";
 import { ListaTemas } from "./lista-temas";
-import { PuntosForo } from "./puntos-foro";
 import { SeccionForo } from "./seccion-foro";
 import { VistaHilo, type AccionesHilo } from "./vista-hilo";
 
@@ -222,12 +221,3 @@ describe("VistaHilo", () => {
   });
 });
 
-describe("PuntosForo", () => {
-  it("muestra el total y el desglose", () => {
-    const html = renderToStaticMarkup(<PuntosForo puntos={{ total: 18, respuestas: 15, profesor: 3 }} />);
-    expect(html).toContain("Puntos del foro");
-    expect(html).toContain("18");
-    expect(html).toContain("15 por tus respuestas");
-    expect(html).toContain("3 del profesor");
-  });
-});

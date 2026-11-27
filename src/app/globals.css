@@ -20,6 +20,13 @@
     100% { opacity: 0; transform: translate3d(60vw, -70vh, 0) rotate(-12deg) scale(0.6); }
   }
 
+  /* Brillo: un reflejo que cruza la barra de premios del perfil (src/components/premios/barra-premios.tsx). */
+  --animate-brillo: brillo 2.5s ease-in-out infinite;
+  @keyframes brillo {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
   /* Confeti: cae desde arriba girando y se desvanece al final (celebración del foro, src/components/foro/celebracion.tsx). */
   --animate-confeti: confeti 2s ease-in both;
   @keyframes confeti {
@@ -69,6 +76,7 @@
   --color-promo-cyber-1: var(--promo-cyber-1);
   --color-promo-cyber-2: var(--promo-cyber-2);
   --color-promo-navidad: var(--promo-navidad);
+  --color-promo-oro: var(--promo-oro);
   /* Letras de los anuncios de temporada (cargadas en src/app/layout.tsx sin precarga). */
   --font-cyber: var(--font-orbitron);
   --font-navidad: var(--font-mountains-of-christmas);
@@ -130,6 +138,7 @@
   --promo-cyber-1: oklch(0.450 0.220 268);    /* azul eléctrico */
   --promo-cyber-2: oklch(0.530 0.165 235);    /* azul cian */
   --promo-navidad: oklch(0.520 0.210 27);     /* rojo navideño */
+  --promo-oro: oklch(0.850 0.170 88);         /* amarillo: halo del premio legendario (solo sombra, no texto) */
 }
 
 .dark {

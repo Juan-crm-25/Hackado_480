@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 const ENLACE_ASTRONAUTA =
   "https://www.magnific.com/es/vector-gratis/lindo-astronauta-montando-cohete-agitando-mano-icono-dibujos-animados-ilustracion-concepto-icono-tecnologia-ciencia_10764053.htm#fromView=search&page=1&position=0&uuid=0386de25-b20c-445a-b6d3-d8d185e2898c&track=ais_hybrid&query=Astronauta+svg";
 
+const ENLACE_PREGUNTAS =
+  "https://www.magnific.com/es/vector-gratis/plantilla-signo-pregunta-diseno-burbuja-chat_416708398.htm#fromView=keyword&page=1&position=0&uuid=b2cc1284-4f2a-438b-8e69-02d45af924b4&track=ais_hybrid&query=Preguntas";
+
 // Enlace externo con zona táctil de 44 px (docs/estilo.md, apartado 7).
 const CLASE_ENLACE = "inline-flex min-h-11 items-center rounded-sm underline underline-offset-4 hover:text-foreground";
 
@@ -21,6 +24,12 @@ export function ContenidoCreditos() {
         </span>
         <a href={ENLACE_ASTRONAUTA} target="_blank" rel="noopener noreferrer" className={CLASE_ENLACE}>
           Imagen de catalyststuff en Magnific
+        </a>
+      </li>
+      <li className="flex flex-col gap-1">
+        <span className="font-semibold">Premio «10 preguntas extra para el tutor»</span>
+        <a href={ENLACE_PREGUNTAS} target="_blank" rel="noopener noreferrer" className={CLASE_ENLACE}>
+          Imagen de starline en Magnific
         </a>
       </li>
       <li className="flex flex-col gap-1">
