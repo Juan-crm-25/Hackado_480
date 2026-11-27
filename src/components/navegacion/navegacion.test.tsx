@@ -203,6 +203,11 @@ describe("créditos", () => {
       'href="https://www.magnific.com/es/vector-gratis/lindo-astronauta-montando-cohete-agitando-mano-icono-dibujos-animados-ilustracion-concepto-icono-tecnologia-ciencia_10764053.htm#fromView=search&amp;page=1&amp;position=0&amp;uuid=0386de25-b20c-445a-b6d3-d8d185e2898c&amp;track=ais_hybrid&amp;query=Astronauta+svg"',
     );
     expect(html).toContain("Imagen de catalyststuff en Magnific");
+    // La imagen del premio de las preguntas, con la atribución que pide Magnific.
+    expect(html).toContain(
+      'href="https://www.magnific.com/es/vector-gratis/plantilla-signo-pregunta-diseno-burbuja-chat_416708398.htm#fromView=keyword&amp;page=1&amp;position=0&amp;uuid=b2cc1284-4f2a-438b-8e69-02d45af924b4&amp;track=ais_hybrid&amp;query=Preguntas"',
+    );
+    expect(html).toContain("Imagen de starline en Magnific");
     // Los tres astronautas son del mismo autor.
     expect(html).toMatch(/astronauta[^<]*cohete[^<]*cohetes[^<]*cocinero|cohete[^<]*cohetes[^<]*cocinero/);
     for (const autor of ["Kiko Palomares", "Dorian Desings", "Lucide", "Simple Icons"]) expect(html).toContain(autor);
