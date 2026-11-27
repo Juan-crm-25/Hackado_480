@@ -46,3 +46,25 @@
 3. **Se puede cambiar sin tocar código:** va detrás de sus propias variables (`AI_FORO_*`), separado del tutor.
 
 **En un caso real** se traería a la UE con un **modelo de código abierto** alojado en Europa: según su anuncio, los pesos de Decider son abiertos (Apache 2.0) y se podrían alojar aquí (está por confirmar); si no, bastaría con Gemma en Scaleway, como el resto de agentes.
+
+## 8. Caché: por capas en el MVP y Upstash en producción (27/11)
+
+**Decisión:** en el MVP **no se monta un servidor de caché** (proxy ni Redis). La caché se reparte en capas que ya funcionan, y la capa compartida entre servidores, **Upstash (Redis)**, queda documentada para producción sin implementarla:
+
+| Capa | Qué guarda | En el MVP | En producción |
+|---|---|---|---|
+| 1. Navegador | La interfaz: JS, CSS, fuentes e imágenes | Service worker de la PWA (`public/sw.js`) | Igual |
+| 2. CDN (Vercel) | La estructura estática de cada página | Prerender parcial: la estructura sale de la CDN y solo los datos van al servidor | Igual |
+| 3. Memoria del servidor | Respuestas caras de repetir | El resumen de dudas del Radar se guarda una hora por curso y solo se recalcula si hay preguntas nuevas (`src/server/radar/servicio.ts`) | **Upstash (Redis)**, compartido entre instancias |
+| 4. BBDD | El material generado por IA | Se genera una vez, se busca antes de generar y se guarda (`docs/bbdd/README.md`) | Igual |
+
+**Qué se cachearía en producción** (capa 3), con su duración y cuándo se invalida:
+- **Catálogo y ficha pública de un curso:** hoy se leen de la BBDD en cada petición. Se guardarían 1 hora y se invalidarían al publicar o cambiar un curso.
+- **Resúmenes y respuestas de IA que no son de un alumno** (como el resumen del Radar): hasta que cambien sus datos de entrada.
+- **Nunca** nada con datos de un alumno: progreso, puntos, canjes, mensajes, sesión. Esas peticiones siempre van a la BBDD.
+
+**Cómo se pasaría a Upstash sin reescribir el código:** Next.js 16 trae `"use cache"`, que guarda en memoria, y `'use cache: remote'` con un `cacheHandler`, que lleva esa misma caché a un almacén externo como Redis. El paso a producción es cambiar la directiva y configurar el almacén; las funciones que leen los datos no cambian.
+
+**Alternativas:** montar ya Upstash o Vercel KV; un proxy propio delante de la API; no cachear nada.
+**Por qué:** en Vercel cada instancia del servidor tiene su propia memoria, así que la caché en memoria no se comparte: en el peor caso se repite una lectura o una llamada barata, pero nunca se da un dato equivocado. Para el tráfico de una demo es suficiente, y nos ahorra otro servicio, otra clave y otro coste. Upstash tiene sentido cuando haya tráfico real y muchas instancias: entonces evita repetir llamadas a la BBDD y a la IA. Antes de contratarlo hay que confirmar que los datos se quedan en una región de la UE (decisión 1) y revisar el precio.
+
