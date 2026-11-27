@@ -3,6 +3,9 @@
  * y los usuarios de prueba. `sembrar()` (./sembrar.ts) los inserta.
  */
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { agruparFragmentos, fragmentosAMarkdown, parsearVtt } from "../../transcripciones";
 import type { Alumno, Catalogo, EjercicioBase, PlantillaEjercicios, TipoEjercicio } from "../../types";
 
 type Rol = "alumno" | "profesor" | "admin";
@@ -98,6 +101,34 @@ export function construirCatalogo(catalogo: Catalogo): CatalogoSeed {
       })),
     })),
   };
+}
+
+/** Transcripción de una clase para `documento` (#39): la clase por su clave natural y el markdown con marcas [mm:ss]. */
+export interface TranscripcionSeed {
+  moduloSlug: string;
+  claseSlug: string;
+  titulo: string;
+  contenidoMd: string;
+}
+
+const leerVttDeDisco = (fichero: string) => readFileSync(path.join(process.cwd(), "data", "transcripciones", fichero), "utf8");
+
+/**
+ * Las transcripciones de los vídeos del curso de la demo, del VTT de `data/transcripciones/` (origen del seed) al
+ * markdown que se guarda en `documento.contenido_md`: una marca [mm:ss] por bloque de unos 30 s, como el temario que
+ * recibe la IA. Los vídeos sin fichero de transcripción no tienen fila.
+ */
+export function construirTranscripciones(catalogo: Catalogo, leer: (fichero: string) => string = leerVttDeDisco): TranscripcionSeed[] {
+  return catalogo.curso.modulos.flatMap((m) =>
+    m.videos
+      .filter((v) => v.transcripcion)
+      .map((v) => ({
+        moduloSlug: m.id,
+        claseSlug: v.id,
+        titulo: `Transcripción · ${v.titulo}`,
+        contenidoMd: fragmentosAMarkdown(v, agruparFragmentos(parsearVtt(leer(v.transcripcion as string)))),
+      })),
+  );
 }
 
 /** Un curso más del catálogo de demo: sin clases (clase.video_url es obligatorio y no se inventan vídeos). */

@@ -9,6 +9,7 @@ import type { Catalogo, PlantillaEjercicios } from "../../types";
 import {
   comprobarDestino,
   construirCatalogo,
+  construirTranscripciones,
   construirCatalogos,
   construirMatriculas,
   construirPlantillas,
@@ -205,5 +206,41 @@ describe("destino del seed", () => {
   it("rechaza una URL que falta o no se entiende", () => {
     expect(comprobarDestino(undefined, true).permitido).toBe(false);
     expect(comprobarDestino("no es una url", true).permitido).toBe(false);
+  });
+});
+
+describe("construirTranscripciones (#39)", () => {
+  const vtt = [
+    "WEBVTT",
+    "",
+    "00:00:01.000 --> 00:00:04.000",
+    "Hola, bienvenidos.",
+    "",
+    "00:00:05.000 --> 00:00:09.000",
+    "Hoy vemos la especificidad.",
+    "",
+    "00:00:40.000 --> 00:00:44.000",
+    "Un id gana a una clase.",
+    "",
+  ].join("\n");
+  const leidos: string[] = [];
+  const leer = (fichero: string) => {
+    leidos.push(fichero);
+    return vtt;
+  };
+
+  it("una por cada vídeo del curso de la demo con transcripción, en markdown con marcas [mm:ss] agrupadas", () => {
+    const transcripciones = construirTranscripciones(catalogo as Catalogo, leer);
+    const conFichero = (catalogo as Catalogo).curso.modulos.flatMap((m) => m.videos.filter((v) => v.transcripcion));
+    expect(transcripciones).toHaveLength(conFichero.length);
+    expect(leidos).toEqual(conFichero.map((v) => v.transcripcion));
+
+    const v04 = transcripciones.find((t) => t.claseSlug === "v04")!;
+    expect(v04.moduloSlug).toBe("m2-css");
+    expect(v04.titulo).toMatch(/^Transcripción · /);
+    // Los trozos de los primeros 30 s van juntos; el del segundo 40 empieza otro bloque.
+    expect(v04.contenidoMd).toBe(
+      `## Vídeo v04: ${conFichero.find((v) => v.id === "v04")!.titulo}\n\n[00:01] Hola, bienvenidos. Hoy vemos la especificidad.\n[00:40] Un id gana a una clase.\n`,
+    );
   });
 });

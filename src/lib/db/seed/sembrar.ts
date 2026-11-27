@@ -3,7 +3,7 @@
  * Lo usa scripts/seed.ts (npm run db:seed) y los tests de integración.
  * Cada usuario tiene una cuenta de email y contraseña (CONTRASENA_DEMO) para el login simulado; no crea sesiones.
  */
-import { and, count, eq, sql } from "drizzle-orm";
+import { and, count, eq, inArray, sql } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
 import catalogoJson from "../../../../data/catalog.json";
 import m1Html from "../../../../data/ejemplos-profesor/m1-html.json";
@@ -23,6 +23,7 @@ import {
   cuenta,
   curso,
   cursoImagen,
+  documento,
   matricula,
   modulo,
   plantillaEjercicio,
@@ -38,6 +39,7 @@ import {
   construirCatalogos,
   construirMatriculas,
   construirPlantillas,
+  construirTranscripciones,
   construirUsuarios,
 } from "./datos";
 import { construirForoDemo, PROFESORA_FORO } from "./foro";
@@ -54,6 +56,7 @@ export type RecuentoSeed = Record<
   | "modulo"
   | "concepto"
   | "clase"
+  | "documento"
   | "usuario"
   | "cuenta"
   | "matricula"
@@ -72,12 +75,15 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
   // El curso de la demo es el primero (construirCatalogos). Se construyen antes de abrir la transacción:
   // si un fichero de ejemplos está mal, el seed falla sin haber escrito nada.
   const plantillas = construirPlantillas(catalogos[0], PLANTILLAS_DEMO);
+  // Las transcripciones se leen y convierten antes también: si falta un VTT, no se escribe nada.
+  const transcripciones = construirTranscripciones(catalogoJson as Catalogo);
   // Se cifra una vez (fuera de la transacción): todas las cuentas del seed comparten contraseña.
   const passwordHash = await cifrarContrasena(CONTRASENA_DEMO);
 
   await db.transaction(async (tx) => {
     const cursoIds = new Map<string, string>();
     const moduloIds = new Map<string, string>(); // "curso/modulo" → id
+    const claseIds = new Map<string, string>(); // "curso/modulo/clase" → id
 
     for (const catalogo of catalogos) {
       const [cat] = await tx
@@ -135,7 +141,7 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
         }
 
         if (m.clases.length > 0) {
-          await tx
+          const filasClase = await tx
             .insert(clase)
             .values(m.clases.map((c) => ({ ...c, moduloId: mod.id })))
             .onConflictDoUpdate({
@@ -146,9 +152,25 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
                 duracionSegundos: nuevo("duracion_segundos"),
                 orden: nuevo("orden"),
               },
-            });
+            })
+            .returning({ id: clase.id, slug: clase.slug });
+          for (const c of filasClase) claseIds.set(`${catalogo.curso.slug}/${m.slug}/${c.slug}`, c.id);
         }
       }
+    }
+
+    // Transcripciones (#39): una por clase en `documento`. Se borra la de cada clase y se vuelve a insertar, así
+    // repetir el seed no duplica nada y deja el texto como dice el VTT.
+    if (transcripciones.length > 0) {
+      const filas = transcripciones.map((t) => {
+        const claseId = claseIds.get(`${catalogos[0].curso.slug}/${t.moduloSlug}/${t.claseSlug}`);
+        if (!claseId) throw new Error(`La transcripción de "${t.moduloSlug}/${t.claseSlug}" no es de ninguna clase del curso.`);
+        return { claseId, tipo: "transcripcion" as const, titulo: t.titulo, contenidoMd: t.contenidoMd };
+      });
+      await tx
+        .delete(documento)
+        .where(and(inArray(documento.claseId, filas.map((f) => f.claseId)), eq(documento.tipo, "transcripcion")));
+      await tx.insert(documento).values(filas);
     }
 
     // Plantillas de ejercicios del profesor: una por módulo. Si ya existe, se deja como dice el fichero,
@@ -287,6 +309,7 @@ export async function sembrar(db: Db): Promise<RecuentoSeed> {
     modulo: await contar(modulo),
     concepto: await contar(concepto),
     clase: await contar(clase),
+    documento: await contar(documento),
     usuario: await contar(usuario),
     cuenta: await contar(cuenta),
     matricula: await contar(matricula),
