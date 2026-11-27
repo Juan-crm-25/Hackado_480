@@ -20,3 +20,19 @@ export const esquemaEntregaTestModulo = z.object({
 });
 
 export type DatosEntregaTestModulo = z.output<typeof esquemaEntregaTestModulo>;
+
+/** POST /api/modulos/:id/tests-videos: las respuestas a las preguntas de UN vídeo (2 en el banco). */
+export const esquemaTestVideo = z.object({
+  videoId: z.string().trim().min(1).max(50),
+  respuestas: z
+    .array(
+      z.object({
+        ejercicioId: z.uuid(),
+        respuesta: z.union([z.string().max(200), z.number().int().min(0).max(20)]),
+      }),
+    )
+    .min(1)
+    .max(4),
+});
+
+export type DatosTestVideo = z.output<typeof esquemaTestVideo>;

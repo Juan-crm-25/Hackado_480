@@ -122,6 +122,25 @@ export interface ResultadoPregunta {
   revisionHumana: boolean;
 }
 
+/** GET /api/modulos/:id/tests-videos — las preguntas del test de cada vídeo (2 por vídeo), por el id del vídeo. */
+export interface TestsVideos {
+  moduloId: string;
+  /** Solo los vídeos que tienen test; un vídeo sin preguntas no bloquea el siguiente. */
+  porVideo: Record<string, EjercicioPublico[]>;
+}
+
+/** POST /api/modulos/:id/tests-videos — las respuestas a TODAS las preguntas de un vídeo. */
+export interface PeticionTestVideo {
+  videoId: string;
+  respuestas: { ejercicioId: string; respuesta: string | number }[];
+}
+
+export interface ResultadoTestVideo {
+  /** Todas correctas: se desbloquea el siguiente vídeo. */
+  superado: boolean;
+  resultados: ResultadoPregunta[];
+}
+
 export interface ResultadoTestModulo {
   /** Sobre 10. */
   nota: number;

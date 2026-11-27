@@ -2,9 +2,8 @@
  * Tests de los vídeos de un módulo (S23): cada vídeo se desbloquea al superar el test del anterior; verlo no
  * hace falta. El primero siempre está abierto y la ruta entre módulos sigue libre.
  * MVP: los tests superados se guardan en el navegador, igual que los vistos (ver `vistos.ts`).
- * Test de demostración · el test definitivo llega con la issue #3.
+ * Las preguntas son las del banco del módulo con `uso = video` (#3): ver `/api/modulos/:id/tests-videos`.
  */
-import type { PreguntaDemo } from "./tests-demo";
 import { type AlmacenVistos, leerVistos, marcarVisto } from "./vistos";
 
 export function claveTests(cursoSlug: string, moduloSlug: string): string {
@@ -21,11 +20,17 @@ export function superarTest(almacen: AlmacenVistos | null, clave: string, claseI
   return marcarVisto(almacen, clave, claseId);
 }
 
-/** Clases que se pueden abrir: la primera, y cada una cuyo vídeo anterior tiene el test superado. */
-export function desbloqueadas(clases: readonly { id: string }[], superados: ReadonlySet<string>): Set<string> {
-  return new Set(clases.filter((_, i) => i === 0 || superados.has(clases[i - 1].id)).map((c) => c.id));
+/**
+ * Clases que se pueden abrir: la primera, y cada una cuyo vídeo anterior tiene el test superado o no tiene test
+ * (`sinTest`: vídeos sin preguntas aprobadas, que no deben bloquear a nadie).
+ */
+export function desbloqueadas(
+  clases: readonly { id: string }[],
+  superados: ReadonlySet<string>,
+  sinTest: ReadonlySet<string> = new Set(),
+): Set<string> {
+  return new Set(
+    clases.filter((_, i) => i === 0 || superados.has(clases[i - 1].id) || sinTest.has(clases[i - 1].id)).map((c) => c.id),
+  );
 }
 
-export function esCorrecta(pregunta: PreguntaDemo, opcion: number | null): boolean {
-  return opcion === pregunta.correcta;
-}

@@ -1,8 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import type { ClaseCatalogo } from "@/lib/catalogo-bd";
-import { TESTS_DEMO } from "./tests-demo";
-import { ContadorVisto, ReproductorClase, TestVideo, VideosModulo } from "./videos-modulo";
+import type { EjercicioPublico, ResultadoTestVideo } from "@/lib/types";
+import { ContadorVisto, CorreccionTestVideo, ReproductorClase, TestVideo, VideosModulo } from "./videos-modulo";
 
 const clases: ClaseCatalogo[] = [
   { id: "c1", titulo: "Selectores", videoUrl: "https://youtu.be/aaaaaaaaaaa", youtubeId: "aaaaaaaaaaa", duracionSegundos: 403 },
@@ -93,25 +93,64 @@ describe("VideosModulo (desbloqueo por tests)", () => {
 });
 
 describe("TestVideo", () => {
-  const pregunta = TESTS_DEMO.v01;
+  const pregunta = (id: string, tipo: EjercicioPublico["tipo"], opciones?: string[]): EjercicioPublico => ({
+    id,
+    moduloId: "css",
+    conceptoId: "css-selectores",
+    tipo,
+    enunciado: `Enunciado ${id}`,
+    ...(opciones ? { opciones } : {}),
+    referencia: { videoId: "c1", segundo: 75 },
+  });
+  const preguntas = [pregunta("p1", "test", ["Uno", "Dos", "Tres"]), pregunta("p2", "respuesta_corta")];
+  const video = { id: "c1", titulo: "Selectores", youtubeId: "aaaaaaaaaaa" };
+  const base = { tituloVideo: "Selectores", moduloSlug: "css", video, superado: false, onSuperado: () => {}, onReintentar: () => {} };
 
-  it("es un test de demostración con una pregunta de 3 opciones", () => {
-    const html = renderToStaticMarkup(
-      <TestVideo tituloVideo="Selectores" pregunta={pregunta} superado={false} onSuperado={() => {}} />,
-    );
+  it("pinta las preguntas reales del vídeo (opciones y respuesta corta) y el botón de comprobar", () => {
+    const html = renderToStaticMarkup(<TestVideo {...base} preguntas={preguntas} />);
     expect(html).toContain("Test del vídeo");
-    expect(html).toContain("Test de demostración · el test definitivo llega con la issue #3");
-    expect(html).toContain(pregunta.enunciado);
+    expect(html).not.toContain("demostración");
+    expect(html).toContain("Enunciado p1");
+    expect(html).toContain("Pregunta 2 de 2");
     expect(html.match(/type="radio"/g)).toHaveLength(3);
+    expect(html).toMatch(/<input(?![^>]*type="radio")[^>]*>/);
     expect(html).toContain("Comprobar");
-    expect(html).not.toContain("Test superado");
+  });
+
+  it("mientras carga lo dice; si falla, lo dice con un botón para reintentar", () => {
+    expect(renderToStaticMarkup(<TestVideo {...base} preguntas={null} />)).toContain("Cargando el test");
+    const error = renderToStaticMarkup(<TestVideo {...base} preguntas={null} error="Sin conexión." />);
+    expect(error).toContain("Sin conexión.");
+    expect(error).toContain("Reintentar");
+  });
+
+  it("un vídeo sin preguntas no tiene test y no bloquea el siguiente", () => {
+    expect(renderToStaticMarkup(<TestVideo {...base} preguntas={[]} />)).toContain("todavía no tiene test");
   });
 
   it("superado lo dice con texto e icono", () => {
-    const html = renderToStaticMarkup(
-      <TestVideo tituloVideo="Selectores" pregunta={pregunta} superado onSuperado={() => {}} />,
-    );
+    const html = renderToStaticMarkup(<TestVideo {...base} preguntas={preguntas} superado />);
     expect(html).toContain("Test superado");
     expect(html).toMatch(/<svg[^>]*aria-hidden/);
+  });
+});
+
+describe("CorreccionTestVideo", () => {
+  it("cada pregunta con su estado en texto, el feedback y el enlace al minuto del vídeo si ha fallado", () => {
+    const resultado: ResultadoTestVideo = {
+      superado: false,
+      resultados: [
+        { ejercicioId: "p1", correcto: true, puntuacion: 1, feedback: "¡Correcto!", revisionHumana: false },
+        { ejercicioId: "p2", correcto: false, puntuacion: 0, feedback: "No es correcto.", repasar: { videoId: "c1", segundo: 75 }, revisionHumana: false },
+      ],
+    };
+    const html = renderToStaticMarkup(
+      <CorreccionTestVideo resultado={resultado} video={{ id: "c1", titulo: "Selectores", youtubeId: "aaaaaaaaaaa" }} />,
+    );
+    expect(html).toContain("Pregunta 1: Correcta");
+    expect(html).toContain("Pregunta 2: Incorrecta");
+    expect(html).toContain("No es correcto.");
+    expect(html).toContain("https://www.youtube.com/watch?v=aaaaaaaaaaa&amp;t=75s");
+    expect(html).toContain("Selectores · 1:15");
   });
 });

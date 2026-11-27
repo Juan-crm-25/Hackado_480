@@ -193,21 +193,7 @@ export async function guardarTestModulo(
       .where(and(eq(intentoEvaluacion.usuarioId, test.usuarioId), eq(intentoEvaluacion.evaluacionId, evaluacionId)));
     const mejorAnterior = anterior?.mejor === null || anterior?.mejor === undefined ? null : Number(anterior.mejor);
 
-    if (test.resultados.length > 0) {
-      await tx.insert(intento).values(
-        test.resultados.map(({ pregunta, respuesta, correccion }) => ({
-          usuarioId: test.usuarioId,
-          ejercicioId: pregunta.id,
-          respuesta,
-          puntuacion: correccion.puntuacion,
-          correcto: correccion.correcto,
-          feedback: correccion.feedback,
-          repasarClaseId: correccion.repasar ? pregunta.claseId : null,
-          repasarSegundo: correccion.repasar ? correccion.repasar.segundo : null,
-          revisionHumana: correccion.revisionHumana,
-        })),
-      );
-    }
+    if (test.resultados.length > 0) await tx.insert(intento).values(filasIntento(test.usuarioId, test.resultados));
     await tx.insert(intentoEvaluacion).values({
       usuarioId: test.usuarioId,
       evaluacionId,
@@ -235,6 +221,44 @@ export async function guardarTestModulo(
       });
 
     return { mejorNota: esElMejor ? test.nota : (mejorAnterior as number), estado };
+  });
+}
+
+/** Las filas de `intento` de unas respuestas corregidas. */
+function filasIntento(usuarioId: string, resultados: TestCorregido["resultados"]) {
+  return resultados.map(({ pregunta, respuesta, correccion }) => ({
+    usuarioId,
+    ejercicioId: pregunta.id,
+    respuesta,
+    puntuacion: correccion.puntuacion,
+    correcto: correccion.correcto,
+    feedback: correccion.feedback,
+    repasarClaseId: correccion.repasar ? pregunta.claseId : null,
+    repasarSegundo: correccion.repasar ? correccion.repasar.segundo : null,
+    revisionHumana: correccion.revisionHumana,
+  }));
+}
+
+/**
+ * Guarda las respuestas del test de un vídeo en `intento` (también las usa el Radar) y, si el alumno no había empezado
+ * el módulo, lo pasa a «en curso». Nunca baja el estado (dominado o completado se quedan).
+ */
+export async function guardarTestVideo(
+  usuarioId: string,
+  moduloId: string,
+  resultados: TestCorregido["resultados"],
+  db: Db = getDb(),
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    if (resultados.length > 0) await tx.insert(intento).values(filasIntento(usuarioId, resultados));
+    await tx
+      .insert(progreso)
+      .values({ usuarioId, moduloId, estado: "en_curso" })
+      .onConflictDoUpdate({
+        target: [progreso.usuarioId, progreso.moduloId],
+        set: { estado: "en_curso", actualizado: new Date() },
+        setWhere: eq(progreso.estado, "pendiente"),
+      });
   });
 }
 

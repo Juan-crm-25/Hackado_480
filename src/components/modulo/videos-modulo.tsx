@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, ChevronDown, CircleCheck, CircleDashed, Lock, Timer } from "lucide-react";
+import { BadgeCheck, ChevronDown, CircleCheck, CircleDashed, CircleX, Lock, Timer } from "lucide-react";
 import {
   type FormEvent,
   useCallback,
@@ -11,11 +11,16 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
-import { EstadoVacio } from "@/components/estado";
+import { EstadoCargando, EstadoError, EstadoVacio } from "@/components/estado";
+import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
+import { PreguntaDelTest } from "@/components/test-modulo/pantalla-test";
+import { type Respuestas, cuantasRespondidas } from "@/components/test-modulo/logica";
 import { Button } from "@/components/ui/button";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
 import { VideoYoutube } from "@/components/video-youtube";
 import type { ClaseCatalogo } from "@/lib/catalogo-bd";
+import { leerRespuesta, mensajeDeError } from "@/lib/peticiones";
+import type { EjercicioPublico, PeticionTestVideo, ResultadoTestVideo, TestsVideos } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { duracionAccesible, duracionVideo } from "@/lib/youtube";
 import {
@@ -28,8 +33,7 @@ import {
   textoContador,
   textoPausa,
 } from "./reproduccion";
-import { type PreguntaDemo, preguntaDeClase } from "./tests-demo";
-import { claveTests, desbloqueadas, esCorrecta, superarTest } from "./tests-modulo";
+import { claveTests, desbloqueadas, superarTest } from "./tests-modulo";
 import { type AlmacenVistos, claveVistos, leerTextoVistos, marcarVisto, vistosDeTexto } from "./vistos";
 
 /** localStorage si existe y se deja leer (puede lanzar con el almacenamiento bloqueado). */
@@ -57,8 +61,9 @@ function suscribir(avisar: () => void) {
  * que al pulsarla se abre y muestra el reproductor; plegada no se carga nada de YouTube.
  * Un vídeo pasa a «Visto» tras 15 s de reproducción real (no al abrirlo; ver `reproduccion.ts`), se guarda
  * en este navegador (ver `vistos.ts`) y arriba se ve el progreso.
- * Debajo de cada vídeo hay un test (de demostración hasta la issue #3): el siguiente vídeo está bloqueado
- * hasta superar el test del anterior, sin necesidad de verlo (ver `tests-modulo.ts`). El primero siempre está abierto.
+ * Debajo de cada vídeo hay un test de 2 preguntas del banco (#3, `/api/modulos/:id/tests-videos`): el siguiente vídeo
+ * está bloqueado hasta superar el test del anterior, sin necesidad de verlo (ver `tests-modulo.ts`). El primero siempre
+ * está abierto, y un vídeo sin preguntas aprobadas no bloquea el siguiente.
  * En el servidor nada está visto ni superado; lo guardado se lee al hidratar (useSyncExternalStore).
  */
 export function VideosModulo({
@@ -84,7 +89,12 @@ export function VideosModulo({
     () => null,
   );
   const superados = useMemo(() => vistosDeTexto(textoTests), [textoTests]);
-  const abiertasPorTest = desbloqueadas(clases, superados);
+  const { tests, recargar } = useTestsVideos(moduloSlug);
+  const sinTest = useMemo(
+    () => new Set(tests.estado === "ok" ? clases.filter((c) => !tests.porVideo[c.id]?.length).map((c) => c.id) : []),
+    [tests, clases],
+  );
+  const abiertasPorTest = desbloqueadas(clases, superados, sinTest);
   const [abiertas, setAbiertas] = useState<ReadonlySet<string>>(() => new Set());
   const base = useId();
 
@@ -206,7 +216,11 @@ export function VideosModulo({
                     )}
                     <TestVideo
                       tituloVideo={clase.titulo}
-                      pregunta={preguntaDeClase(clase.id)}
+                      moduloSlug={moduloSlug}
+                      video={{ id: clase.id, titulo: clase.titulo, youtubeId: clase.youtubeId ?? "" }}
+                      preguntas={tests.estado === "ok" ? (tests.porVideo[clase.id] ?? []) : null}
+                      error={tests.estado === "error" ? tests.mensaje : undefined}
+                      onReintentar={recargar}
                       superado={superado}
                       onSuperado={() => superar(clase.id)}
                     />
@@ -319,35 +333,138 @@ function TestSuperado() {
   );
 }
 
+type EstadoTests = { estado: "cargando" } | { estado: "error"; mensaje: string } | { estado: "ok"; porVideo: TestsVideos["porVideo"] };
+
+/** Las preguntas del test de cada vídeo del módulo, pedidas una vez a la API al abrir la pantalla. */
+function useTestsVideos(moduloSlug: string) {
+  const [tests, setTests] = useState<EstadoTests>({ estado: "cargando" });
+  const [intento, setIntento] = useState(0);
+  useEffect(() => {
+    let vigente = true;
+    fetch(`/api/modulos/${encodeURIComponent(moduloSlug)}/tests-videos`)
+      .then((res) => leerRespuesta<TestsVideos>(res))
+      .then(
+        (r) => vigente && setTests({ estado: "ok", porVideo: r.porVideo }),
+        (e: unknown) => vigente && setTests({ estado: "error", mensaje: mensajeDeError(e) }),
+      );
+    return () => {
+      vigente = false;
+    };
+  }, [moduloSlug, intento]);
+  const recargar = useCallback(() => {
+    setTests({ estado: "cargando" });
+    setIntento((n) => n + 1);
+  }, []);
+  return { tests, recargar };
+}
+
 /**
- * «Test del vídeo»: una pregunta de 3 opciones. Test de demostración · el test definitivo llega con la issue #3.
- * Acertar llama a `onSuperado` (desbloquea el siguiente vídeo); fallar deja volver a intentarlo.
+ * «Test del vídeo» (#3): las preguntas del banco para este vídeo (2, de test o respuesta corta; siempre las mismas).
+ * Acertarlas todas llama a `onSuperado` (desbloquea el siguiente vídeo); si falla alguna, se ve la corrección con el
+ * minuto del vídeo que hay que repasar y se puede volver a intentar. `preguntas` es null mientras se cargan.
  */
 export function TestVideo({
   tituloVideo,
-  pregunta,
+  moduloSlug,
+  video,
+  preguntas,
+  error,
+  onReintentar,
   superado,
   onSuperado,
 }: {
   tituloVideo: string;
-  pregunta: PreguntaDemo;
+  moduloSlug: string;
+  video: VideoResumen;
+  preguntas: EjercicioPublico[] | null;
+  error?: string;
+  onReintentar: () => void;
   superado: boolean;
   onSuperado: () => void;
 }) {
-  const [opcion, setOpcion] = useState<number | null>(null);
-  const [fallo, setFallo] = useState(false);
-  const nombre = useId();
-  const idTitulo = `${nombre}-titulo`;
+  const [respuestas, setRespuestas] = useState<Respuestas>({});
+  const [comprobando, setComprobando] = useState(false);
+  const [resultado, setResultado] = useState<ResultadoTestVideo | null>(null);
+  const [errorEnvio, setErrorEnvio] = useState<string | null>(null);
+  const idTitulo = `${useId()}-titulo`;
 
-  function comprobar(e: FormEvent<HTMLFormElement>) {
+  async function comprobar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (opcion === null) return;
-    if (esCorrecta(pregunta, opcion)) {
-      setFallo(false);
-      onSuperado();
-    } else {
-      setFallo(true);
+    if (!preguntas?.length || comprobando) return;
+    setComprobando(true);
+    setErrorEnvio(null);
+    try {
+      const peticion: PeticionTestVideo = {
+        videoId: video.id,
+        respuestas: preguntas.map((p) => {
+          const r = respuestas[p.id];
+          return { ejercicioId: p.id, respuesta: typeof r === "number" ? r : (r ?? "").trim() };
+        }),
+      };
+      const res = await fetch(`/api/modulos/${encodeURIComponent(moduloSlug)}/tests-videos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(peticion),
+      });
+      const r = await leerRespuesta<ResultadoTestVideo>(res);
+      setResultado(r);
+      if (r.superado) onSuperado();
+    } catch (err) {
+      setErrorEnvio(mensajeDeError(err));
+    } finally {
+      setComprobando(false);
     }
+  }
+
+  let contenido: React.ReactNode;
+  if (superado) {
+    contenido = <p className="text-sm">Has superado este test: el siguiente vídeo ya está desbloqueado.</p>;
+  } else if (preguntas === null) {
+    contenido = error ? (
+      <div className="flex flex-col items-start gap-2">
+        <EstadoError>{error}</EstadoError>
+        <Button type="button" variant="outline" onClick={onReintentar}>
+          Reintentar
+        </Button>
+      </div>
+    ) : (
+      <EstadoCargando texto="Cargando el test…" />
+    );
+  } else if (preguntas.length === 0) {
+    contenido = <p className="text-sm">Este vídeo todavía no tiene test: el siguiente ya está abierto.</p>;
+  } else {
+    const completas = cuantasRespondidas(preguntas, respuestas) === preguntas.length;
+    contenido = (
+      <form onSubmit={comprobar} className="flex flex-col gap-3">
+        <ol className="flex flex-col gap-3">
+          {preguntas.map((p, i) => (
+            <li key={p.id}>
+              <PreguntaDelTest
+                pregunta={p}
+                numero={i + 1}
+                total={preguntas.length}
+                respuesta={respuestas[p.id]}
+                desactivada={comprobando}
+                onCambiar={(r) => {
+                  setRespuestas((antes) => ({ ...antes, [p.id]: r }));
+                  setResultado(null);
+                }}
+              />
+            </li>
+          ))}
+        </ol>
+        {resultado && !resultado.superado && <CorreccionTestVideo resultado={resultado} video={video} />}
+        {errorEnvio && <EstadoError>{errorEnvio}</EstadoError>}
+        <div className="flex flex-wrap items-center gap-3">
+          <Button type="submit" disabled={!completas || comprobando}>
+            {comprobando ? "Comprobando…" : resultado ? "Volver a comprobar" : "Comprobar"}
+          </Button>
+          <p aria-live="polite" className="text-sm">
+            {resultado && !resultado.superado ? "Alguna no es correcta: repasa y vuelve a intentarlo" : ""}
+          </p>
+        </div>
+      </form>
+    );
   }
 
   return (
@@ -358,43 +475,39 @@ export function TestVideo({
         </h4>
         {superado && <TestSuperado />}
       </div>
-      <p className="text-xs text-muted-foreground">Test de demostración · el test definitivo llega con la issue #3</p>
-      {superado ? (
-        <p className="text-sm">Has superado este test: el siguiente vídeo ya está desbloqueado.</p>
-      ) : (
-        <form onSubmit={comprobar} className="flex flex-col gap-3">
-          <fieldset className="flex flex-col gap-2">
-            <legend className="mb-2 text-sm font-medium">{pregunta.enunciado}</legend>
-            {pregunta.opciones.map((texto, i) => (
-              <label
-                key={texto}
-                className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border bg-card px-3 py-2 text-sm has-checked:border-primary has-focus-visible:ring-3 has-focus-visible:ring-ring"
-              >
-                <input
-                  type="radio"
-                  name={nombre}
-                  value={i}
-                  checked={opcion === i}
-                  onChange={() => {
-                    setOpcion(i);
-                    setFallo(false);
-                  }}
-                  className="size-4 accent-primary"
-                />
-                {texto}
-              </label>
-            ))}
-          </fieldset>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button type="submit" disabled={opcion === null}>
-              Comprobar
-            </Button>
-            <p aria-live="polite" className="text-sm">
-              {fallo ? "No es correcta, vuelve a intentarlo" : ""}
-            </p>
-          </div>
-        </form>
-      )}
+      {contenido}
     </section>
+  );
+}
+
+/** Corrección del test de un vídeo: cada pregunta en texto (no solo color), su feedback y, si falla, el minuto que repasar. */
+export function CorreccionTestVideo({ resultado, video }: { resultado: ResultadoTestVideo; video: VideoResumen }) {
+  return (
+    <ul className="flex flex-col gap-2">
+      {resultado.resultados.map((r, i) => {
+        const Icono = r.correcto ? CircleCheck : CircleX;
+        return (
+          <li key={r.ejercicioId} className="flex flex-col gap-1 rounded-lg border bg-card p-3 text-sm">
+            <p className="flex items-center gap-2 font-semibold">
+              <Icono className="size-4 shrink-0" aria-hidden />
+              Pregunta {i + 1}: {r.correcto ? "Correcta" : "Incorrecta"}
+            </p>
+            {!r.correcto && (
+              <>
+                <p>
+                  <TextoConCodigo texto={r.feedback} />
+                </p>
+                {r.repasar && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span>Repasa:</span>
+                    <FuenteVideo fuente={r.repasar} videos={[video]} />
+                  </div>
+                )}
+              </>
+            )}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
