@@ -14,6 +14,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { profesorDelCurso } from "@/lib/demo/profesores";
 import { cn } from "@/lib/utils";
 import { buscarModulo, cargarCursoPrincipal } from "@/server/catalogo/servicio";
+import { DiagnosticoRapido } from "@/components/modulo/diagnostico-rapido";
 
 /**
  * Pantalla «Módulo»: descripción, conceptos y vídeos de las clases (acordeón con «visto» y progreso),
@@ -115,7 +116,7 @@ async function ContenidoModulo({ params }: { params: PageProps<"/modulos/[id]">[
             <VideosModulo cursoSlug={resultado.curso.id} moduloSlug={modulo.id} clases={modulo.clases} />
           )}
         </section>
-
+        <DiagnosticoRapido moduloSlug={modulo.id} moduloTitulo={modulo.titulo} />
         {/* Mismo peso para los dos («Ir al foro» es el único botón verde). Lado a lado también a 360 px: el texto baja de línea si no cabe. */}
         <nav aria-label="Seguir con el módulo" className="grid grid-cols-2 gap-3">
           <Link href={`/modulos/${modulo.id}/material`} className={cn(buttonVariants({ variant: "outline" }), accionModulo)}>
