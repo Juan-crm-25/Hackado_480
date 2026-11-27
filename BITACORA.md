@@ -302,7 +302,6 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 **Quién:** Antonio Pascual (en rama `feat/issue-6-diagnostico-rapido` desde la web de GitHub).
 **Bloque:** Evaluaciones y ruta personalizada (issue #6).
-**Coordinación:** se avisó por WhatsApp antes de asignarse el issue y de empezar, y se avisará antes de fusionar la PR.
 
 ### Qué hicimos
 
