@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { destinoTrasLogin } from "./destino";
+import { describe, expect, it, vi } from "vitest";
+import { destinoTrasLogin, entrarConSesionNueva } from "./destino";
 
 describe("destinoTrasLogin", () => {
   it("vuelve a la ruta interna de la que venía, con su query", () => {
@@ -29,5 +29,13 @@ describe("destinoTrasLogin", () => {
   it("no vuelve a las pantallas de login o registro", () => {
     expect(destinoTrasLogin("/login")).toBe("/dashboard");
     expect(destinoTrasLogin("/registro?volver=/perfil")).toBe("/dashboard");
+  });
+});
+
+describe("entrarConSesionNueva", () => {
+  it("carga el destino de cero (sin la caché del navegador de antes de entrar o salir) y sin dejar el login en el historial", () => {
+    const ubicacion = { replace: vi.fn() };
+    entrarConSesionNueva("/pago/python-desde-cero", ubicacion);
+    expect(ubicacion.replace).toHaveBeenCalledWith("/pago/python-desde-cero");
   });
 });
