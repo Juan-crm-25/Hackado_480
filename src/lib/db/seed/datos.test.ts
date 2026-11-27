@@ -229,7 +229,7 @@ describe("construirTranscripciones (#39)", () => {
     return vtt;
   };
 
-  it("una por cada vídeo del curso de la demo con transcripción, en markdown con marcas [mm:ss] agrupadas", () => {
+  it("una por cada vídeo del curso de la demo con transcripción, en markdown con una marca [mm:ss] por línea del VTT", () => {
     const transcripciones = construirTranscripciones(catalogo as Catalogo, leer);
     const conFichero = (catalogo as Catalogo).curso.modulos.flatMap((m) => m.videos.filter((v) => v.transcripcion));
     expect(transcripciones).toHaveLength(conFichero.length);
@@ -238,9 +238,9 @@ describe("construirTranscripciones (#39)", () => {
     const v04 = transcripciones.find((t) => t.claseSlug === "v04")!;
     expect(v04.moduloSlug).toBe("m2-css");
     expect(v04.titulo).toMatch(/^Transcripción · /);
-    // Los trozos de los primeros 30 s van juntos; el del segundo 40 empieza otro bloque.
+    // Tal cual (#33): sin agrupar, así no se pierde precisión; se agrupa al leer.
     expect(v04.contenidoMd).toBe(
-      `## Vídeo v04: ${conFichero.find((v) => v.id === "v04")!.titulo}\n\n[00:01] Hola, bienvenidos. Hoy vemos la especificidad.\n[00:40] Un id gana a una clase.\n`,
+      `## Vídeo v04: ${conFichero.find((v) => v.id === "v04")!.titulo}\n\n[00:01] Hola, bienvenidos.\n[00:05] Hoy vemos la especificidad.\n[00:40] Un id gana a una clase.\n`,
     );
   });
 });

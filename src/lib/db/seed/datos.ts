@@ -5,7 +5,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { agruparFragmentos, fragmentosAMarkdown, parsearVtt } from "../../transcripciones";
+import { vttAMarkdown } from "../../transcripciones";
 import type { Alumno, Catalogo, EjercicioBase, PlantillaEjercicios, TipoEjercicio } from "../../types";
 
 type Rol = "alumno" | "profesor" | "admin";
@@ -115,8 +115,8 @@ const leerVttDeDisco = (fichero: string) => readFileSync(path.join(process.cwd()
 
 /**
  * Las transcripciones de los vídeos del curso de la demo, del VTT de `data/transcripciones/` (origen del seed) al
- * markdown que se guarda en `documento.contenido_md`: una marca [mm:ss] por bloque de unos 30 s, como el temario que
- * recibe la IA. Los vídeos sin fichero de transcripción no tienen fila.
+ * markdown que se guarda en `documento.contenido_md` con `vttAMarkdown()` (#33): tal cual, una marca [mm:ss] por
+ * línea del VTT. Se agrupan al leerlas (el temario de la IA, en bloques de ~30 s). Los vídeos sin fichero no tienen fila.
  */
 export function construirTranscripciones(catalogo: Catalogo, leer: (fichero: string) => string = leerVttDeDisco): TranscripcionSeed[] {
   return catalogo.curso.modulos.flatMap((m) =>
@@ -126,7 +126,7 @@ export function construirTranscripciones(catalogo: Catalogo, leer: (fichero: str
         moduloSlug: m.id,
         claseSlug: v.id,
         titulo: `Transcripción · ${v.titulo}`,
-        contenidoMd: fragmentosAMarkdown(v, agruparFragmentos(parsearVtt(leer(v.transcripcion as string)))),
+        contenidoMd: vttAMarkdown(v, leer(v.transcripcion as string)),
       })),
   );
 }

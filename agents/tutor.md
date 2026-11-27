@@ -15,7 +15,7 @@ Es la interacción más frecuente, así que manda el coste y la velocidad: respo
 
 | Dato | Origen | Tratamiento |
 |---|---|---|
-| Temario del módulo | Transcripciones de la tabla `documento` (las guarda el seed, #39) | Bloques de ~30 s con marcas `[vídeo @segundo]` (`src/lib/agentes/temario.ts`) |
+| Temario del módulo | Transcripciones de la tabla `documento` (las guarda el seed, #39) | Agrupado al leer en bloques de ~30 s con marcas `[vídeo @segundo]` (`src/lib/agentes/temario.ts`) |
 | Pregunta del alumno | Pantalla de chat | **Filtrada** (`filtrarTexto`): sin emails, teléfonos, DNI ni el nombre del alumno |
 | Últimos 6 mensajes | Pantalla de chat | También filtrados, porque vienen del navegador y podrían manipularse |
 

@@ -20,9 +20,9 @@ const modulo: Modulo = {
 };
 
 describe("temarioDeTranscripciones", () => {
-  it("una cabecera por vídeo, en el orden del módulo, y una marca [vídeo @segundo] por bloque", () => {
+  it("una cabecera por vídeo, en el orden del módulo, y una marca [vídeo @segundo] por bloque de ~30 s", () => {
     const transcripciones = new Map([
-      ["v05", "## Vídeo v05: Caja\n\n[00:00] Padding dentro.\n[01:30] Margin fuera.\n"],
+      ["v05", "## Vídeo v05: Caja\n\n[00:00] Padding\n[00:10] dentro.\n[01:30] Margin fuera.\n"],
       ["v04", "## Vídeo v04: Especificidad\n\n[00:01] Un id gana.\n"],
     ]);
     expect(temarioDeTranscripciones(modulo, transcripciones)).toBe(
