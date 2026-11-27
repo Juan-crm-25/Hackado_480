@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { BotonCerrarSesion } from "./cerrar-sesion";
 import { BotonCreditos } from "./creditos";
+import { BotonInstalar } from "@/components/pwa/boton-instalar";
 import { type Destino, destinosPrincipales, destinosSecundariosPara, esDestinoActivo, type RolNavegacion } from "./destinos";
 
 // Sobre el fondo oscuro, el foco y la línea del destino activo van en verde (12:1 sobre carbón).
@@ -54,6 +55,10 @@ export function BarraLateral({ pathname, rol = null }: { pathname: string | null
           ))}
         </ul>
         <ul className="flex flex-col gap-1 border-t border-sidebar-border pt-4">
+          {/* «Descarga la app» (PWA): solo aparece si el navegador permite instalarla; si no, el hueco desaparece. */}
+          <li className="empty:hidden">
+            <BotonInstalar className={cn(CLASE_ITEM, "border-transparent text-white/80 hover:text-white")} />
+          </li>
           {destinosSecundariosPara(rol).map((d) => (
             // Sin sesión, «Cerrar sesión» guarda su hueco (no salta nada) pero no se ve ni se puede pulsar.
             <li key={d.id} className={cn(d.id === "cerrar-sesion" && !rol && "invisible")}>

@@ -24,3 +24,14 @@ export function destinoTrasLogin(volver: string | null | undefined): string {
   if (url.pathname === "/login" || url.pathname === "/registro") return DESTINO_POR_DEFECTO;
   return `${url.pathname}${url.search}${url.hash}`;
 }
+
+/**
+ * Navega tras entrar, registrarse o cerrar sesión cargando el destino de cero (`location.replace`), no con el router.
+ * Al cambiar la sesión cambia todo lo que el navegador tenía guardado: el router reutilizaba respuestas de antes, como
+ * «/pago/… redirige al login», y se quedaba en bucle entre el pago y el login (Next lo muestra como «Rendering…»).
+ * Al salir, además, podría enseñar páginas privadas del usuario anterior. Con `replace`, el login no queda en el historial.
+ */
+export function entrarConSesionNueva(destino: string, ubicacion: Pick<Location, "replace"> = window.location): void {
+  ubicacion.replace(destino);
+}
+
