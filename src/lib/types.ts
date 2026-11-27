@@ -93,6 +93,66 @@ export interface Ejercicio extends EjercicioBase {
 /** Versión que se envía al alumno: sin solución ni rúbrica. */
 export type EjercicioPublico = Omit<Ejercicio, "solucion" | "rubrica" | "estado" | "uso">;
 
+/** GET /api/modulos/:id/test — el test del módulo (#3): entre 5 y 8 preguntas de su banco, al azar. */
+export interface TestModulo {
+  moduloId: string;
+  preguntas: EjercicioPublico[];
+  /** Firma de las preguntas que han salido: se devuelve tal cual al entregar el test. */
+  firma: string;
+  /** Nota sobre 10 para aprobar y completar el módulo. */
+  notaAprobado: number;
+}
+
+/** POST /api/modulos/:id/test — las respuestas del alumno, una por pregunta del test que se le dio. */
+export interface PeticionTestModulo {
+  firma: string;
+  respuestas: { ejercicioId: string; respuesta: string | number }[];
+}
+
+/** Corrección de una pregunta del test. */
+export interface ResultadoPregunta {
+  ejercicioId: string;
+  correcto: boolean;
+  /** De 0 a 1. */
+  puntuacion: number;
+  feedback: string;
+  /** Momento del vídeo que hay que repasar si no es correcta. */
+  repasar?: ReferenciaVideo;
+  /** La IA no ha podido corregirla con seguridad: la revisará el profesor. */
+  revisionHumana: boolean;
+}
+
+/** GET /api/modulos/:id/tests-videos — las preguntas del test de cada vídeo (2 por vídeo), por el id del vídeo. */
+export interface TestsVideos {
+  moduloId: string;
+  /** Solo los vídeos que tienen test; un vídeo sin preguntas no bloquea el siguiente. */
+  porVideo: Record<string, EjercicioPublico[]>;
+}
+
+/** POST /api/modulos/:id/tests-videos — las respuestas a TODAS las preguntas de un vídeo. */
+export interface PeticionTestVideo {
+  videoId: string;
+  respuestas: { ejercicioId: string; respuesta: string | number }[];
+}
+
+export interface ResultadoTestVideo {
+  /** Todas correctas: se desbloquea el siguiente vídeo. */
+  superado: boolean;
+  resultados: ResultadoPregunta[];
+}
+
+export interface ResultadoTestModulo {
+  /** Sobre 10. */
+  nota: number;
+  aprobado: boolean;
+  notaAprobado: number;
+  /** La mejor nota de todos sus intentos (cuenta el mejor). */
+  mejorNota: number;
+  /** Estado del módulo después del test. */
+  estado: EstadoModulo;
+  resultados: ResultadoPregunta[];
+}
+
 // ─── Alumno, intentos y progreso ─────────────────────────────────────────────
 
 /** Datos personales: NUNCA salen hacia la IA (los filtra la capa de privacidad, issue #9). */

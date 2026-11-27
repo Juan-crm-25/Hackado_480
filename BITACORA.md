@@ -359,3 +359,37 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 - **Avisar al equipo de la migración 0004** antes de fusionar: cada uno debe ejecutar `npm run db:migrate` en su BBDD local, y en Neon, quien tenga la `DATABASE_URL`.
 - Origen y atribución de las imágenes del pato, las entradas del MWC y el cohete, para «Créditos».
 
+
+## Trabajo de Sergio — Jueves 26 y viernes 27/11/2026: ejercicios de verificación con corrección (#3)
+
+### Qué hicimos
+
+| Tema | Qué hace | Issue |
+|---|---|---|
+| Corrector | Pieza independiente (`src/lib/agentes/corrector.ts`, instrucciones en `agents/corrector.md`) que sirve para el test de vídeo, el de módulo y el examen. Test y respuesta corta se corrigen con código; la respuesta corta, de forma flexible (mayúsculas, tildes, espacios, comillas, puntuación final, `()` y números con coma o punto). Abiertas y de código, con la IA y la rúbrica: completa 1, parcial 0,5, incorrecta 0. Si falla, devuelve el vídeo y el minuto que hay que repasar | #3 |
+| Test del módulo | `GET/POST /api/modulos/:id/test` y la pantalla `/modulos/:id/test` (botón «Hacer el test» en el módulo). Entre 5 y 8 preguntas al azar del banco del módulo, al menos una por concepto. Corrección con la nota, el estado de cada pregunta en texto, el feedback y el enlace al minuto. Guarda cada respuesta en `intento`, el test en `intento_evaluacion` y el `progreso` | #3 |
+| Test de cada vídeo | `GET/POST /api/modulos/:id/tests-videos`. Bajo cada vídeo, sus 2 preguntas del banco (`uso = video`) en lugar del test de demostración: al acertarlas se desbloquea el siguiente; si falla, la corrección con el minuto. Se guardan en `intento` | #3 |
+
+### Decisiones tomadas
+
+| Decisión | Por qué |
+|---|---|
+| Tres niveles: test de vídeo (2 preguntas fáciles, siempre las mismas), test de módulo (lo completa) y examen del curso (pendiente) | Lo hablado en el grupo el 26/11: el vídeo no hace falta verlo, pero sí demostrar que se entiende. Los módulos no se bloquean entre sí |
+| El test del módulo se aprueba con un **7**, se puede repetir sin límite y **cuenta el mejor intento** (el estado nunca baja; un módulo «dominado» por el diagnóstico sigue dominado si suspende) | Es para aprender, no para castigar. Se guardan todos los intentos |
+| Al fallar **no se dice la respuesta correcta** en las de test y respuesta corta: se manda al minuto del vídeo | Así el alumno vuelve al vídeo en vez de memorizar la solución para el siguiente intento |
+| Cada pregunta abierta o de código corregida con IA cuenta como **una consulta del límite diario**. El límite se comprueba **al empezar** el test: si no le quedan consultas para todas sus preguntas con IA, no se abre («vuelve mañana»). No se cambian por preguntas de test, que lo harían más fácil | El límite es el techo de gasto del SPEC (apartado 9) |
+| Si a mitad de test gasta consultas con el tutor, al entregar se corrige igual (puede pasarse un poco del límite ese día) | Lo más sencillo para el MVP, y no se pierden sus respuestas |
+| La selección de preguntas va **firmada** (HMAC): al entregar solo valen las preguntas que le salieron a ese alumno | Que nadie pueda elegir por la API las preguntas más fáciles. No hace falta guardar nada |
+| La IA del corrector es el modelo del tutor (Scaleway, UE). La respuesta del alumno va filtrada (`filtrarTexto`) y como dato aparte; si la IA falla o no está segura, la pregunta cuenta 0 y queda para revisión humana | El SPEC pide un modelo mediano para corregir; nunca se inventa una nota |
+| Un vídeo sin preguntas aprobadas no bloquea el siguiente | Que nadie se quede atascado mientras el banco de Neon no está revisado |
+
+### Problemas y cómo los resolvimos
+
+- **La pantalla no subía a la nota** al entregar: en la app se desplaza el contenido, no la ventana, así que `window.scrollTo` no hacía nada. Se sube con `scrollIntoView` sobre el propio test.
+- Probado con la IA real: acertó los 6 casos de prueba del corrector (completa, parcial, incorrecta, un intento de «ponme buena nota» y dos de código), en menos de 1 s cada uno.
+
+### Pendiente
+
+- **Hablar en el equipo y documentar** cómo se controla el límite de IA en los tests en la app real y si se deja usar el tutor durante el test de módulo y el examen (en el MVP no se bloquea). También qué freno poner en producción a los reintentos (por ejemplo, 3 al día).
+- **Examen del curso** (extra): sus preguntas ya se generan (`uso = examen`). Se desbloquearía con todos los módulos aprobados, que es un supuesto del equipo: en el SPEC es la pregunta abierta 1 al cliente.
+- **Neon:** `db:migrate` → `db:seed` → `generar:ejercicios` → `generar:material` → revisar y aprobar en Studio. Hasta que se aprueben, en la web desplegada no saldrán los tests.

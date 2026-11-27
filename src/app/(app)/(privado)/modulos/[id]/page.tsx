@@ -1,4 +1,4 @@
-import { BookOpen, MessageCircle } from "lucide-react";
+import { BookOpen, ClipboardCheck, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { buscarModulo, cargarCursoPrincipal } from "@/server/catalogo/servicio";
 
 /**
- * Pantalla «Módulo»: descripción, conceptos y vídeos de las clases (acordeón con «visto» y progreso),
+ * Pantalla «Módulo»: descripción, conceptos y vídeos de las clases (acordeón con «visto» y progreso), el test del módulo (#3),
  * con enlaces al material y al tutor (uno al lado del otro, con el mismo peso), la tarjeta de su profesor
  * (datos de demostración, con «Enviar mensaje» a la bandeja simulada del MVP)
  * y el foro del módulo al pie («Ir al foro», arriba, baja hasta él).
@@ -114,6 +114,20 @@ async function ContenidoModulo({ params }: { params: PageProps<"/modulos/[id]">[
           ) : (
             <VideosModulo cursoSlug={resultado.curso.id} moduloSlug={modulo.id} clases={modulo.clases} />
           )}
+        </section>
+
+        {/* Test del módulo (#3): lo que lo completa. Botón carbón: «Ir al foro» es el único verde de la pantalla. */}
+        <section aria-labelledby="test-modulo" className="flex flex-col gap-2 rounded-lg border bg-card p-4">
+          <h2 id="test-modulo" className="text-lg leading-tight font-bold">
+            Test del módulo
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Entre 5 y 8 preguntas de todos los vídeos. Apruébalo con un 7 para completar el módulo.
+          </p>
+          <Link href={`/modulos/${modulo.id}/test`} className={cn(buttonVariants(), "self-start")}>
+            <ClipboardCheck aria-hidden />
+            Hacer el test
+          </Link>
         </section>
 
         {/* Mismo peso para los dos («Ir al foro» es el único botón verde). Lado a lado también a 360 px: el texto baja de línea si no cabe. */}

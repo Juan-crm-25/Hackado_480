@@ -10,6 +10,10 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/catalogo` | `Curso` | ✅ Real (lee `data/catalog.json`) | #11 rellena el contenido |
 | `GET /api/modulos/:id` | `Modulo` | ✅ Real | — |
 | `GET /api/modulos/:id/ejercicios` | `EjercicioPublico[]` (sin solución ni rúbrica) | 🧪 Prueba. El banco ya se genera en la tabla `ejercicio` (#4, `npm run generar:ejercicios`); falta que el endpoint lea los aprobados | #3 selección |
+| `GET /api/modulos/:id/test` | `TestModulo` | ✅ Real (#3): entre 5 y 8 preguntas al azar del banco del módulo (aprobadas, `uso = modulo`; al menos una por concepto), **sin solución ni rúbrica**, y la `firma` para entregarlo. Necesita el curso (401 sin sesión, 403 sin el curso); 404 si el módulo no tiene banco aprobado; **429 si no le quedan consultas de IA** para sus preguntas abiertas o de código (no gasta nada) | #3 |
+| `GET /api/modulos/:id/tests-videos` | `TestsVideos` | ✅ Real (#3): las preguntas aprobadas de vídeo (`uso = video`, 2 por vídeo, en el orden del vídeo), **sin solución**, agrupadas por el id del vídeo. Necesita el curso (401 sin sesión, 403 sin el curso); 404 si el módulo no existe. Un vídeo sin preguntas no aparece y no bloquea el siguiente | #3 |
+| `POST /api/modulos/:id/tests-videos` | `ResultadoTestVideo` | ✅ Real (#3): corrige con código (sin IA) las respuestas a TODAS las preguntas de un vídeo y las guarda en `intento`; si el alumno no había empezado el módulo, lo pasa a «en curso». `superado` si están todas bien (el navegador desbloquea el siguiente vídeo). 400 si no son justo las preguntas de ese vídeo | #3 |
+| `POST /api/modulos/:id/test` | `ResultadoTestModulo` | ✅ Real (#3): corrige el test (test y respuesta corta con código; abiertas y de código con IA, 1 consulta cada una, aunque pase del límite), guarda cada respuesta en `intento`, el test en `intento_evaluacion` y el `progreso` (aprobado con un 7 → módulo completado; cuenta el mejor intento). 400 si las respuestas no son del test que se le dio (firma) | #3 |
 | `POST /api/intentos` | `Intento` | 🧪 Test corregido por código; abiertas pendientes | #3 corrector, #13 guardar |
 | `GET /api/progreso?alumnoId=` | `Progreso[]` | 🧪 Prueba | #13 |
 | `POST /api/tutor` | `RespuestaTutor` | ✅ Real (IA). El alumno es el **usuario de la sesión** (401 sin sesión, 403 sin el curso); `alumnoId` ya no se usa. Límite diario en `uso_ia` (429). Guarda cada pregunta y respuesta, ya filtradas, en `conversacion` y `mensaje` (para el Radar) y devuelve `preguntaId` | #1, #5 |
@@ -25,6 +29,22 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/modulos/:id/infografias` | `InfografiasModulo` | ✅ Real (tabla `material_clase`; no llama a la IA): una por vídeo, solo las **revisadas**. Necesita el curso (401 sin sesión, 403 sin el curso); 404 si aún no hay ninguna revisada | #7, #15 |
 
 ## Ejemplos
+
+### `POST /api/modulos/:id/test`
+
+```json
+// Petición (PeticionTestModulo): la firma de GET /api/modulos/:id/test y una respuesta por pregunta
+{ "firma": "…", "respuestas": [{ "ejercicioId": "…", "respuesta": 1 }, { "ejercicioId": "…", "respuesta": "margin" }] }
+
+// Respuesta (ResultadoTestModulo)
+{
+  "nota": 7.5, "aprobado": true, "notaAprobado": 7, "mejorNota": 7.5, "estado": "completado",
+  "resultados": [
+    { "ejercicioId": "…", "correcto": false, "puntuacion": 0, "feedback": "No es correcto. Repasa este momento del vídeo.",
+      "repasar": { "videoId": "v04", "segundo": 206 }, "revisionHumana": false }
+  ]
+}
+```
 
 ### `POST /api/intentos`
 
