@@ -296,3 +296,41 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 - **Neon:** que nadie genere ejercicios hasta fusionar esta PR; después, `migrate` → `seed` → `generar:ejercicios` (ahora genera los tres bancos) → revisar y aprobar.
 - **#3:** corrector, test del módulo y tests de vídeo con las preguntas de `uso = video`.
+
+
+## Trabajo de Antonio sobre diagnóstico rápido por módulo — Viernes 27/11/2026 (#6)
+
+**Quién:** Antonio Pascual (en rama `feat/issue-6-diagnostico-rapido` desde la web de GitHub).
+**Bloque:** Evaluaciones y ruta personalizada (issue #6).
+**Coordinación:** se avisó por WhatsApp antes de asignarse el issue y de empezar, y se avisará antes de fusionar la PR.
+
+### Qué hicimos
+
+| Parte | Qué se hizo | Ficheros |
+|---|---|---|
+| Esquemas y validación | Validación con Zod de los parámetros del módulo (`esquemaParamsModulo`) y del envío de respuestas (`esquemaResponderDiagnostico`), comprobando que se envían respuestas válidas dentro de límites razonables (`server-only`). | `src/server/evaluaciones/esquemas.ts` |
+| Banco de preguntas | Definición de 3 preguntas tipo test por módulo del curso de muestra (`m1-html`, `m2-css`, `m3-responsive`, `m4-javascript`) con el índice de la opción correcta en el lado del servidor, sin exponer la solución en la respuesta pública. | `src/server/evaluaciones/banco-diagnostico.ts` |
+| Repositorio de BBDD | Consultas con Drizzle (`server-only`) para localizar el módulo y su curso (`leerModuloConCurso`), comprobar si existen preguntas de diagnóstico en BD (`leerDiagnosticoEnBd`), consultar el estado actual del alumno (`leerEstadoModulo`), marcar el módulo como `dominado` en `progreso` (`marcarModuloDominado`) y registrar el intento en `intento_evaluacion` cuando existe evaluación en BD (`guardarIntentoDiagnostico`). | `src/server/evaluaciones/repositorio.ts` |
+| Servicio de negocio | `obtenerDiagnosticoModulo()` devuelve las 3 preguntas sin la respuesta correcta tras verificar sesión y acceso al curso (`requerirAccesoCurso()`). `responderDiagnosticoModulo()` cuenta los aciertos por código (sin IA); si acierta todas, marca el módulo como `dominado` (respetando que no pasa a `completado` sin superar los ejercicios del módulo) y reordena la ruta del alumno para bajar ese módulo al final de `matricula.orden_modulos` y recalcular `modulo_principal_id` mediante `ordenarRuta()` y `guardarRutaDeMatricula()`. | `src/server/evaluaciones/servicio.ts` |
+| Endpoint HTTP | Rutas `GET` y `POST` en `/api/modulos/[id]/diagnostico` construidas con `ruta({ acceso: "usuario", ... })` para exigir sesión (401), validar parámetros y cuerpo (400) y delegar en el servicio (que aplica 403 si falta acceso al curso o 404 si no existe el módulo). | `src/app/api/modulos/[id]/diagnostico/route.ts` |
+| Documentación del módulo | Actualización del `README.md` de `evaluaciones` explicando las tablas implicadas, el endpoint `GET/POST /api/modulos/[id]/diagnostico` y las reglas de `dominado` frente a `completado` y reordenación de ruta. | `src/server/evaluaciones/README.md` |
+| Pruebas automatizadas | Tests de servicio (`servicio.test.ts`) cubriendo obtención sin revelar solución, fallo parcial (no marca `dominado`), pleno acierto (marca `dominado` y baja el módulo en la ruta) y módulo inexistente/sin acceso; más tests de ruta HTTP (`route.test.ts`) comprobando 401 sin sesión, 400 con cuerpo vacío y llamadas al servicio. | `src/server/evaluaciones/servicio.test.ts`, `src/app/api/modulos/[id]/diagnostico/route.test.ts` |
+
+### Decisiones tomadas
+
+| Decisión | Alternativas | Por qué |
+|---|---|---|
+| Corrección 100 % por código con preguntas tipo test predefinidas | Usar IA en tiempo real para generar o corregir el diagnóstico | Evita latencia y coste de IA en una prueba rápida de 3 preguntas, garantiza respuestas inmediatas y predecibles, y encaja con una estimación de 1 h. |
+| Reutilizar `ordenarRuta()` (`src/lib/ruta.ts`) y `guardarRutaDeMatricula()` (`matriculas`) | Escribir una ordenación nueva dentro de `evaluaciones` | Mantiene una única lógica de ordenación y evita divergencias entre la ruta personalizada de Héctor y la bajada de módulos dominados. |
+| Marcar `dominado` (no `completado`) al acertar las 3 preguntas | Dar el módulo por completado o subir directamente el porcentaje completado sin ejercicios | Respeta el acuerdo del equipo y el SPEC: el diagnóstico solo reordena y marca `dominado`, mientras que completar el módulo exige superar los ejercicios de verificación. |
+| Si el módulo ya está `completado`, conservar `completado` | Sobrescribir `completado` por `dominado` | Evita retroceder el estado de un módulo que el alumno ya había completado previamente. |
+
+### Problemas y cómo los resolvimos
+
+- **Coexistencia de UUIDs y slugs en la ruta:** `matricula.ordenModulos` almacena UUIDs de `modulo.id`, mientras `src/lib/ruta.ts` opera con los slugs (`m.id` en `ModuloOrdenable`). Se tradujeron los UUIDs a slugs al leer la ruta previa y se volvieron a mapear a UUIDs al persistir en `guardarRutaDeMatricula()`.
+- **Trabajo sin entorno local ni Git instalado:** todo el desarrollo y los commits se realizaron directamente desde la interfaz web de GitHub en la rama `feat/issue-6-diagnostico-rapido`, apoyándose en los patrones existentes de `matriculas` y `ruta`.
+
+### Pendiente
+
+- Conectar la interfaz móvil del módulo/curso para lanzar el diagnóstico rápido de 3 preguntas y mostrar el resultado de reordenación al alumno.
+- Ejecutar la batería completa (`npm test`, `npm run lint` y `npm run build`) en la PR / entorno de comprobación antes de fusionar a `main`.
