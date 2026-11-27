@@ -5,7 +5,7 @@
  */
 import { completar as completarIA } from "../ai/cliente";
 import { contenidoDelCurso, filtrarTexto } from "../ai/privacidad";
-import { temarioDelModulo } from "../transcripciones";
+import { temarioDelModulo } from "./temario";
 import type { MaterialPersonal, Modulo, NivelMaterial, PeticionMaterialPersonal } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
 import { validarSecciones, validarTarjetas } from "./material";
@@ -35,7 +35,8 @@ export interface EntradaMaterialPersonal {
 
 export interface DependenciasMaterialPersonal {
   completar: typeof completarIA;
-  temario: (modulo: Modulo) => string;
+  /** El temario del módulo; el real lo lee de la BBDD (`documento`, #39). */
+  temario: (modulo: Modulo) => string | Promise<string>;
   ahora: () => Date;
   id: () => string;
 }
@@ -53,7 +54,7 @@ export async function generarMaterialPersonal(
   { modulo, peticion, nombresOcultos }: EntradaMaterialPersonal,
   deps: DependenciasMaterialPersonal = dependenciasReales,
 ): Promise<MaterialPersonal> {
-  const temario = deps.temario(modulo);
+  const temario = await deps.temario(modulo);
   if (!temario) throw new ErrorMaterial(`Todavía no tengo el contenido de los vídeos del módulo «${modulo.titulo}».`);
 
   const concepto = peticion.conceptoId ? modulo.conceptos.find((c) => c.id === peticion.conceptoId) : undefined;

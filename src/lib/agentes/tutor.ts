@@ -6,7 +6,7 @@
  */
 import { completar as completarIA, type MensajeIA } from "../ai/cliente";
 import { contenidoDelCurso, filtrarTexto } from "../ai/privacidad";
-import { temarioDelModulo } from "../transcripciones";
+import { temarioDelModulo } from "./temario";
 import type { Curso, Mensaje, Modulo, ReferenciaVideo } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
 import { quitarBloqueCodigo, validarFuentes } from "./validacion";
@@ -33,7 +33,8 @@ export interface SalidaTutor {
 /** Dependencias inyectables para los tests. */
 export interface DependenciasTutor {
   completar: typeof completarIA;
-  temario: (modulo: Modulo) => string;
+  /** El temario del módulo; el real lo lee de la BBDD (`documento`, #39). */
+  temario: (modulo: Modulo) => string | Promise<string>;
 }
 
 const dependenciasReales: DependenciasTutor = { completar: completarIA, temario: (m) => temarioDelModulo(m) };
@@ -44,7 +45,7 @@ export async function preguntarAlTutor(
 ): Promise<SalidaTutor> {
   const { curso, modulo, nombresOcultos } = entrada;
 
-  const temario = deps.temario(modulo);
+  const temario = await deps.temario(modulo);
   if (!temario) {
     // Sin transcripciones el tutor no tiene de dónde responder: ni se llama a la IA.
     return {

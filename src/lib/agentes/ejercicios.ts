@@ -10,7 +10,7 @@
  */
 import { completar as completarIA } from "../ai/cliente";
 import { contenidoDelCurso } from "../ai/privacidad";
-import { temarioDelModulo } from "../transcripciones";
+import { temarioDelModulo } from "./temario";
 import type { Ejercicio, Modulo, PlantillaEjercicios, TipoEjercicio, UsoEjercicio } from "../types";
 import { leerInstrucciones, rellenar } from "./instrucciones";
 import { parsearObjetoJson, validarFuentes } from "./validacion";
@@ -35,7 +35,8 @@ export type EjercicioGenerado = Omit<Ejercicio, "id" | "estado">;
 
 export interface DependenciasEjercicios {
   completar: typeof completarIA;
-  temario: (modulo: Modulo) => string;
+  /** El temario del módulo; el real lo lee de la BBDD (`documento`, #39). */
+  temario: (modulo: Modulo) => string | Promise<string>;
 }
 
 const dependenciasReales: DependenciasEjercicios = { completar: completarIA, temario: (m) => temarioDelModulo(m) };
@@ -53,7 +54,7 @@ export async function generarEjercicios(
   deps: DependenciasEjercicios = dependenciasReales,
 ): Promise<EjercicioGenerado[]> {
   const sistema = rellenar(leerInstrucciones("generador-ejercicios"), {
-    ...comunes(modulo, plantilla, plantilla.tipos, deps),
+    ...(await comunes(modulo, plantilla, plantilla.tipos, deps)),
     total: String(modulo.conceptos.length * EJERCICIOS_POR_CONCEPTO),
   });
   return validarEjercicios(await pedir(sistema, "Genera los ejercicios del módulo.", deps), modulo, plantilla);
@@ -101,7 +102,7 @@ export async function generarPreguntasVideo(
   deps: DependenciasEjercicios = dependenciasReales,
 ): Promise<EjercicioGenerado[]> {
   const sistema = rellenar(leerInstrucciones("generador-ejercicios", "video"), {
-    ...comunes(modulo, plantilla, tiposDeVideo(plantilla), deps),
+    ...(await comunes(modulo, plantilla, tiposDeVideo(plantilla), deps)),
     videos: modulo.videos.map((v) => `- ${v.id}: ${v.titulo}`).join("\n"),
     por_video: String(PREGUNTAS_POR_VIDEO),
   });
@@ -153,13 +154,13 @@ export async function generarPreguntasExamen(
   deps: DependenciasEjercicios = dependenciasReales,
 ): Promise<EjercicioGenerado[]> {
   const sistema = rellenar(leerInstrucciones("generador-ejercicios", "examen"), {
-    ...comunes(modulo, plantilla, plantilla.tipos, deps),
+    ...(await comunes(modulo, plantilla, plantilla.tipos, deps)),
     total: String(PREGUNTAS_EXAMEN),
     anteriores:
       anteriores.length === 0
         ? "Ninguno: es el primer módulo."
         : anteriores.map((m) => `- ${m.titulo}: ${m.conceptos.map((c) => c.nombre).join(", ")}`).join("\n"),
-    temario_anteriores: anteriores.map((m) => deps.temario(m)).filter(Boolean).join("\n") || "-",
+    temario_anteriores: (await Promise.all(anteriores.map((m) => deps.temario(m)))).filter(Boolean).join("\n") || "-",
   });
   return validarPreguntasExamen(await pedir(sistema, "Genera las preguntas de examen del módulo.", deps), modulo, plantilla);
 }
@@ -182,8 +183,8 @@ export function validarPreguntasExamen(respuesta: string, modulo: Modulo, planti
 // ─── Comunes ─────────────────────────────────────────────────────────────────
 
 /** Variables que comparten los tres prompts. Falla si el módulo no tiene transcripciones. */
-function comunes(modulo: Modulo, plantilla: PlantillaEjercicios, tipos: TipoEjercicio[], deps: DependenciasEjercicios) {
-  const temario = deps.temario(modulo);
+async function comunes(modulo: Modulo, plantilla: PlantillaEjercicios, tipos: TipoEjercicio[], deps: DependenciasEjercicios) {
+  const temario = await deps.temario(modulo);
   if (!temario) throw new Error(`El módulo «${modulo.titulo}» no tiene transcripciones: no hay de dónde generar ejercicios.`);
   const ejemplos = plantilla.ejemplos.filter((e) => tipos.includes(e.tipo)).map(enOrden);
   return {

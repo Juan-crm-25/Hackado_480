@@ -108,7 +108,7 @@ npm run generar:ejercicios -- --forzar      # regenera: borra los borradores de 
 - **Revisión desde la app:** el profesor no usaría herramientas de la BBDD. Revisaría los borradores desde **una pantalla de la app**, solo de los cursos que enseña (`requerirProfesorDelCurso()`), con cada ejercicio legible (concepto, vídeo y minuto con enlace, solución o rúbrica) y los botones aprobar, corregir y descartar. Por debajo cambia la misma columna `estado`.
 - **Pedir otros nuevos:** un botón «Generar otros» en esa pantalla, para regenerar los borradores del módulo (lo que hoy hace `--forzar`) o **solo uno**, con un ejercicio nuevo del mismo concepto. El profesor puede decir por qué no le gusta («demasiado fácil», «la solución es ambigua»): ese comentario y los ejercicios ya aprobados se añaden al prompt, para que la IA no los repita y ajuste el nivel. Si los fallos se repiten, lo mejor es mejorar la plantilla (ejemplos e indicaciones) desde la misma pantalla. Con un límite diario por profesor, como el del tutor para los alumnos.
 - **En segundo plano:** el generador se lanzaría solo al guardar la plantilla o subir vídeos nuevos al módulo, nunca mientras alguien espera una página.
-- **Temario desde la BBDD:** hoy el temario sale de `data/transcripciones/`, como en el material. Cuando la tabla `documento` tenga las transcripciones, se leerá de ahí sin cambiar el resto del generador.
+- **Temario desde la BBDD:** desde el #39 el temario sale de la tabla `documento` (`src/lib/agentes/temario.ts`), que llena el seed. Por eso, en una BBDD nueva hay que ejecutar `npm run db:seed` **antes** de generar.
 
 ## Instrucciones (prompt de sistema)
 

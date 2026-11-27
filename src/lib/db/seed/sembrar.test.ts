@@ -4,7 +4,8 @@ import { bdPruebasDisponible, crearBdPrueba, type BdPrueba } from "../test-utils
 import { comprobarContrasena } from "../../contrasena";
 import m2Css from "../../../../data/ejemplos-profesor/m2-css.json";
 import { FRASES_SENSEI } from "../../foro";
-import { clase, comentarioForo, cuenta, curso, cursoImagen, matricula, modulo, plantillaEjercicio, puntoForo, temaForo, usuario } from "../schema";
+import { clase, comentarioForo, cuenta, curso, cursoImagen, documento, matricula, modulo, plantillaEjercicio, puntoForo, temaForo, usuario } from "../schema";
+import { parsearMarkdown } from "../../transcripciones";
 import { CONTRASENA_DEMO, EMAIL_IA_FORO } from "./datos";
 import { sembrar } from "./sembrar";
 
@@ -27,6 +28,7 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
       modulo: 18,
       concepto: 12,
       clase: 12,
+      documento: 12, // la transcripción de cada vídeo (#39)
       usuario: 13, // 12 de la demo + Sensei, la IA del foro
       cuenta: 12, // Sensei no tiene cuenta: no puede iniciar sesión
       matricula: 34,
@@ -67,12 +69,27 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
     expect(v04).toMatchObject({ videoUrl: "https://www.youtube.com/watch?v=6fh7ZTj2t2k", orden: 1 });
   });
 
+  it("guarda la transcripción de cada vídeo en documento, con marcas [mm:ss] que se pueden volver a leer (#39)", async () => {
+    const filas = await bd.db
+      .select({ slug: clase.slug, tipo: documento.tipo, titulo: documento.titulo, md: documento.contenidoMd })
+      .from(documento)
+      .innerJoin(clase, eq(clase.id, documento.claseId))
+      .orderBy(asc(clase.slug));
+    expect(filas.map((f) => f.slug)).toEqual(Array.from({ length: 12 }, (_, i) => `v${String(i + 1).padStart(2, "0")}`));
+    expect(filas.every((f) => f.tipo === "transcripcion")).toBe(true);
+    const v04 = filas.find((f) => f.slug === "v04")!;
+    expect(v04.md.startsWith("## Vídeo v04: ")).toBe(true);
+    const fragmentos = parsearMarkdown(v04.md);
+    expect(fragmentos.length).toBeGreaterThan(5);
+    expect(fragmentos.every((f, i) => i === 0 || f.inicio > fragmentos[i - 1].inicio)).toBe(true);
+  });
+
   it("es idempotente: repetirlo deja los mismos datos", async () => {
     const antes = await bd.db.select().from(usuario).orderBy(usuario.email);
     const cuentasAntes = await bd.db.select().from(cuenta).orderBy(cuenta.id);
     const comentariosAntes = await bd.db.select().from(comentarioForo).orderBy(comentarioForo.id);
     const recuento = await sembrar(bd.db);
-    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 13, cuenta: 12, matricula: 34, clase: 12, progreso: 2, curso_imagen: 6 });
+    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 13, cuenta: 12, matricula: 34, clase: 12, documento: 12, progreso: 2, curso_imagen: 6 });
     // El foro no se duplica: un tema que ya existe (mismo módulo y título) no vuelve a crear sus comentarios ni sus puntos.
     expect(recuento).toMatchObject({ tema_foro: 6, comentario_foro: 26, punto_foro: 2 });
     expect(await bd.db.select().from(comentarioForo).orderBy(comentarioForo.id)).toEqual(comentariosAntes);

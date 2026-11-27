@@ -184,7 +184,7 @@ Usamos 12 vídeos de dos canales de YouTube en español: **Kiko Palomares** (HTM
 | | v11 · [Modificar el DOM](https://www.youtube.com/watch?v=H7CC46Hi0YA) | 12:51 | automáticos |
 | | v12 · [Eventos](https://www.youtube.com/watch?v=griNhCfEIOM) | 12:11 | automáticos |
 
-Los vídeos, sus duraciones y los 3 conceptos de cada módulo están en `data/catalog.json`; las transcripciones, en `data/transcripciones/v01.vtt` … `v12.vtt`. Son el origen del seed de la BBDD (ver [`docs/bbdd/README.md`](docs/bbdd/README.md)).
+Los vídeos, sus duraciones y los 3 conceptos de cada módulo están en `data/catalog.json`; las transcripciones, en `data/transcripciones/v01.vtt` … `v12.vtt`. Son el origen del seed de la BBDD, que las guarda en `documento`; la app las lee de ahí (ver [`docs/bbdd/README.md`](docs/bbdd/README.md)).
 
 ### Cómo obtuvimos las transcripciones
 
