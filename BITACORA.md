@@ -333,3 +333,29 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 
 - Conectar la interfaz móvil del módulo/curso para lanzar el diagnóstico rápido de 3 preguntas y mostrar el resultado de reordenación al alumno.
 - Ejecutar la batería completa (`npm test`, `npm run lint` y `npm run build`) en la PR / entorno de comprobación antes de fusionar a `main`.
+
+## Trabajo de Héctor — Viernes 27/11/2026: PWA completa y puntos con premios
+
+### Qué hicimos
+
+| Tema | Qué hace |
+|---|---|
+| PWA terminada | Service worker que cachea la interfaz (JS, CSS, fuentes e imágenes) y, sin conexión, muestra la página «Sin conexión». Las páginas con datos del alumno nunca se guardan. Manifiesto con `id`, icono `maskable` y `theme-color`. Solo se registra en producción. |
+| Puntos y premios en el perfil | Un solo cajón con el total, de dónde sale (respuestas, profesor, demo y canjes) y una barra con 4 premios: preguntas extra para el tutor (100), pato de 480 (340), entradas del MWC (460) y la «Misión Leyenda» de la ESA (9999), aparte. |
+| Canje en la BBDD | Canjear resta los puntos del premio, una vez por premio y sin gastar dos veces el mismo saldo. Los botones «+100 puntos» y «+1000 puntos» permiten enseñarlo en la demo. Es una simulación: no se entrega nada. |
+| Diseño | Barra con degradado de la marca y brillo, premios que crecen y brillan con su color al pasar el ratón, columnas alineadas en móvil y confeti al canjear. Imágenes acreditadas en «Créditos». |
+| Limpieza y arreglos | Código muerto fuera (`getUsuarioDemo`, `getProgresoDemo`, `PuntosForo`, icono original). Se borra `src/app/api/diagnostico/route.ts`, que estaba vacío y rompía `tsc` y `next build`. |
+
+### Decisiones tomadas
+
+| Decisión | Por qué |
+|---|---|
+| El canje **resta** los puntos del premio (no vacía el saldo) | Como una tienda de puntos: puedes canjear varios premios si te llega |
+| Los canjes y los puntos de demo van en una tabla nueva, `movimiento_puntos` (migración `0004_premios_puntos`) | Los puntos del foro se calculan y no se guardan; solo se guarda lo que los cambia |
+| El GTA se quitó de los premios | Es PEGI 18 y en la academia hay alumnos menores |
+
+### Pendiente
+
+- **Avisar al equipo de la migración 0004** antes de fusionar: cada uno debe ejecutar `npm run db:migrate` en su BBDD local, y en Neon, quien tenga la `DATABASE_URL`.
+- Origen y atribución de las imágenes del pato, las entradas del MWC y el cohete, para «Créditos».
+
