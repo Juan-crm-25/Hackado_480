@@ -36,11 +36,15 @@ export const ejerciciosDemo: Ejercicio[] = [
   },
 ];
 
+/**
+ * Punto de partida de Lucía para la demo: HTML completado (el curso empieza al 25 %), CSS en curso (se aprueba su test
+ * en directo y sube al 50 %) y Maquetación dominado por el diagnóstico (enseña la etiqueta «Dominado»: falta el test).
+ */
 export const progresoDemo: Progreso[] = [
   {
     alumnoId: "a1",
     moduloId: "m1-html",
-    estado: "dominado",
+    estado: "completado",
     aciertosPorConcepto: { "html-web": 1, "html-estructura": 1, "html-semantica": 0.8 },
     actualizado: "2026-11-23T10:00:00Z",
   },
@@ -50,6 +54,13 @@ export const progresoDemo: Progreso[] = [
     estado: "en_curso",
     aciertosPorConcepto: { "css-especificidad": 0.3 },
     actualizado: "2026-11-23T11:00:00Z",
+  },
+  {
+    alumnoId: "a1",
+    moduloId: "m3-responsive",
+    estado: "dominado",
+    aciertosPorConcepto: {},
+    actualizado: "2026-11-23T09:00:00Z",
   },
 ];
 

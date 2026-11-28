@@ -133,8 +133,9 @@ describe.skipIf(!hayBd)("ruta personalizada (con BBDD real)", () => {
     expect(avance.orden?.at(-1)).toBe("m2-css");
     expect(avance.progreso).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ moduloId: "m1-html", estado: "dominado" }),
+        expect.objectContaining({ moduloId: "m1-html", estado: "completado" }),
         expect.objectContaining({ moduloId: "m2-css", estado: "en_curso" }),
+        expect.objectContaining({ moduloId: "m3-responsive", estado: "dominado" }),
       ]),
     );
   });

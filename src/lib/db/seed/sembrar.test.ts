@@ -32,7 +32,7 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
       usuario: 13, // 12 de la demo + Sensei, la IA del foro
       cuenta: 12, // Sensei no tiene cuenta: no puede iniciar sesión
       matricula: 34,
-      progreso: 2,
+      progreso: 3, // Lucía: HTML completado, CSS en curso y Maquetación dominado
       plantilla_ejercicio: 4,
       curso_imagen: 6,
       tema_foro: 6,
@@ -89,7 +89,7 @@ describe.skipIf(!hayBd)("sembrar (con BBDD real)", () => {
     const cuentasAntes = await bd.db.select().from(cuenta).orderBy(cuenta.id);
     const comentariosAntes = await bd.db.select().from(comentarioForo).orderBy(comentarioForo.id);
     const recuento = await sembrar(bd.db);
-    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 13, cuenta: 12, matricula: 34, clase: 12, documento: 12, progreso: 2, curso_imagen: 6 });
+    expect(recuento).toMatchObject({ curso: 6, modulo: 18, usuario: 13, cuenta: 12, matricula: 34, clase: 12, documento: 12, progreso: 3, curso_imagen: 6 });
     // El foro no se duplica: un tema que ya existe (mismo módulo y título) no vuelve a crear sus comentarios ni sus puntos.
     expect(recuento).toMatchObject({ tema_foro: 6, comentario_foro: 26, punto_foro: 2 });
     expect(await bd.db.select().from(comentarioForo).orderBy(comentarioForo.id)).toEqual(comentariosAntes);
