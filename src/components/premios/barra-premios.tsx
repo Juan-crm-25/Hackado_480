@@ -12,6 +12,7 @@ import { leerRespuesta, mensajeDeError } from "@/lib/peticiones";
 import { cn } from "@/lib/utils";
 import type { SaldoPremios } from "@/server/recompensas/servicio";
 import { estadoPremio, posicionHito, rellenoBarra } from "./logica";
+import { contar } from "@/lib/formato";
 
 const NORMALES = PREMIOS.filter((p) => !p.legendario);
 const LEGENDARIO = PREMIOS.find((p) => p.legendario);
@@ -90,13 +91,14 @@ export function BarraPremios({ saldoInicial }: { saldoInicial: SaldoPremios }) {
           </h2>
           <p className="flex items-center gap-2 text-2xl font-bold whitespace-nowrap tabular-nums">
             <Trophy className="size-6 shrink-0" aria-hidden />
-            {`${puntos} puntos`}
+            {contar(puntos, "punto", "puntos")}
           </p>
         </div>
         {/* Dos filas, centradas en móvil para que no se vea apretado: lo ganado en el foro y, debajo, demo y canjes. */}
         <div className="text-center text-xs text-muted-foreground tabular-nums md:text-left">
           <p>{`${saldo.respuestas} por respuestas · ${saldo.profesor} del profesor`}</p>
-          <p>{`${saldo.demo} de demo · −${saldo.canjeado} canjeados`}</p>
+          {/* Los canjes restan: «−» solo si hay alguno (nunca «−0»). */}
+          <p>{`${saldo.demo} de demo · ${saldo.canjeado > 0 ? "−" : ""}${saldo.canjeado} canjeados`}</p>
         </div>
       </header>
 

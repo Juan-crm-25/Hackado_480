@@ -16,8 +16,9 @@ const FRANJAS = ["bg-chart-1", "bg-chart-2", "bg-chart-3", "bg-chart-4", "bg-cha
 export type ModuloDeTarjeta = { id: string; titulo: string; descripcion: string; numClases: number; numConceptos: number };
 
 /**
- * Tarjeta de un módulo en el panel. Un módulo dominado o completado (solo se consigue aprobando su test) se
- * distingue del resto con borde y fondo de la marca, un icono y el texto «Test superado»: nunca solo con color.
+ * Tarjeta de un módulo en el panel. Un módulo completado (solo se consigue aprobando su test, #3) se distingue del
+ * resto con borde y fondo de la marca, un icono y el texto «Test superado»: nunca solo con color. Uno «Dominado» por
+ * el diagnóstico no está superado: lo dice y recuerda que falta el test para completarlo (SPEC, H6).
  * Con `disponible={false}` (cursos sin pantallas de módulo todavía) no enlaza a nada y dice «Contenido próximamente».
  */
 export function TarjetaModulo({
@@ -46,6 +47,11 @@ export function TarjetaModulo({
               {etiquetaEstado(estado)}
             </Badge>
             <span className="text-xs font-semibold text-muted-foreground">Test superado</span>
+          </div>
+        ) : estado === "dominado" ? (
+          <div className="flex flex-col gap-0.5">
+            <p className="text-xs font-semibold text-muted-foreground">{etiquetaEstado(estado)}</p>
+            <p className="text-xs text-muted-foreground">Haz el test del módulo para completarlo</p>
           </div>
         ) : (
           <p className="text-xs font-semibold text-muted-foreground">{etiquetaEstado(estado)}</p>

@@ -68,6 +68,18 @@ describe("VistaRadar", () => {
     expect(html).toContain("6 veces");
   });
 
+  it("con una sola pregunta o un solo alumno, en singular", () => {
+    const html = pintar({
+      ...informe,
+      alumnos: 1,
+      dudasFrecuentes: [{ moduloId: "m1-html", modulo: "HTML", total: 1, masRepetidas: [{ texto: "¿Qué es el head?", veces: 1 }] }],
+    });
+    expect(html).toContain("1 pregunta<");
+    expect(html).not.toContain("1 preguntas");
+    expect(html).toContain("· 1 alumno");
+    expect(html).not.toContain("1 alumnos");
+  });
+
   it("con todo vacío, lo dice en cada apartado en vez de dejarlo en blanco", () => {
     const html = pintar({ ...informe, alertas: [], conceptosMasFallados: [], dudasFrecuentes: [] });
     expect(html).toContain("Nadie necesita ayuda ahora mismo");

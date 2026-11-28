@@ -36,6 +36,15 @@ describe("BarraPremios (perfil)", () => {
     expect(html).toMatch(/<div class="[^"]*\btext-center\b[^"]*\bmd:text-left\b[^"]*"><p[^>]*>5 por respuestas · 3 del profesor<\/p><p[^>]*>3000 de demo · −100 canjeados<\/p><\/div>/);
   });
 
+  it("sin canjes no pone un «−0», y 1 punto va en singular", () => {
+    const html = renderToStaticMarkup(
+      <BarraPremios saldoInicial={{ foro: 1, respuestas: 0, profesor: 1, demo: 0, canjeado: 0, saldo: 1, canjeados: [] }} />,
+    );
+    expect(html).toContain("0 de demo · 0 canjeados");
+    expect(html).not.toContain("−0");
+    expect(html).toMatch(/1 punto<\/p>/);
+  });
+
   it("la barra es de colores llamativos y solo brilla si el usuario acepta animaciones", () => {
     const html = pinta(220);
     expect(html).toContain("from-brand");

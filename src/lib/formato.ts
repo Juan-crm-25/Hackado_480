@@ -25,3 +25,8 @@ export function formatoPrecio(centimos: number): string {
 export function formatoDecimal(numero: number): string {
   return UN_DECIMAL.format(numero);
 }
+
+/** El número con la palabra en singular o en plural: contar(1, "pregunta", "preguntas") → "1 pregunta". */
+export function contar(n: number, singular: string, plural: string): string {
+  return `${n} ${n === 1 ? singular : plural}`;
+}

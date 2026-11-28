@@ -58,3 +58,14 @@ describe("tutor humano (H9) en el chat", () => {
     expect(renderToStaticMarkup(<DudasConTutor dudas={[]} />)).toBe("");
   });
 });
+
+describe("formato de las respuestas del tutor", () => {
+  it("las negritas y las listas en markdown se ven con formato, sin asteriscos", () => {
+    const html = renderToStaticMarkup(
+      <BurbujaMensaje mensaje={{ rol: "tutor", texto: "El **ID** gana.\n- `#id`: 100\n- `.clase`: 10" }} videos={[]} />,
+    );
+    expect(html).toContain("<strong>ID</strong>");
+    expect(html).not.toContain("**");
+    expect(html).toMatch(/<ul[^>]*><li><code/);
+  });
+});

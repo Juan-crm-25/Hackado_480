@@ -30,7 +30,7 @@ describe.skipIf(!hayBd)("cursos del usuario con su progreso (con BBDD real)", ()
     expect(titulos).toEqual([...titulos].sort((a, b) => a.localeCompare(b, "es")));
 
     const web = resultado.cursos.find((c) => c.slug === "desarrollo-web");
-    // Del progreso de demostración: HTML dominado y CSS en curso, de 4 módulos.
+    // Del progreso de demostración: HTML completado, CSS en curso y Maquetación dominado (dominado no cuenta: falta el test).
     expect(web).toMatchObject({ totalModulos: 4, modulosCompletados: 1, porcentaje: 25, rolEnCurso: "alumno", personalizada: false });
     expect(web!.categoria).toBe("Programación");
     expect(web!.bannerUrl).toBe("/banners/desarrollo-web.webp");

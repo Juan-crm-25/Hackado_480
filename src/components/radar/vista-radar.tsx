@@ -1,6 +1,7 @@
 import { Clock, MessageCircleQuestion, TriangleAlert } from "lucide-react";
 import { EstadoVacio } from "@/components/estado";
 import { Badge } from "@/components/ui/badge";
+import { contar } from "@/lib/formato";
 import type { AlertaAlumno, InformeRadar } from "@/lib/types";
 import { haceCuanto } from "./hace-cuanto";
 import { ResumenDudas } from "./resumen-dudas";
@@ -17,7 +18,7 @@ export function VistaRadar({ informe, ahora }: { informe: InformeRadar; ahora: D
       <header className="flex flex-col gap-1">
         <h1 className="text-3xl leading-tight font-bold md:text-4xl">Radar del tutor</h1>
         <p className="text-base text-muted-foreground">
-          {informe.curso.titulo} · {informe.alumnos} alumnos
+          {informe.curso.titulo} · {contar(informe.alumnos, "alumno", "alumnos")}
         </p>
       </header>
 
@@ -85,7 +86,7 @@ export function VistaRadar({ informe, ahora }: { informe: InformeRadar; ahora: D
               <article key={d.moduloId} className="flex flex-col gap-2 rounded-lg border p-4">
                 <h3 className="flex items-baseline justify-between gap-3 font-bold">
                   {d.modulo}
-                  <span className="text-sm font-normal text-muted-foreground">{d.total} preguntas</span>
+                  <span className="text-sm font-normal text-muted-foreground">{contar(d.total, "pregunta", "preguntas")}</span>
                 </h3>
                 <ul className="flex flex-col gap-2">
                   {d.masRepetidas.map((p) => (
