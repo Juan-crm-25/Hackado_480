@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatoDecimal, formatoPrecio } from "./formato";
+import { contar, formatoDecimal, formatoPrecio } from "./formato";
 
 describe("formatoPrecio", () => {
   it("un curso de 0 céntimos es «Gratis»", () => {
@@ -18,5 +18,13 @@ describe("formatoDecimal", () => {
     expect(formatoDecimal(4.6)).toBe("4,6");
     expect(formatoDecimal(4)).toBe("4,0");
     expect(formatoDecimal(4.25)).toBe("4,3");
+  });
+});
+
+describe("contar", () => {
+  it("el número con la palabra en singular solo si es 1", () => {
+    expect(contar(1, "pregunta", "preguntas")).toBe("1 pregunta");
+    expect(contar(0, "pregunta", "preguntas")).toBe("0 preguntas");
+    expect(contar(12, "alumno", "alumnos")).toBe("12 alumnos");
   });
 });

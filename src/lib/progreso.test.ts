@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { porcentajeCompletado } from "./progreso";
+import { ESTADOS_COMPLETADOS, porcentajeCompletado } from "./progreso";
 
 describe("porcentajeCompletado", () => {
   it("es la parte de módulos completados, redondeada a un entero", () => {
@@ -17,5 +17,11 @@ describe("porcentajeCompletado", () => {
   it("nunca pasa de 100 ni baja de 0", () => {
     expect(porcentajeCompletado(5, 4)).toBe(100);
     expect(porcentajeCompletado(-1, 4)).toBe(0);
+  });
+});
+
+describe("ESTADOS_COMPLETADOS", () => {
+  it("solo «completado»: un módulo dominado por el diagnóstico aún tiene que aprobar su test (SPEC, H6)", () => {
+    expect([...ESTADOS_COMPLETADOS]).toEqual(["completado"]);
   });
 });

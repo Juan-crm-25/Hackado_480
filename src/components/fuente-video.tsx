@@ -34,7 +34,10 @@ export function FuenteVideo({ fuente, videos }: { fuente: ReferenciaVideo; video
   );
 }
 
-/** Texto con los trozos entre `comillas invertidas` en monoespaciada (el modelo marca así el código). */
+/**
+ * Texto con los trozos entre `comillas invertidas` en monoespaciada (el modelo marca así el código) y los que van
+ * entre **dos asteriscos** en negrita. Dentro del código no se tocan los asteriscos; unos sin cerrar se quedan tal cual.
+ */
 export function TextoConCodigo({ texto }: { texto: string }) {
   return (
     <>
@@ -44,9 +47,23 @@ export function TextoConCodigo({ texto }: { texto: string }) {
             {trozo}
           </code>
         ) : (
-          trozo
+          <ConNegritas key={i} texto={trozo} />
         ),
       )}
     </>
   );
+}
+
+const NEGRITA = /\*\*([^*\n]+?)\*\*/g;
+
+function ConNegritas({ texto }: { texto: string }) {
+  const partes: React.ReactNode[] = [];
+  let desde = 0;
+  for (const m of texto.matchAll(NEGRITA)) {
+    partes.push(texto.slice(desde, m.index));
+    partes.push(<strong key={m.index}>{m[1]}</strong>);
+    desde = m.index + m[0].length;
+  }
+  partes.push(texto.slice(desde));
+  return <>{partes}</>;
 }

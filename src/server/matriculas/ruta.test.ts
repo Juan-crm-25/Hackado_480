@@ -87,7 +87,7 @@ describe.skipIf(!hayBd)("ruta personalizada (con BBDD real)", () => {
     expect(despues.modulos.map((x) => x.id)).toEqual(["m1-html", "m2-css", "m3-responsive", "m4-javascript"]);
   });
 
-  it("«Ya lo sé» solo cambia el orden: no toca el progreso (el dominado llega al aprobar el test del módulo)", async () => {
+  it("«Ya lo sé» solo cambia el orden: no toca el progreso (el completado llega al aprobar el test del módulo)", async () => {
     const pablo = await sesionDe("pablo@demo.test");
     expect(await estadoDe(pablo.id, "m1-html")).toBeNull();
     const lucia = await sesionDe("lucia@demo.test");

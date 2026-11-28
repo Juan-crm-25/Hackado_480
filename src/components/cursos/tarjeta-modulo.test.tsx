@@ -7,19 +7,22 @@ const MODULO = { id: "m1-html", titulo: "HTML", descripcion: "Estructura", numCl
 const tarjeta = (html: string) => html.match(/<div[^>]*data-slot="card"[^>]*>/)?.[0] ?? "";
 
 describe("TarjetaModulo", () => {
-  it("un módulo dominado se distingue: marca, icono, texto y borde de color", () => {
-    const html = renderToStaticMarkup(<TarjetaModulo modulo={MODULO} estado="dominado" indice={0} recomendado={false} />);
-    expect(tarjeta(html)).toContain('data-estado="dominado"');
+  it("un módulo completado (test aprobado) se distingue: marca, icono, texto y borde de color", () => {
+    const html = renderToStaticMarkup(<TarjetaModulo modulo={MODULO} estado="completado" indice={0} recomendado={false} />);
+    expect(tarjeta(html)).toContain('data-estado="completado"');
     expect(tarjeta(html)).toContain("border-brand");
     expect(html).toContain("lucide-circle-check");
-    expect(html).toContain("Dominado");
+    expect(html).toContain("Completado");
     expect(html).toContain("Test superado");
   });
 
-  it("un módulo completado se distingue igual", () => {
-    const html = renderToStaticMarkup(<TarjetaModulo modulo={MODULO} estado="completado" indice={0} recomendado={false} />);
-    expect(tarjeta(html)).toContain("border-brand");
-    expect(html).toContain("Completado");
+  it("un módulo dominado (por el diagnóstico) NO está superado: dice que falta el test para completarlo", () => {
+    const html = renderToStaticMarkup(<TarjetaModulo modulo={MODULO} estado="dominado" indice={0} recomendado={false} />);
+    expect(tarjeta(html)).toContain('data-estado="dominado"');
+    expect(tarjeta(html)).not.toContain("border-brand");
+    expect(html).not.toContain("Test superado");
+    expect(html).toContain("Dominado");
+    expect(html).toContain("Haz el test del módulo para completarlo");
   });
 
   it("un módulo sin terminar no lleva la marca de superado", () => {

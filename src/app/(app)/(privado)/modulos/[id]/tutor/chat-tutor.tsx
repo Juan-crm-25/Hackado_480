@@ -4,11 +4,13 @@ import { Clock, Info, UserCheck, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { EstadoCargando, EstadoVacio } from "@/components/estado";
 import { FuenteVideo, TextoConCodigo, type VideoResumen } from "@/components/fuente-video";
+import { TextoMarkdown } from "@/components/texto-markdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { leerRespuesta, mensajeDeError } from "@/lib/peticiones";
 import type { DudaHumana, ErrorApi, Mensaje, PeticionTutor, RespuestaTutor } from "@/lib/types";
+import { contar } from "@/lib/formato";
 
 type Burbuja = Mensaje & {
   fueraDeTemario?: boolean;
@@ -154,7 +156,7 @@ export function ChatTutor({
             className="max-h-32 min-h-11 resize-none"
             aria-label="Tu pregunta"
           />
-          {restantes !== null && <p className="text-xs text-muted-foreground">Te quedan {restantes} preguntas hoy</p>}
+          {restantes !== null && <p className="text-xs text-muted-foreground">{restantes === 1 ? "Te queda" : "Te quedan"} {contar(restantes, "pregunta", "preguntas")} hoy</p>}
         </div>
         <Button type="submit" variant="accent" disabled={enviando || !texto.trim()}>
           Enviar
@@ -192,10 +194,8 @@ export function BurbujaMensaje({
           Fuera del temario
         </p>
       )}
-      <p>
-        {/* Los trozos entre `comillas invertidas` son código: se muestran en monoespaciada. */}
-        <TextoConCodigo texto={mensaje.texto} />
-      </p>
+      {/* Markdown sencillo del modelo: párrafos, listas, `código` y **negritas** (sin asteriscos a la vista). */}
+      <TextoMarkdown texto={mensaje.texto} />
       {!!mensaje.fuentes?.length && (
         <ul className="flex flex-wrap gap-2">
           {mensaje.fuentes.map((f) => (
