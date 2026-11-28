@@ -2,7 +2,9 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { getModulo } from "../catalogo";
 import { sembrar } from "../db/seed/sembrar";
 import { bdPruebasDisponible, crearBdPrueba, type BdPrueba } from "../db/test-utils";
-import { leerTranscripcion } from "../transcripciones";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { agruparFragmentos, parsearVtt } from "../transcripciones";
 import type { Modulo } from "../types";
 import { temarioDeTranscripciones, temarioDelModulo } from "./temario";
 
@@ -54,7 +56,9 @@ describe.skipIf(!hayBd)("temarioDelModulo desde la BBDD (con BBDD real)", () => 
       .filter((v) => v.transcripcion)
       .flatMap((v) => [
         `### Vídeo ${v.id}: ${v.titulo}`,
-        ...leerTranscripcion(v.transcripcion as string).map((f) => `[${v.id} @${f.inicio}] ${f.texto.replace(/\s+/g, " ").trim()}`),
+        ...agruparFragmentos(parsearVtt(readFileSync(path.join(process.cwd(), "data", "transcripciones", v.transcripcion as string), "utf8"))).map(
+          (f) => `[${v.id} @${f.inicio}] ${f.texto.replace(/\s+/g, " ").trim()}`,
+        ),
       ])
       .join("\n");
   }

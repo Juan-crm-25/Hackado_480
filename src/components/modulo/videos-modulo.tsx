@@ -33,6 +33,7 @@ import {
   textoContador,
   textoPausa,
 } from "./reproduccion";
+import { PanelEstudio } from "./panel-estudio";
 import { claveTests, desbloqueadas, superarTest } from "./tests-modulo";
 import { type AlmacenVistos, claveVistos, leerTextoVistos, marcarVisto, vistosDeTexto } from "./vistos";
 
@@ -214,6 +215,10 @@ export function VideosModulo({
                       .
                     </EstadoVacio>
                     )}
+                    <PanelEstudio
+                      moduloSlug={moduloSlug}
+                      video={{ id: clase.id, titulo: clase.titulo, youtubeId: clase.youtubeId ?? "" }}
+                    />
                     <TestVideo
                       tituloVideo={clase.titulo}
                       moduloSlug={moduloSlug}

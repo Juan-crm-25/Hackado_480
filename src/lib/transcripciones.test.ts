@@ -7,10 +7,9 @@ import {
   marcaMinuto,
   parsearMarkdown,
   parsearVtt,
-  temarioDelModulo,
   vttAMarkdown,
 } from "./transcripciones";
-import type { Catalogo, Modulo } from "./types";
+import type { Catalogo } from "./types";
 
 const VTT = `WEBVTT
 
@@ -54,24 +53,6 @@ describe("agruparFragmentos", () => {
       { inicio: 0, texto: "a b c" },
       { inicio: 30, texto: "d" },
     ]);
-  });
-});
-
-describe("temarioDelModulo", () => {
-  it("pone una marca [vídeo @segundo] por fragmento y salta vídeos sin transcripción", () => {
-    const modulo: Modulo = {
-      id: "m",
-      titulo: "M",
-      descripcion: "",
-      ordenSugerido: 1,
-      conceptos: [],
-      videos: [
-        { id: "v1", titulo: "Uno", youtubeId: "", duracionSegundos: 60, transcripcion: "v1.vtt" },
-        { id: "v2", titulo: "Dos", youtubeId: "", duracionSegundos: 60 },
-      ],
-    };
-    const temario = temarioDelModulo(modulo, () => [{ inicio: 12, texto: "Texto" }]);
-    expect(temario).toBe("### Vídeo v1: Uno\n[v1 @12] Texto");
   });
 });
 

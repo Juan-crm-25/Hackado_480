@@ -4,7 +4,18 @@ import { consumirConsulta } from "@/lib/ai/limite";
 import { ErrorMaterial, generarMaterialPersonal } from "@/lib/agentes/material-personal";
 import { getModulo } from "@/lib/catalogo";
 import { getDb, type Db } from "@/lib/db/client";
-import type { Infografia, InfografiasModulo, MaterialComun, MaterialPersonal, RespuestaMaterialPersonal, SeccionResumen, Tarjeta } from "@/lib/types";
+import type {
+  EstudioVideo,
+  Infografia,
+  InfografiasModulo,
+  MaterialComun,
+  MaterialPersonal,
+  RespuestaMaterialPersonal,
+  SeccionResumen,
+  Tarjeta,
+} from "@/lib/types";
+import { agruparFragmentos, parsearMarkdown } from "@/lib/transcripciones";
+import { leerTranscripcionesDelModulo } from "../catalogo/repositorio";
 import { CURSO_DEMO_SLUG } from "@/lib/usuario-demo";
 import type { UsuarioSesion } from "../auth/roles";
 import { datosInvalidos, errorIa, limiteSuperado, noEncontrado } from "../compartido/errores";
@@ -114,4 +125,32 @@ export async function infografiasDelModulo(
   const { moduloId, infografias } = await leerMaterialDelModulo(usuario, moduloSlug, db);
   if (!infografias.length) throw noEncontrado("Este módulo todavía no tiene infografías");
   return { moduloId, infografias };
+}
+
+// ── Panel de estudio de cada vídeo (#39): su transcripción y su material revisado ──
+
+/**
+ * GET /api/modulos/:id/videos/:video/estudio: la transcripción del vídeo (de `documento`, agrupada en bloques de ~30 s
+ * para leerla) y su resumen, tarjetas e infografía, solo lo REVISADO. Necesita el curso (403). Módulo o vídeo que no
+ * existe, o un vídeo de otro módulo: 404. Sin nada aún, listas vacías. No llama a la IA.
+ */
+export async function estudioDelVideo(
+  usuario: UsuarioSesion,
+  moduloSlug: string,
+  videoSlug: string,
+  db: Db = getDb(),
+): Promise<EstudioVideo> {
+  const modulo = getModulo(moduloSlug);
+  if (!modulo) throw noEncontrado(`No existe el módulo "${moduloSlug}"`);
+  await requerirAccesoCurso(usuario, CURSO_DEMO_SLUG, db);
+  if (!modulo.videos.some((v) => v.id === videoSlug)) throw noEncontrado(`El vídeo "${videoSlug}" no es del módulo`);
+  const moduloBd = await buscarModulo(modulo.id, db);
+  if (!moduloBd) throw noEncontrado(`El módulo "${modulo.id}" no está en la base de datos`);
+
+  const [transcripciones, material] = await Promise.all([
+    leerTranscripcionesDelModulo(modulo.id, db),
+    leerMaterialPublicado(moduloBd.id, db, videoSlug),
+  ]);
+  const transcripcion = agruparFragmentos(parsearMarkdown(transcripciones.get(videoSlug) ?? ""));
+  return { moduloId: modulo.id, videoId: videoSlug, transcripcion, ...material };
 }

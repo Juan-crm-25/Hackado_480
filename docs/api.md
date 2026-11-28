@@ -26,6 +26,7 @@ Los errores siempre tienen la forma `{ "error": "mensaje" }` (`ErrorApi`).
 | `GET /api/modulos/:id/material` | `MaterialComun` (resumen + tarjetas) | ✅ Real (tabla `material_clase`; no llama a la IA): lo **revisado** de los vídeos del módulo, en orden. Necesita el curso (401 sin sesión, 403 sin el curso); 404 si aún no hay nada revisado | #2, #15 |
 | `POST /api/material-personal` | `RespuestaMaterialPersonal` | ✅ Real (IA). El alumno es el **usuario de la sesión** (401 sin sesión, 403 sin el curso); `alumnoId` ya no se usa. Cuenta para su límite diario (429). Si no se puede generar con esas indicaciones o el módulo no tiene transcripciones: 400; si falla la IA: 502 | #2 |
 | `GET /api/material-personal?moduloId=` | `MaterialPersonal[]` | ✅ Real (tabla `material_personal`): **solo el material del usuario de la sesión** | #2 |
+| `GET /api/modulos/:id/videos/:video/estudio` | `EstudioVideo` | ✅ Real (#39; no llama a la IA): el panel de estudio de un vídeo. Su transcripción (tabla `documento`, en bloques de ~30 s) y su resumen, tarjetas e infografía, solo lo **revisado**. Necesita el curso (401 sin sesión, 403 sin el curso); 404 si el módulo o el vídeo no existen. Sin nada todavía, listas vacías | #39 |
 | `GET /api/modulos/:id/infografias` | `InfografiasModulo` | ✅ Real (tabla `material_clase`; no llama a la IA): una por vídeo, solo las **revisadas**. Necesita el curso (401 sin sesión, 403 sin el curso); 404 si aún no hay ninguna revisada | #7, #15 |
 
 ## Ejemplos

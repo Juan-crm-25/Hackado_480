@@ -93,6 +93,17 @@ export interface Ejercicio extends EjercicioBase {
 /** Versión que se envía al alumno: sin solución ni rúbrica. */
 export type EjercicioPublico = Omit<Ejercicio, "solucion" | "rubrica" | "estado" | "uso">;
 
+/** GET /api/modulos/:id/videos/:video/estudio — panel de estudio de un vídeo (#39): solo lo revisado. */
+export interface EstudioVideo {
+  moduloId: string;
+  videoId: string;
+  /** La transcripción del vídeo, en bloques de ~30 s con su segundo de inicio. Vacía si aún no hay. */
+  transcripcion: { inicio: number; texto: string }[];
+  resumen: SeccionResumen[];
+  tarjetas: Tarjeta[];
+  infografias: Infografia[];
+}
+
 /** GET /api/modulos/:id/test — el test del módulo (#3): entre 5 y 8 preguntas de su banco, al azar. */
 export interface TestModulo {
   moduloId: string;
