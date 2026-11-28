@@ -393,3 +393,28 @@ Para desarrollar el tutor se escribieron **transcripciones de prueba del módulo
 - **Hablar en el equipo y documentar** cómo se controla el límite de IA en los tests en la app real y si se deja usar el tutor durante el test de módulo y el examen (en el MVP no se bloquea). También qué freno poner en producción a los reintentos (por ejemplo, 3 al día).
 - **Examen del curso** (extra): sus preguntas ya se generan (`uso = examen`). Se desbloquearía con todos los módulos aprobados, que es un supuesto del equipo: en el SPEC es la pregunta abierta 1 al cliente.
 - **Neon:** `db:migrate` → `db:seed` → `generar:ejercicios` → `generar:material` → revisar y aprobar en Studio. Hasta que se aprueben, en la web desplegada no saldrán los tests.
+
+## Trabajo de Sergio — Viernes 27 y sábado 28/11/2026: transcripciones en la BBDD y panel de estudio por vídeo (#39)
+
+### Qué hicimos
+
+| Tema | Qué hace | PR |
+|---|---|---|
+| Transcripciones en la BBDD | El seed guarda la de cada vídeo en `documento` con `vttAMarkdown()` (de la #33), tal cual: una marca `[mm:ss]` por línea del VTT | #70 |
+| Todo lee el temario de la BBDD | `src/lib/agentes/temario.ts`: el tutor, el material, la infografía, el material personal y el generador de ejercicios leen las transcripciones de `documento` y las agrupan en bloques de ~30 s. A la IA le llega lo mismo que antes (test de regresión) | #70 |
+| Panel de estudio en cada vídeo | Dentro de cada vídeo del módulo, «Estudiar este vídeo» con 4 pestañas: Transcripción (cada bloque enlazado a su minuto), Resumen, Tarjetas y Diagrama. Solo el material revisado de ESE vídeo; lo que no hay, lo dice. Se pide a la API al abrirlo | esta |
+| Limpieza | `transcripciones.ts` queda solo con los formatos (VTT, markdown y fragmentos): nada lee ya `data/transcripciones/` mientras la app funciona. Los VTT se quedan como origen del seed | esta |
+
+### Decisiones tomadas
+
+| Decisión | Por qué |
+|---|---|
+| Del #39 quedan fuera los pasos 0 y 3 (el profesor pega la URL de YouTube y la app baja los subtítulos) | El enunciado da el catálogo por cargado. Además, Vercel suele estar bloqueado por YouTube |
+| El paso 4 (material por vídeo) ya se hizo en el #15 | Se genera una vez con `npm run generar:material` y una persona lo revisa |
+| El alumno solo ve el material común **revisado**, sin la etiqueta «Generado por IA» que proponía el issue | Manda el SPEC: el material común lo ven todos los alumnos. La etiqueta se usa donde tiene sentido: el material personal del alumno, que es suyo y no se revisa |
+| La transcripción se guarda **tal cual** y se agrupa al leer | Lo que se planteó en la #33: no se pierde precisión (una marca cada ~15 s) y se puede agrupar de otra forma sin repetir el seed |
+
+### Pendiente
+
+- **Neon**: la tabla `documento` solo se llena con el seed. Hasta ejecutar `db:seed` allí, el tutor de la web publicada dice que no tiene el contenido de los vídeos. El seed va **antes** de generar ejercicios y material.
+- Para la demo, el panel solo enseña resumen, tarjetas y diagrama si en Neon el material está generado y aprobado.

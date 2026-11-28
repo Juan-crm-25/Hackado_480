@@ -1,14 +1,8 @@
 /**
- * Lectura de transcripciones VTT (data/transcripciones/) y construcción del temario
- * que recibe el tutor. Cada fragmento lleva su marca [vídeo @segundo] para que el tutor
- * pueda citar el momento exacto del vídeo.
- *
- * También convierte las transcripciones al markdown con marcas [mm:ss] que se guarda en la
- * tabla `documento` de la BBDD (#13), y lo lee de vuelta.
+ * Formatos de las transcripciones, sin leer ficheros ni la BBDD: del VTT de YouTube (origen del seed, en
+ * data/transcripciones/) al markdown con marcas [mm:ss] que se guarda en la tabla `documento` (#13, #39), y de vuelta
+ * a fragmentos. El temario que recibe la IA se monta en `src/lib/agentes/temario.ts`, leyendo de la BBDD.
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import type { Modulo } from "./types";
 
 export interface Fragmento {
   /** Segundo en el que empieza el fragmento. */
@@ -16,7 +10,6 @@ export interface Fragmento {
   texto: string;
 }
 
-const CARPETA = path.join(process.cwd(), "data", "transcripciones");
 const TIEMPO = /^(?:(\d+):)?(\d{2}):(\d{2})[.,](\d{3})\s+-->/;
 
 /** Convierte el contenido de un VTT en fragmentos con su segundo de inicio. Ignora cabecera y notas. */
@@ -98,24 +91,4 @@ export function parsearMarkdown(contenido: string): Fragmento[] {
     }
   }
   return fragmentos.filter((f) => f.texto);
-}
-
-const cache = new Map<string, Fragmento[]>();
-
-export function leerTranscripcion(fichero: string): Fragmento[] {
-  if (!cache.has(fichero)) {
-    cache.set(fichero, agruparFragmentos(parsearVtt(readFileSync(path.join(CARPETA, fichero), "utf8"))));
-  }
-  return cache.get(fichero)!;
-}
-
-/** Temario del módulo en texto, con una marca [vídeo @segundo] por fragmento. */
-export function temarioDelModulo(modulo: Modulo, leer: (fichero: string) => Fragmento[] = leerTranscripcion): string {
-  const partes: string[] = [];
-  for (const video of modulo.videos) {
-    if (!video.transcripcion) continue;
-    partes.push(`### Vídeo ${video.id}: ${video.titulo}`);
-    for (const f of leer(video.transcripcion)) partes.push(`[${video.id} @${f.inicio}] ${f.texto}`);
-  }
-  return partes.join("\n");
 }

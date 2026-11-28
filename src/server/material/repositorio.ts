@@ -167,13 +167,15 @@ export async function guardarMaterialClase(
   });
 }
 
-/** El material revisado de un módulo (id de la BBDD), juntando sus vídeos en orden. Sin nada revisado, listas vacías. */
-export async function leerMaterialPublicado(moduloId: string, db: Db = getDb()): Promise<MaterialPublicado> {
+/** El material REVISADO de los vídeos de un módulo (id de la BBDD), en orden; con `claseSlug`, solo el de ese vídeo. */
+export async function leerMaterialPublicado(moduloId: string, db: Db = getDb(), claseSlug?: string): Promise<MaterialPublicado> {
   const filas = await db
     .select({ tipo: materialClase.tipo, contenido: materialClase.contenido })
     .from(materialClase)
     .innerJoin(clase, eq(clase.id, materialClase.claseId))
-    .where(and(eq(clase.moduloId, moduloId), eq(materialClase.revisado, true)))
+    .where(
+      and(eq(clase.moduloId, moduloId), eq(materialClase.revisado, true), claseSlug === undefined ? undefined : eq(clase.slug, claseSlug)),
+    )
     .orderBy(asc(clase.orden));
 
   const publicado: MaterialPublicado = { resumen: [], tarjetas: [], infografias: [] };

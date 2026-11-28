@@ -18,3 +18,6 @@ export const esquemaQueryMaterialPersonal = z.object({ moduloId: z.string().trim
 
 /** /api/modulos/:id/material y /api/modulos/:id/infografias: el módulo por su slug (p. ej. "m2-css"). */
 export const esquemaParamsModulo = z.object({ id: z.string().trim().min(1).max(100) });
+
+/** /api/modulos/:id/videos/:video/estudio: el módulo y el vídeo por su slug (p. ej. "m2-css" y "v04"). */
+export const esquemaParamsVideo = z.object({ id: z.string().trim().min(1).max(100), video: z.string().trim().min(1).max(50) });
